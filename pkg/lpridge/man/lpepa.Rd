@@ -49,13 +49,13 @@ lpepa(x, y, bandwidth, deriv = 0, n.out = 200, x.out = NULL,
 }
 \details{More details are described in the reference SBE\&G below.  In
   the S\&G a bad finite sample behaviour of local polynomials for random
-  designs was found. 
+  designs was found.
   For practical use, we therefore propose local polynomial regression
   fitting with ridging, as implemented in the function
   \code{\link{lpridge}}.  In \code{lpepa}, several parameters described
-  in SBE\&G are fixed either in the fortran 
+  in SBE\&G are fixed either in the fortran
   routine or in the \R-function.  There, you find comments how to change them.
- 
+
   For \code{var=TRUE}, the variance of the estimator proportional to the
   residual variance is computed, i.e., the exact finite sample variance of the
   regression estimator is \code{var(est) = est.var * sigma^2}.
@@ -79,7 +79,7 @@ lpepa(x, y, bandwidth, deriv = 0, n.out = 200, x.out = NULL,
   Seifert, B. and Gasser, T. (2000)
   Data adaptive ridging in local polynomial
   regression.  \emph{J. Computational and Graphical Statistics} \bold{9},
-  338--360. 
+  338--360.
 
   Seifert, B. and Gasser, T. (1998)
   Ridging Methods in Local Polynomial Regression.
@@ -97,9 +97,10 @@ lpepa(x, y, bandwidth, deriv = 0, n.out = 200, x.out = NULL,
   modifications. in: \emph{Statistical Theory and Computational Aspects
     of Smoothing}, W. Härdle, M. G. Schimek (eds), Physica, 50--127.
 }
-\seealso{\code{\link{lpridge}, and also \code{\link{lowess}} and
-    \code{\link[modreg]{loess}} (in package \bold{modreg}) which do
-    local linear and quadratic regression quite a bit differently.}
+\seealso{\code{\link{lpridge}}, and also \code{\link{lowess}} and
+  \code{\link[modreg]{loess}} (in package \bold{modreg}) which do
+  local linear and quadratic regression quite a bit differently.
+}
 \examples{
 data(cars)
 attach(cars)
