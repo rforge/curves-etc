@@ -1,3 +1,3 @@
-.First.lib <- function(lib, pkg) library.dynam("kern",pkg,lib)
+.First.lib <- function(lib, pkg) library.dynam("lokern",pkg,lib)
 
 
