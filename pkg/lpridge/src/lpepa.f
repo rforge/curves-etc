@@ -6,7 +6,7 @@ c
 c     local polynomials with Epanechnikov(!) weights for regression
 c     functions and derivatives
 c
-c     04. 01. 93    B. Seifert                    last edit: 19. 08. 93 
+c     04. 01. 93    B. Seifert                    last edit: 19. 08. 93
 c
 c                                (hopefully) cosmetic edits: 23. 03. 95
 c
@@ -21,7 +21,7 @@ c     input    p        polynomial approximation order (0 <= p <= 10)
 c     input    tt(m)    outputgrid
 c     input    m        size of outputgrid
 c     input    mnew     restart parameter: restart is forced after mnew
-c                       updating steps. (mnew >= 0) 
+c                       updating steps. (mnew >= 0)
 c                       mnew = 0 --> no updating
 c     in/out   imoms(nmoms) 0,1 - block (not) computed, used in lpnew.
 c                       Set imoms = 0 at the beginning and after
@@ -39,7 +39,7 @@ c     calls:            lpadd, lpnew, lpslv, lpsub, lpsv
 c
 ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
-      implicit undefined (a-z)
+      implicit none
       integer n,nue,p,m,mnew,imoms(*),leng,nmoms,nvar
       double precision t(*),x(*),b(*),tt(*),moms(nmoms,0:*),y(*),var(*)
 
@@ -92,7 +92,7 @@ ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
        zer=1d-10
        if (p.gt.0) zer=1d-10*dble(n)*(dble(p+1)/dble(n+n))**(p+p-1)
 
-c - limits for singularity: sins(i,*,*)=lower and upper, 
+c - limits for singularity: sins(i,*,*)=lower and upper,
 c      (*,i,*)=update and restart, (*,*,i)=weighted and unweighted
        do 10 i=1,2
           do 10 j=1,2
@@ -144,11 +144,11 @@ c      switch to the right boundary and restart
                iu=n
                io=n+1
             endif
-         endif 
+         endif
 c - minimal number of points in the smoothing interval
          nmin=p+1
 c
-c - determine smoothing interval 
+c - determine smoothing interval
 c
 110      tleft=tt(i)-b(i)
          tright=tt(i)+b(i)
@@ -300,7 +300,7 @@ c - 1. try restart
          if (nsub.gt.0) then
             iup=mnew
             goto 200
-         endif 
+         endif
 c - 2. try unweighted LSE
          if (irec.eq.1) goto 400
 c - 3. try more points
@@ -308,7 +308,7 @@ c - 3. try more points
          iuold=iu
          nmin=nmin+1
          goto 160
-c - limits for singularity: sins(i,*,*)=lower and upper, 
+c - limits for singularity: sins(i,*,*)=lower and upper,
 c      (*,i,*)=update and restart, (*,*,i)=weighted and unweighted
 600      if (nsin.eq.0.and.nsub.eq.0) then
             sins(2,1,irec)=2d0
@@ -352,7 +352,7 @@ c    - unweighted LSE
 850      do 860 l=0,2*p
 860         w(l,4)=w(l,1)
 c    - variance (sigma = 1)
-c    - var = u'* (X'W X)**-1 X'W**2 X (X'W X)**-1 * u 
+c    - var = u'* (X'W X)**-1 X'W**2 X (X'W X)**-1 * u
 880      var(i)=0d0
          do 890 j=0,p
             var(i)=var(i)-w(j+j,4)*w(j,3)*w(j,3)
@@ -383,19 +383,19 @@ c     in/out   tbar     mean of inputgrid-points
 c     in/out   xbar     mean of data
 c     input    p	number of moments
 c     input    pmax     true dimension of arrays
-c     input    n        number of data used 
+c     input    n        number of data used
 c     input    bin(0:p,0:p)  matrix of binomial coefficients
 c     input    iu,io    intervall of data used
 c
 ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
-      implicit undefined (a-z)
+      implicit none
       integer n,p,ps,j,k,pmax,iu,io,i
       double precision s(0:pmax),t(0:pmax),to(*),x(*),tbar,xbar,
      .         e,d,dp,sx,tx,bin(0:pmax,0:pmax),dnp,nn
 c
       ps=2+2*p
-      do 500 i=iu,io 
+      do 500 i=iu,io
          n=n+1
          d=tbar
          e=xbar
@@ -437,9 +437,9 @@ C
 
 ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 c
-c     04. 01. 93    B. Seifert                    last edit: 14. 01. 93 
+c     04. 01. 93    B. Seifert                    last edit: 14. 01. 93
 c
-c     Calculates new centered moments at restart 
+c     Calculates new centered moments at restart
 c
 c     output   t(0:p+2) vector of centered moments multiplied with
 c                       centered y-values, i.e. t_{j,n}
@@ -452,20 +452,20 @@ c     input    leng     length of blocks stored
 c     in/out   imoms(*) 0,1 - block (not) computed
 c     in/out   moms(nmoms,2,0:2+2p) moments for blocks - (*,1,*)=t
 c                       (*,2,*)=s (*,*,0)=means
-c     work     mom(*)   local moms 
+c     work     mom(*)   local moms
 c     input    p        number of moments
 c     input    pmax     true dimension of arrays
-c     output   n        number of data used 
+c     output   n        number of data used
 c     input    bin(0:p,0:p)  matrix of binomial coefficients
 c     input    iu,io    intervall of data used
 c
 ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
-      implicit undefined (a-z)
+      implicit none
       integer leng,nmoms,imoms(*),p,pmax,n,iu,io
       double precision t(0:pmax),s(0:pmax),to(*),x(*),tbar,xbar,
      .   moms(nmoms,2,0:pmax),mom(2,*),bin(0:pmax,0:pmax)
-      
+
       integer ps,j,k,im1,im2,i1,i2,ii,ii1,ii2,i,n2
       double precision e,d,dp,sx,tx,dnp,xy,xx,tt,n1,nn
 c
@@ -497,7 +497,7 @@ c
             xy=x(i)-xbar
             do 130 j=1,p+2
                xy=xy*(to(i)-tbar)
-130            t(j)=t(j)+xy 
+130            t(j)=t(j)+xy
             xy=to(i)-tbar
             do 140 j=2,ps
                xy=xy*(to(i)-tbar)
@@ -505,7 +505,7 @@ c
       endif
 c
 c compute central blocks
-c      
+c
       if(im2.ge.im1) then
          do 480 i=im1,im2
             if(imoms(i).le.0) then
@@ -522,7 +522,7 @@ c - store block i
                   tt=tt+to(ii)
 220               xx=xx+x(ii)
                tt=tt/leng
-               xx=xx/leng 
+               xx=xx/leng
                moms(i,1,0)=tt
                moms(i,2,0)=xx
                do 240 ii=ii1,ii2
@@ -533,10 +533,10 @@ c - store block i
                   xy=to(ii)-tt
                   do 240 j=2,ps
                      xy=xy*(to(ii)-tt)
-240                  moms(i,2,j)=moms(i,2,j)+xy 
+240                  moms(i,2,j)=moms(i,2,j)+xy
             endif
 c
-            n1=n         
+            n1=n
             n=n+leng
             d=tbar
             e=xbar
@@ -567,7 +567,7 @@ C
                dp=dp*d
 340            s(j)=sx+dp*n1*(1d0-dnp)
 480      continue
-      endif     
+      endif
 c
 c compute last incomplete block without storing
 c
@@ -587,13 +587,13 @@ c
             xy=x(i)-xx
             do 530 j=1,p+2
                xy=xy*(to(i)-tt)
-530            mom(1,j)=mom(1,j)+xy 
+530            mom(1,j)=mom(1,j)+xy
             xy=to(i)-tt
             do 540 j=2,ps
                xy=xy*(to(i)-tt)
 540            mom(2,j)=mom(2,j)+xy
 c
-         n1=n 
+         n1=n
          n=n+n2
          d=tbar
          e=xbar
@@ -623,7 +623,7 @@ C
 630            dnp=dnp*nn
             dp=dp*d
 640         s(j)=sx+dp*n1*(1d0-dnp)
-      endif     
+      endif
 c
       s(0)=dble(n)
 c         write(*,'(5g12.4)')(t(i),i=0,ps)
@@ -647,7 +647,7 @@ C       RESULTING X OVERWRITES Y
 c
 ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
-        implicit undefined (a-z)
+        implicit none
         double precision A(NA,NA),D(NA),y(na),SINout,sin,ZER
         INTEGER dif,NA,NSIn,nzer
         double precision XX,YY
@@ -726,13 +726,13 @@ c     in/out   tbar     mean of inputgrid-point
 c     in/out   xbar     mean of data
 c     input    p	number of moments
 c     input    pmax     true dimension of arrays
-c     in/out   n        number of data 
+c     in/out   n        number of data
 c     input    bin(0:p,0:p)   matrix of binomialcoefficients
 c     input    iu,io    interval of data used
 c
 ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
-      implicit undefined (a-z)
+      implicit none
       integer n,p,ps,j,k,pmax,iu,io,i
       double precision s(0:pmax),t(0:pmax),to(*),x(*),tbar,xbar,
      .              e,d,dp,sx,tx,bin(0:pmax,0:pmax),dnp,nn
@@ -792,7 +792,7 @@ C       RESULTING X OVERWRITES Y
 c
 ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
-        implicit undefined (a-z)
+        implicit none
         double precision A(NA,NA),D(NA),y(na),SINout,sin,ZER
         INTEGER dif,NA,NSIn,nzer
         double precision XX
