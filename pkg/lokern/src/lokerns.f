@@ -1,5 +1,5 @@
       subroutine lokerns(t,x,n,tt,m,nue,kord,ihom,irnd,
-     .     ismo,m1,tl,tu,s,sig,wn,w1,wm,ban,y)
+     .     ismo,m1,tl,tu,s,sig,wn,w1, wm,ban, y)
 c----------------------------------------------------------------------*
 c-----------------------------------------------------------------------
 c       Short-version: January 1997
@@ -8,17 +8,24 @@ c       Purpose:
 c
 c       General subroutine for kernel smoothing:
 c       Computation of iterative plug-in algorithm for local bandwidth
-c       selection for kernels with (nue,kord) = (0,2),(0,4),(1,3) or 
-c       (2,4).
+c       selection for kernels with
+c       (nue,kord) = (0,2), (0,4), (1,3) or (2,4).
 c-----------------------------------------------------------------------
-c  used subroutines: coff, resest, kernel with further subroutines
+c  used subroutines: constV, resest, kernel with further subroutines
 c-----------------------------------------------------------------------
-      implicit double precision (a-h,o-z)
-      dimension x(n),t(n),tt(m),y(m),wn(0:n,5),s(0:n)
-      dimension w1(m1,3),ban(m),wm(m)
-      dimension bias(2,0:2),vark(2,0:2),fak2(2:4)
+      integer n,m, nue, kord, ihom, irnd, ismo, m1
+      double precision t(n),x(n), tt(m), s(0:n)
+      double precision tl,tu,sig
+      double precision wn(0:n,5), w1(m1,3), wm(m),ban(m), y(m)
+c Var
+      integer nyg, inputs, i,ii,iil,itt,il,iu,isort,itende,it, j,
+     1  kk,kk2, kordv, nn, nuev,nyl
+      double precision bias(2,0:2),vark(2,0:2),fak2(2:4),
+     1     rvar, s0,sn, b,b2,bmin,bmax,bres,bvar,bs,alpha,ex,exs,exsvi,
+     2     r2,snr,vi,ssi,const,fac, g1,g2,dist, q,tll,tuu, wstep,
+     3     xi,xh,xxh,xmy2
 c-
-c-------- 1. initialisations 
+c-------- 1. initialisations
       data bias/.2,.04762,.4286,.1515,1.33,.6293/
       data vark/.6,1.250,2.143,11.93,35.0,381.6/
       data fak2/4.,36.,576./
@@ -31,15 +38,15 @@ c-------- 1. initialisations
       if(m.lt.1) stop
       if(m1.lt.3) stop
       kk=(kord-nue)/2
-      if(2*kk+nue.ne.kord) kord=nue+2
-      if(kord.gt.4.and.ismo.eq.0) kord=nue+2
-      if(kord.gt.6.or.kord.le.nue) kord=nue+2
+      if(2*kk + nue .ne. kord)       kord=nue+2
+      if(kord.gt.4 .and. ismo.eq.0)  kord=nue+2
+      if(kord.gt.6 .or. kord.le.nue) kord=nue+2
       rvar=sig
 c-
-c-------- 2. computation of s-sequence 
+c-------- 2. computation of s-sequence
       s0=1.5*t(1)-0.5*t(2)
       sn=1.5*t(n)-0.5*t(n-1)
-      if(s(n).le.s(0)) then 
+      if(s(n).le.s(0)) then
         inputs=1
         do 20 i=1,n-1
 20        s(i)=.5*(t(i)+t(i+1))
@@ -85,7 +92,7 @@ c-------- 5. compute indices
         goto 40
       end if
 c-
-c-------- 6. compute t-grid for integral approximation 
+c-------- 6. compute t-grid for integral approximation
       do 60 i=1,m1
          w1(i,2)=1.0
 60       w1(i,1)=tl+(tu-tl)*dble(i-1)/dble(m1-1)
@@ -108,7 +115,7 @@ c-------- 7. calculation of weight function
         xi=(tu-w1(i,1))/alpha/(tu-tl)
         if(xi.gt.1) goto 77
 76      w1(i,2)=(10.0-15*xi+6*xi*xi)*xi*xi*xi
-77    continue 
+77    continue
 c-
 c-------- 8. compute constants for iteration
       ex=1./dble(kord+kord+1)
@@ -116,9 +123,9 @@ c-------- 8. compute constants for iteration
       kk=kk2/2
 c-
 c-------- 9. estimating variance and smoothed pseudoresiduals
-      if((sig.le..0).and.(ihom.eq.0)) 
+      if(sig .le. 0. .and. ihom .eq. 0)
      .     call resest(t(il),x(il),nn,wn(il,2),r2,sig)
-      if(ihom.ne.0) then 
+      if(ihom.ne.0) then
         call resest(t,x,n,wn(1,2),snr,sig)
         bres=max(bmin,.2*nn**(-.2)*(s(iu)-s(il-1)))
         do 91 i=1,n
@@ -127,14 +134,14 @@ c-------- 9. estimating variance and smoothed pseudoresiduals
         call kernel(t,wn(1,2),n,bres,0,kk2,nyg,s,
      .            wn(1,3),n,wn(1,4))
       else
-        call coff(wn(1,4),n,sig)
+        call constV(wn(1,4),n,sig)
       end if
 c-
 c-------- 10. estimate/compute integral constant
 100   vi=0.
       do 101 i=il,iu
-101      vi=vi+wn(i,1)*n*(s(i)-s(i-1))**2*wn(i,4)       
-c- 
+101      vi=vi+wn(i,1)*n*(s(i)-s(i-1))**2*wn(i,4)
+c-
 c-------- 11. refinement of s-sequence for random design
       if(inputs.eq.1.and.irnd.eq.0) then
         do 110 i=0,n
@@ -148,7 +155,7 @@ c-------- 11. refinement of s-sequence for random design
         isort=0
         vi=0.0
 111     do 112 i=1,n
-        vi=vi+wn(i,1)*n*(s(i)-s(i-1))**2*wn(i,4)       
+        vi=vi+wn(i,1)*n*(s(i)-s(i-1))**2*wn(i,4)
           if(s(i).lt.s(i-1)) then
             ssi=s(i-1)
             s(i-1)=s(i)
@@ -191,7 +198,7 @@ c-------- 15. finish of iterations
 c-------- 16  compute smoothed function with global plug-in bandwidth
 160   call kernel(t,x,n,b,nue,kord,nyg,s,tt,m,y)
 c-
-c-------- 17. variance check 
+c-------- 17. variance check
       if(ihom.ne.0) sig=rvar
       if(rvar.eq.sig.or.r2.lt..88.or.ihom.ne.0.or.nue.gt.0) goto 180
       ii=0
@@ -215,11 +222,11 @@ c-------- 17. variance check
         call resest(t(iil),wn(1,3),ii,wn(1,4),snr,rvar)
       end if
       q=sig/rvar
-      if(q.le.2.) call coff(wn(1,4),n,sig) 
+      if(q.le.2.) call constV(wn(1,4),n,sig)
       if(q.le.2.) goto 180
       if(q.gt.5..and.r2.gt..95) rvar=rvar*.5
       sig=rvar
-      call coff(wn(1,4),n,sig)
+      call constV(wn(1,4),n,sig)
       goto 100
 c-
 c-------- 18. local initializations
@@ -233,7 +240,7 @@ c-------- 19. compute inner bandwidths
       g1=g1*dble(n)**(4./dble(2*kord+1)/(2*kord+5))
       g1=max(g1,bmin/dble(kord-1)*dble(kord+1))
       g1=min(g1,bmax)
-      
+
       g2=1.4*(1.+dble(kord-nue-2)*0.05)*b
       g2=g2*dble(n)**(2./dble(2*kord+1)/dble(2*kord+3))
       g2=max(g2,bmin)
@@ -260,7 +267,7 @@ c-------- 20. estimate/compute integral constant vi locally
  201  continue
       call kernel(t,wn(1,4),n,bvar,nuev,kordv,nyl,s,wm,m,ban)
 c-
-c-------- 21. estimation of kordth derivative locally
+c-------- 21. estimation of kord-th derivative locally
       wstep=(tt(m)-tt(1))/dble(m1-2)
       do 210 j=2,m1
          w1(j,2)=tt(1)+dble(j-2)*wstep
@@ -269,13 +276,13 @@ c-------- 21. estimation of kordth derivative locally
       w1(1,1)=tt(1)+.5*wstep
 
       call kernel(t,x,n,g1,kord,kord+2,nyg,s,w1(2,2),m1-1,w1(2,3))
-      
+
       do 211 j=2,m1
         w1(j,3)=w1(j,3)*w1(j,3)
  211  continue
       do 212 j=1,m
          y(j)=g2
-         if(tt(j).lt.s(0)+g1) then           
+         if(tt(j).lt.s(0)+g1) then
             y(j)=g2*(1.0+1.0*((tt(j)-g1-s(0))/g1)**2)
             y(j)=min(y(j),bmax)
          else if(tt(j).gt.s(n)-g1) then
@@ -283,7 +290,7 @@ c-------- 21. estimation of kordth derivative locally
             y(j)=min(y(j),bmax)
          end if
  212  continue
-      
+
       call kernp(w1(2,2),w1(2,3),m1-1,g2,nuev,kordv,nyl,
      .     w1(1,1),wm,m,y)
 c-
@@ -308,7 +315,7 @@ c-------- 23. compute smoothed function with local plug-in bandwidth
         y(j)=ban(j)
  231  continue
       call kernel(t,x,n,b,nue,kord,nyl,s,tt,m,y)
-      
+
       return
       end
 c     --- of lokerns()
