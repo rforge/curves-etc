@@ -20,5 +20,5 @@ varNPreg <- function(x,y)
              as.double(x), as.double(y), n,
              res = double(n),
              snr = double(1),
-             sigma2 = double(1))[4:6]
+             sigma2 = double(1), PACKAGE = "lokern")[4:6]
 }
