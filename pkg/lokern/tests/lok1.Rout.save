@@ -1,0 +1,59 @@
+
+R : Copyright 2001, The R Development Core Team
+Version 1.3.0 Under development (unstable) (2001-06-13)
+
+R is free software and comes with ABSOLUTELY NO WARRANTY.
+You are welcome to redistribute it under certain conditions.
+Type `license()' or `licence()' for distribution details.
+
+R is a collaborative project with many contributors.
+Type `contributors()' for more information.
+
+Type `demo()' for some demos, `help()' for on-line help, or
+`help.start()' for a HTML browser interface to help.
+Type `q()' to quit R.
+
+> require(lokern)
+Loading required package: lokern 
+[1] TRUE
+> data(xSim)
+> (n <- length(xSim))
+[1] 75
+> summary(xSim)
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+-3.1320 -1.6150  0.7583  0.3969  1.7710  4.4510 
+> tt <- ((1:n) - 1/2)/n # equidistant x
+> 
+> str(lk <- lokerns(tt, xSim))
+List of 11
+ $ x        : num [1:75] 0.00667 0.02000 0.03333 0.04667 0.06000 ...
+ $ y        : num [1:75] 1.97 1.90 1.64 1.43 2.40 ...
+ $ bandwidth: num [1:300] 0.0506 0.0502 0.0499 0.0495 0.0491 ...
+ $ x.out    : num [1:300] 0.00667 0.00997 0.01327 0.01657 0.01987 ...
+ $ est      : num [1:300] 1.87 1.86 1.86 1.85 1.85 ...
+ $ sig      : num 0.145
+ $ deriv    : num 0
+ $ korder   : num 2
+ $ xl       : num 0.067
+ $ xu       : num 0.933
+ $ s        : num [1:76] 0.00412 0.01333 0.02667 0.04000 0.05333 ...
+> summary(lk$est)
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+-3.0720 -1.6710  0.7233  0.4130  1.7870  4.2950 
+> summary((lk1 <- lokerns(tt,xSim, deriv = 1))$est)
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+-41.240  -8.247  -5.614  -4.940  -1.744  35.270 
+> summary((lk2 <- lokerns(tt,xSim, deriv = 2))$est)
+    Min.  1st Qu.   Median     Mean  3rd Qu.     Max. 
+-689.000  -75.810   31.670   -4.915  171.400  352.200 
+> 
+> summary(lk  $bandwidth)
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+0.03755 0.04529 0.04926 0.05264 0.05996 0.07839 
+> summary(lk1 $bandwidth)
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+0.05854 0.06545 0.06666 0.06975 0.06932 0.09286 
+> summary(lk2 $bandwidth)
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+0.07662 0.07995 0.09396 0.09031 0.09502 0.10940 
+> 
