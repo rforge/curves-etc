@@ -2,7 +2,7 @@ ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 cc     several kernel smoothing subroutines which are used by
 cc     glkern.f and lokern.f, version oct 1996
 cc
-cc     glkerns() & lokerns() directly only call the first 3 and constVec()
+cc     glkerns() & lokerns() directly only call the first 3 and constV()
 ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 cc     this file contains:
 cc
@@ -44,7 +44,7 @@ cc     subroutine coffb(nue,kord,q,iboun,c)
 cc                kernel coefficient of polynomial boundary kernels
 cc                used by kernfa and kerncl
 cc---------------------------------------------------------------------
-cc     subroutine constVec(x,n,fa)
+cc     subroutine constV(x,n,fa)
 cc                simple subroutine for array initialization
 ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
@@ -68,7 +68,6 @@ c     output  snr       explained variance of the true curve
 c     output  sigma2    estimation of sigma^2 (residual variance)
 c
 c-----------------------------------------------------------------------
-      implicit none
 c Arguments
       integer n
       double precision x(n),t(n), res(n), snr, sigma2
@@ -151,9 +150,10 @@ c  input    y(m)         bandwith sequence for ny=1, dummy for ny=0
 c  output   y(m)         estimated regression function
 c
 c-----------------------------------------------------------------------
-
-      integer n,nue,kord,ny,m
-      double precision t(n),x(n),b,s(0:n),tt(m),y(m), chan
+      integer n,nue, kord,ny,m
+      double precision t(n),x(n), b,s(0:n),tt(m),y(m)
+c
+      double precision chan
 c
 c------  computing change point
       chan=(5.+kord)*max(1.,sqrt(float(n)/float(m)))
@@ -194,9 +194,11 @@ c  output   y(m)         estimated regression function
 c
 c-----------------------------------------------------------------------
 
-      double precision t(n),x(n),b,s(0:n),tt(m),y(m),chan
-      integer n,nue,kord,ny,m
-c-
+      integer n,nue, kord,ny,m
+      double precision t(n),x(n), b,s(0:n),tt(m),y(m)
+c
+      double precision chan
+c
 c------  computing change point
       chan=(5.+kord)*max(1.,sqrt(float(n)/float(m)))
 c------
@@ -239,12 +241,12 @@ c
 c-----------------------------------------------------------------------
       integer n,nue,kord,ny,m
       double precision t(n),x(n),s(0:n),tt(m),y(m),b
-
+c Var
       integer j,k,iord,init,icall,i,iboun
       integer jl,jr,jnr,jnl
       double precision c(7),sw(7),xf(7),dold
       double precision a(7,7),a1(7),a2(7),a3(7,7),cm(7,6)
-      double precision bmin,bmax,bb,wwl,wwr,wid,wr,wido
+      double precision s0,sn,bmin,bmax,bb,wwl,wwr,wid,wr,wido
 c-
 c------ compute constants for later use
       s0=1.5*t(1)-0.5*t(2)
@@ -432,7 +434,7 @@ c-----------------------------------------------------------------------
       double precision x(n),t(n),s(0:n),tt(m),y(m),b
       double precision c(7),sw(7),xf(7),dold,qq,q,xnor
       double precision a(7,7),a1(7),a2(7),a3(7,7),cm(7,6)
-      double precision bmin,bmax,bb,wwl,wwr,wid,wr,wido
+      double precision s0,sn,bmin,bmax,bb,wwl,wwr,wid,wr,wido
 c-
 c------ compute constants for later use
       s0=1.5*t(1)-0.5*t(2)
@@ -875,11 +877,12 @@ c  input    y(m)         bandwith sequence for ny=1, dummy for ny=0
 c  output   y(m)         estimated regression function
 c
 c-----------------------------------------------------------------------
-
-      double precision x(n),t(n),s(0:n),tt(m),y(m)
+      integer n,nue,kord,ny,m
+      double precision t(n),x(n), b, s(0:n),tt(m),y(m)
+c Var
       double precision c(7),c1(7)
-      integer n,nue,kord,ny,m,ist,i,iboun,iord
-      double precision b, bb, bmax, wid, s1, bmin
+      integer ist,i,iboun,iord
+      double precision bb, s0,s1,sn,bmin,bmax, wid
 c-
 c------  compute kernel coefficients for interior and some constants
       call coffi(nue,kord,c)
@@ -968,10 +971,12 @@ c  output   y            smoothed value at tau
 c  work     wo(7)        work array
 c
 c-----------------------------------------------------------------------
-      double precision x(n),s(0:n),wo(7)
-      double precision c(7)
-      integer n,nue,iord,iboun,ist,jend,ibeg,incr,i,j
-      double precision tau,wid,s1,y,yy,yyy,w,widnue
+      integer n,nue,iord,iboun,ist
+      double precision x(n), tau,wid, s(0:n)
+      double precision s1, c(7), y
+c Var
+      double precision wo(7), yy,yyy,w,widnue
+      integer jend,ibeg,incr,i,j
 c-
       y=0.
       jend=0
@@ -1048,12 +1053,12 @@ c  input    y(m)         bandwith sequence for ny=1, dummy for ny=0
 c  output   y(m)         estimated regression function
 c
 c-----------------------------------------------------------------------
+      integer n, nue,kord,ny, m
+      double precision t(n),x(n),b, s(0:n),tt(m),y(m)
+c Var
+      integer ist,i,iboun,iord
+      double precision c(7),c1(7), bb, bmax, wid, s0,s1,sn, bmin
 
-      double precision x(n),t(n),s(0:n),tt(m),y(m)
-      double precision c(7),c1(7)
-      integer n,nue,kord,ny,m,ist,i,iboun,iord
-      double precision b, bb, bmax, wid, s1, bmin
-c-
 c------  compute kernel coefficients for interior and some constants
       call coffi(nue,kord,c)
       iord=kord+1
@@ -1136,10 +1141,11 @@ c  output   y            smoothed value at tau
 c  work     wo(7)        work array
 c
 c-----------------------------------------------------------------------
-      double precision x(n),s(0:n),wo(7)
-      double precision c(7)
-      integer n,nue,iord,iboun,ist,jend,ibeg,incr,i,j
-      double precision tau,wid,s1,y,yy,yyy,w,widnue,ww
+      integer n, nue,iord,iboun,ist
+      double precision s(0:n),x(n), tau,wid, s1,c(7),y
+c
+      integer jend,ibeg,incr,i,j
+      double precision wo(7), yy,yyy,w,widnue,ww
 c-
       y=0.
       ww=0.
@@ -1209,7 +1215,10 @@ c  input  kord       order of kernel (nue+i, i=2,4,6;  kord<=6)
 c  output c(7)       polynomial kernel coefficients
 c
 c-----------------------------------------------------------------------
+      integer nue,kord
       double precision c(7)
+c
+      integer i
 c-
       do 10 i=1,7
 10      c(i)=0.
@@ -1291,7 +1300,6 @@ c                    > 0 left boundary of data
 c  output c(7)       polynomial kernel coefficients
 c
 c-----------------------------------------------------------------------
-      implicit none
 c Arguments
       integer nue,kord,iboun
       double precision q, c(7)
@@ -1422,9 +1430,11 @@ c
       return
       end
 
-      subroutine constVec(x,n,fa)
+      subroutine constV(x,n,fa)
+      integer n
       double precision  x(n),fa
-      integer i,n
+
+      integer i
       do 1 i=1,n
 1       x(i)=fa
       return
