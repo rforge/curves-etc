@@ -6,7 +6,7 @@
   with kernel regression estimators and automatically adapted plug-in bandwidth.
 }
 \usage{
-glkerns(x , y, deriv=0, n.out=300, x.out=NULL, korder=NULL,
+glkerns(x, y, deriv = 0, n.out = 300, x.out=NULL, korder=NULL,
         ihetero=FALSE, irnd=TRUE, inputb=FALSE, m1=400, xl=NULL, xu=NULL,
         s=NULL, sig=NULL, bandwidth=NULL)
 }
@@ -62,8 +62,8 @@ glkerns(x , y, deriv=0, n.out=300, x.out=NULL, korder=NULL,
     irnd=FALSE or as quantiles estimators of the design density for irnd=TRUE.
   }
   \item{sig}{
-    variance of the error variables. If it is not given by input or if ihetero=TRUE
-    (no default) it is calculated
+    variance of the error variables. If it is not given by input or if
+    \code{ihetero=TRUE} (no default) it is calculated
     by a nonparametric variance estimator.
   }
   \item{bandwidth}{
@@ -194,5 +194,5 @@ myfit <- glkerns(speed, dist)
 plot(speed, dist)
 lines(myfit$x.out, myfit$est, col=2)
 }
-\keyword{smoothing}
-% Converted by Sd2Rd version 1.19.
+\keyword{smooth}
+
