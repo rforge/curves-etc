@@ -12,7 +12,7 @@
   construction, printing, plotting, and basic computations are provided.
 }
 \usage{
-norMix(mu, sig2 = NULL, w = NULL, name = NULL, long.name = FALSE)
+norMix(mu, sig2 = rep(1,m), w = NULL, name = NULL, long.name = FALSE)
 
 is.norMix(obj)
 m.norMix(obj)
@@ -60,5 +60,7 @@ var.norMix(x, \dots)
 ex <- norMix(mu = c(1,2,5))# s^2 = 1, equal proportions
 ex
 plot(ex)# looks like a mixture of only 2
+
+plot(ex, log = "y")# maybe "revealing"
 }
 \keyword{distribution}
