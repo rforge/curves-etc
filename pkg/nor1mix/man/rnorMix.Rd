@@ -1,55 +1,33 @@
 \name{rnorMix}
 \alias{rnorMix}
-%- Also NEED an `\alias' for EACH other topic documented here.
-\title{ ~~function to do ... ~~ }
+\title{Generate ``Normal Mixture'' Distributed Random Numbers}
 \description{
-  ~~ A concise (1-5 lines) description of what the function does. ~~
+  Generate \code{n} random numbers, distributed according to a normal
+  mixture.
 }
 \usage{
 rnorMix(n, obj)
 }
-%- maybe also `usage' for other objects documented here.
 \arguments{
-  \item{n}{ ~~Describe \code{n} here~~ }
-  \item{obj}{ ~~Describe \code{obj} here~~ }
+  \item{n}{the number of random numbers desired.}
+  \item{obj}{an object of class \code{norMix}.}
 }
 \details{
-  ~~ If necessary, more details than the __description__  above ~~
+  For a mixture of \eqn{m}, i.e., \code{m.norMix(obj)}, components,
+  generate the number in each component as multinomial, and then use
+  \code{\link{rnorm}} for each.
 }
 \value{
-  ~Describe the value returned
-  If it is a LIST, use
-  \item{comp1 }{Description of `comp1'}
-  \item{comp2 }{Description of `comp2'}
-  ...
+  numeric vector of length \code{n}.
 }
-\references{ ~put references to the literature/web site here ~ }
-\author{ ~~who you are~~ }
-\note{ ~~further notes~~ }
-
- ~Make other sections like WARNING with \section{WARNING }{....} ~
-
-\seealso{ ~~objects to SEE ALSO as \code{\link{~~fun~~}}, ~~~ }
-
+\seealso{\code{\link{dnorMix}} for the density, and \code{\link{norMix}}
+  for the construction and further methods.
+}
 \examples{
-##---- Should be DIRECTLY executable !! ----
-##-- ==>  Define data, use random,
-##--	     or do  help(data=index)  for the standard data sets.
-
-## The function is currently defined as
-function(n, obj)
-{
-    ## Purpose: Generate random numbers according to "norMix" object `obj'
-    ## -------------------------------------------------------------------------
-    ## Arguments:
-    ## -------------------------------------------------------------------------
-    ## Author: Martin Maechler, Date: 27 Jun 2002, 16:03
-    nj <- n * obj[,"w"]
-    mu <- obj[,"mu"]
-    s2 <- obj[,"sig2"]
-    ## Easy version: *round* the  `nj' to the nearest integers
-    sample(unlist(sapply(seq(nj),
-                         function(j) rnorm(nj[j], mean = mu[j], sd = sqrt(s2[j])))))
-  }
+x <- rnorMix(5000, MW.nm10)
+hist(x)# you don't see the claw
+plot(density(x), ylim = c(0,0.6),
+     main = "Estim. and true 'MW.nm10' density")
+lines(MW.nm10, col = "orange")
 }
 \keyword{distribution}
