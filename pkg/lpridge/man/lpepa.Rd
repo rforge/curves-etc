@@ -8,7 +8,7 @@
 }
 \usage{
 lpepa(x, y, bandwidth, deriv = 0, n.out = 200, x.out = NULL,
-      order = NULL, mnew = 100, var = FALSE)
+      order = deriv+1, mnew = 100, var = FALSE)
 }
 \arguments{
   \item{x}{vector of design points, not necessarily ordered.}
