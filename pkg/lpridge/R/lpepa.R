@@ -3,7 +3,7 @@
 
 lpepa <- function(x, y, bandwidth,
                   deriv = 0, n.out = 100, x.out = NULL,
-                  order = 1, mnew = 100, var = FALSE)
+                  order = deriv+1, mnew = 100, var = FALSE)
 {
     ## x		inputgrid
     ## y		data
