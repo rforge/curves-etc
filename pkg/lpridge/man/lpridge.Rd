@@ -94,14 +94,17 @@ lpridge(x, y, bandwidth, deriv=0, n.out=200, x.out=NULL,
 \examples{
 data(cars)
 attach(cars)
-plot(speed, dist, main = "data(cars)  &  lp-regression")
+plot(speed, dist, main = "data(cars) & lpRIDGE Regression")
+
+%% MM: make example more dramatic by extrapolation?
 
 myfit <- lpridge(speed,dist,bandw = 5, ridge=0)		# local polynomials
 lines(myfit$x.out,myfit$est,col=2)
 
 myridge <- lpridge(speed,dist,bandw = 5)		# local pol. ridge
 lines(myridge$x.out,myridge$est,col=3)
+mtext("bandw = 5")
+legend(5,120, c("ridge = 0", "default ridging"), col = 2:3, lty = 1)
 detach()
 }
 \keyword{smooth}
-
