@@ -1,4 +1,4 @@
-C---------- LP auxiliary routines   used BOTH in   lpridge()  and  lpepa() ---------
+C--- LP auxiliary routines   used BOTH in   lpridge()  and  lpepa() ---------
 C---
 C--- Separated out by Martin Maechler, Jan.2000
 C---
@@ -68,6 +68,7 @@ C
       s(0)=dble(n)
       return
       end
+C     ---
       subroutine lpnew(t,s,to,x,tbar,xbar,leng,nmoms,imoms,moms,mom,
      .              p,pmax,n,bin,iu,io)
 
@@ -267,7 +268,8 @@ c         write(*,'(5g12.4)')(s(i),i=0,ps)
 c
       return
       end
-        SUBROUTINE lpslv(A,D,y,NA,NSIN,nzer,SINout,sin,ZER,dif)
+C     ---
+      SUBROUTINE lpslv(A,D,y,NA,NSIN,nzer,SINout,sin,ZER,dif)
 
 ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 c
@@ -345,6 +347,7 @@ c - compute only last dif elements
 C
         RETURN
         END
+C     ---
       subroutine lpsub(t,s,to,x,tbar,xbar,p,pmax,n,bin,iu,io)
 
 ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
@@ -412,7 +415,7 @@ c
       s(0)=dble(n)
       return
       end
-
+C     ---
         SUBROUTINE lpsv(A,D,y,NA,NSIN,nzer,SINout,sin,ZER,dif)
 
 ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
