@@ -122,7 +122,7 @@ rnorMix <- function(n, obj)
     nj <- rmultinom(n=1, size = n, prob = obj[,"w"])
     ## Easy version: *round* the `nj' to the nearest integers
     ## this is *inaccurate* for small n !
-    sample(unlist(sapply(seq(nj),
+    sample(unlist(sapply(seq(along=nj),
 			 function(j) rnorm(nj[j], mean = mu[j], sd = sd[j]))))
 }
 
@@ -149,15 +149,33 @@ qnorMix <- function(obj, p)
      stop("'obj' must be a 'Normal Mixture' object!")
   mu <- obj[, "mu"]
   sd <- sqrt(obj[, "sig2"])
+  k <- nrow(obj)# = #{components}
+  if(k == 1) # one component
+      return(qnorm(p, mu, sd))
+
+  ## else
+
   ## m <- m.norMix(obj)
 ### FIXME: it's not clear that the `interval = range(.)' below is ok!
 
   ## vectorize in `p' :
-  sapply(p, function(p) {
-      if(p <= 0) -Inf else if(p >= 1) +Inf else
-      uniroot(function(l) pnorMix(obj,l) - p,
-	      interval = range(qnorm(p,mu,sd)))$root
-  })
+  r <- p
+  left  <- p <= 0 ; r[left] <- -Inf
+  right <- p >= 1 ; r[right] <- Inf
+  imid <- which(mid <- !left & !right) # 0 < p < 1
+  ## p[] increasing for easier root finding start:
+  p <- sort(p[mid], index.return = TRUE)
+  ip <- imid[p$ix]
+  pp <- p$x
+  for(i in seq(along=pp)) {
+      ## since pp[] is increasing, we can start from last 'root':
+      rq <-
+          if(i > 1) c(root, max(qnorm(pp[i], mu, sd)))
+          else range(qnorm(pp[i], mu, sd))
+      root <- uniroot(function(l) pnorMix(obj,l) - pp[i], interval = rq)$root
+      r[ip[i]] <- root
+  }
+  r
 }
 
 plot.norMix <-
