@@ -233,24 +233,24 @@ c   - subtract terms no longer needed
 c     - at left boundary
             if (iuold.lt.iu) then
                call lpsub(w(0,2),w(0,1),t,x,tbar,xbar,pow,pmax,k,bin,
-     .                 iuold,iu-1)
+     .                  iuold,iu-1)
                nsub=nsub+1
             endif
 c     - at right boundary
             if (io.lt.ioold) then
                call lpsub(w(0,2),w(0,1),t,x,tbar,xbar,pow,pmax,k,bin,
-     .                 io,ioold-1)
+     .                  io,ioold-1)
                nsub=nsub+1
             endif
 c   - add new terms
 c     - at left boundary
             if (iu.lt.iuold)
      .         call lpadd(w(0,2),w(0,1),t,x,tbar,xbar,pow,pmax,k,bin,
-     .                 iu,iuold-1)
+     .                  iu,iuold-1)
 c     - at right boundary
             if (ioold.lt.io)
      .         call lpadd(w(0,2),w(0,1),t,x,tbar,xbar,pow,pmax,k,bin,
-     .                 ioold,io-1)
+     .                  ioold,io-1)
          endif
 c - Now the sum has its new value
 c
@@ -308,6 +308,7 @@ c - 3. try more points
          iuold=iu
          nmin=nmin+1
          goto 160
+
 c - limits for singularity: sins(i,*,*)=lower and upper,
 c      (*,i,*)=update and restart, (*,*,i)=weighted and unweighted
 600      if (nsin.eq.0.and.nsub.eq.0) then
