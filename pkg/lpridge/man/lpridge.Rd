@@ -1,6 +1,6 @@
-\title{lpridge}{
-Local polynomial regression fitting with ridging
-}
+\name{lpridge}
+\alias{lpridge}
+\title{Local polynomial regression fitting with ridging}
 \usage{
 lpridge(x, y, bandwidth, deriv=0, n.out=200, x.out=NULL,
 	order=NULL, ridge=NULL, weight="epa", mnew=100,
@@ -13,28 +13,27 @@ lpridge(x, y, bandwidth, deriv=0, n.out=200, x.out=NULL,
     number or a vector of the same length as x.out. }
   \item{deriv}{order of derivative of the regression function to be
     estimated; default is 0.}
-  \item{n.out}{number of output design points, where the function has to
-    be estimated.  The default value is n.out=200.}
-  \item{x.out}{vector of output design points, where the function has to
-    be estimated.  The default value is an equidistant grid of n.out
-    points from min(x) to max(x).}
+  \item{n.out}{number of output design points at which to evaluate the
+    estimator; defaults to 200.}
+  \item{x.out}{vector of output design points at which to evaluate the
+    estimator;  By default, an equidistant grid of \code{n.out}
+    points from \code{min(x)} to \code{max(x)}.}
   \item{order}{order of the polynomial used for local polynomials. The
-    default value is order=deriv+1.}
-  \item{ridge}{ridging parameter. The default value performs a slight
-    ridging (see DETAILS below). ridge=0 leads to the local polynomial
+    default value is \code{deriv + 1}.}
+  \item{ridge}{ridging parameter.  The default value performs a slight
+    ridging (see "Details").  \code{ridge=0} leads to the local polynomial
     estimator without ridging.}
   \item{weight}{kernel weight function.  The default value is
     weight="epa" for Epanechnikov weights.  Other weights are "bi" for
     biweights (square of "epa") and "tri" for triweights (cube of
-    "epa"). If weight is a vector, it is interpreted as vector of
+    "epa").  If weight is a vector, it is interpreted as vector of
     coefficients of the polynomial weight function.  Thus, weight="epa"
     is equivalent to weight=c(1,0,-1).}
   \item{mnew}{force to restart the algorithm after mnew updating
-    steps. The default value is mnew=100. For mnew=1 you get a
-    numerically "super-stable" algorithm (see ref. SBE\\&G below).}
+    steps.  The default value is mnew=100.  For \code{mnew=1} you get a
+    numerically "super-stable" algorithm (see refernce SBE\\&G below).}
   \item{var}{logical flag: if TRUE, the variance of the estimator
-    proportional to the residual variance is computed (see DETAILS
-    below).}
+    proportional to the residual variance is computed (see "Details" below).}
 }
 \value{
   a list including used parameters and estimator.
@@ -93,11 +92,16 @@ lpridge(x, y, bandwidth, deriv=0, n.out=200, x.out=NULL,
 \references{The same as for \code{\link{lpepa}}.
 }
 \examples{
-myfit <- lpridge(x,y,b,ridge=0)		# local polynomials
-plot(x,y)
+data(cars)
+attach(cars)
+plot(speed, dist, main = "data(cars)  &  lp-regression")
+
+myfit <- lpridge(speed,dist,bandw = 5, ridge=0)		# local polynomials
 lines(myfit$x.out,myfit$est,col=2)
-myridge <- lpridge(x,y,b)		# local pol. ridge
+
+myridge <- lpridge(speed,dist,bandw = 5)		# local pol. ridge
 lines(myridge$x.out,myridge$est,col=3)
+detach()
 }
 \keyword{smoothing}
 % Converted by Sd2Rd version 0.2-a1.
