@@ -1,6 +1,6 @@
 ####---- Normal Mixtures  "norMix" -------
 ####---- ~~~~~~~~~~~~~~~   ######  -------
-#### Object-oriented  S/R - functions for dealing with normal mixtures.
+#### Object-oriented  S/R - functions for dealing with 1D normal mixtures.
 #### -------------------------------------------------------------------------
 #### Author: Martin Maechler, 20 Mar 1997
 #### -------------------------------------------------------------------------
@@ -55,11 +55,11 @@ is.norMix <- function(obj)
 
 m.norMix <- function(obj) nrow(obj) ##  Number of components of  normal mixture
 
-mean.norMix <- function(obj)
+mean.norMix <- function(x, ...)
 {
   ## Purpose: Return "true mean", i.e., the expectation of  a normal mixture.
-  if(!is.norMix(obj)) stop("'obj' must be a 'Normal Mixture' object!")
-  obj[,"w"] %*% obj[,"mu"]
+  if(!is.norMix(x)) stop("'x' must be a 'Normal Mixture' object!")
+  x[,"w"] %*% x[,"mu"]
 }
 
 var.norMix <- function(obj)
@@ -71,19 +71,20 @@ var.norMix <- function(obj)
   w %*% (obj[,"sig2"] + (obj[,"mu"]-mu)^2)
 }
 
-print.norMix <- function(obj, ...)
+print.norMix <- function(x, ...)
 {
-  ## Purpose: print method for  "norMix" objects (normal mixtures)
-  ## -------------------------------------------------------------------------
-  ## Author: Martin Maechler, Date: 20 Mar 97, 10:02
-  has.nam <- !is.null(nam <- attr(obj,"name"))
-  cat("'Normal Mixture' object",
-      if(has.nam) paste("\t ``", nam, "''", sep=''), "\n")
-  if(has.nam) attr(obj, "name") <- NULL
-  cl <- class(obj);  cl <- cl[ cl != "norMix"] #- the remaining classes
-  class(obj) <- if(length(cl)>0) cl else NULL
-  NextMethod("print", ...)
-  invisible(obj)
+    ## Purpose: print method for  "norMix" objects (normal mixtures)
+    ## -------------------------------------------------------------------------
+    ## Author: Martin Maechler, Date: 20 Mar 97, 10:02
+    ox <- x
+    has.nam <- !is.null(nam <- attr(x,"name"))
+    cat("'Normal Mixture' object",
+        if(has.nam) paste("\t ``", nam, "''", sep=''), "\n")
+    if(has.nam) attr(x, "name") <- NULL
+    cl <- class(x);  cl <- cl[ cl != "norMix"] #- the remaining classes
+    class(x) <- if(length(cl)>0) cl ## else NULL
+    NextMethod("print", ...)
+    invisible(ox)
 }
 
 dnorMix <- function(obj, x = NULL, xlim = NULL, n = 511,...)
@@ -108,23 +109,89 @@ dnorMix <- function(obj, x = NULL, xlim = NULL, n = 511,...)
   list(x = x, y = y)
 }
 
-
-plot.norMix <- function(obj, main = attr(obj,"name"), n = 511, xx = NULL,
-			p.norm = TRUE, p.h0 = TRUE,
-                        norm.col = 2, h0.col=3, ...)
+###---- This is /usr/local/app/R/R_local/src/combinat/R/rmultz2.R :
+"rmultz2"<-
+function(n, p, draws = length(n))
 {
-  ## Purpose: plot method for  "norMix" objects (normal mixtures)
-  ## -------------------------------------------------------------------------
-  ## Author: Martin Maechler, Date: 20 Mar 97, 10:14
-  d.o <- dnorMix(obj, n=n, x = xx); x <- d.o$x
-  if(p.norm)
-    dn  <- dnorm(x, mean = mean.norMix(obj), sd = sqrt(var.norMix(obj)))
-  plot(d.o, type='l', ylim = c(0,max(d.o$y, if(p.norm) dn)),
-       xlab = 'x', ylab = 'f(x)', main = main, lwd = 1.4, ...)
-  if(p.norm) lines(x, dn, lwd=0.1, lty=2, col=norm.col)
-  if(p.h0)   abline(h=0,  lwd=0.1, lty=3, col=h0.col)
-  invisible(obj)
+# 19 Feb 1997: From s-news 14 Feb 1997, Alan Zaslavsky
+# 11 Mar 1997: Modified by Scott D. Chasalow
+#
+# Generate random samples from a multinomial(n, p) distn: varying n,
+# fixed p case.
+#
+	n <- rep(n, length = draws)
+	lenp <- length(p)
+	tab <- tabulate(sample(lenp, sum(n), TRUE, p) + lenp * rep(1:draws - 1, n),
+		nbins = draws * lenp)
+	dim(tab) <- c(lenp, draws)
+	tab
 }
+###----- "rmultz2"
+
+## Arg.names like  rbinom();  returns  n x p matrix
+                                        # ---> ~/R/MM/STATISTICS/multinom-Dist.R
+rmultinom <- function(n, size, prob) {
+    K <- length(prob) # #{classes}
+    matrix(tabulate(sample(K, n * size, repl = TRUE, prob) + K * 0:(n - 1),
+                    nbins = n * K),
+           nrow = n, ncol = K, byrow = TRUE)
+}
+
+rnorMix <- function(n, obj)
+{
+    ## Purpose: Generate random numbers according to "norMix" object `obj'
+    ## -------------------------------------------------------------------------
+    ## Author: Martin Maechler, Date: 27 Jun 2002, 16:03
+    mu <- obj[,"mu"]
+    sd <- sqrt(obj[,"sig2"])
+    nj <- rmultinom(n=1, size = n, prob = obj[,"w"])
+    ## Easy version: *round* the `nj' to the nearest integers
+    ## this is *inaccurate* for small n !
+    sample(unlist(sapply(seq(nj),
+                         function(j) rnorm(nj[j], mean = mu[j], sd = sd[j]))))
+}
+
+
+plot.norMix <-
+    function(x, type = "l", n = 511, xout = NULL, xlim = NULL,
+             xlab = "x", ylab = "f(x)", main = attr(x,"name"), lwd = 1.4,
+             p.norm = TRUE, p.h0 = TRUE,
+             parNorm = list(col = 2, lty = 2, lwd = 0.4),
+             parH0   = list(col = 3, lty = 3, lwd = 0.4),
+             ...)
+{
+    ## Purpose: plot method for  "norMix" objects (normal mixtures)
+    ## -------------------------------------------------------------------------
+    ## Author: Martin Maechler, Date: 20 Mar 1997
+    d.o <- dnorMix(x, n=n, x = xout)
+    plot(d.o, type=type, xlim = xlim, ylim = c(0,max(d.o$y, if(p.norm) dn)),
+         main = main, xlab = xlab, ylab = ylab, lwd = lwd, ...)
+    if(p.norm) {
+        dn <- dnorm(d.o$x, mean = mean.norMix(x), sd = sqrt(var.norMix(x)))
+        do.call("lines",  c(list(x=d.o$x, y=dn), parNorm))
+    }
+    if(p.h0)
+        do.call("abline", c(list(h = 0), parH0))
+    invisible(x)
+}
+
+lines.norMix <-
+    function(x, type = "l", n = 511, xout = NULL, lwd = 1.4,
+             p.norm = FALSE, parNorm = list(col = 2, lty = 2, lwd = 0.4), ...)
+{
+    ## Purpose: lines method for "norMix" objects (normal mixtures)
+    ## -------------------------------------------------------------
+    ## Author: Martin Maechler, Date: 27 Jun 2002, 16:10
+    xlim <- if(is.null(xout)) par("usr")[1:2] # else NULL
+    d.o <- dnorMix(x, n = n, x = xout, xlim = xlim)
+    lines(d.o, type=type, col = col, lty = lty, lwd = lwd)
+    if(p.norm) {
+        dn <- dnorm(d.o$x, mean = mean.norMix(x), sd = sqrt(var.norMix(x)))
+        do.call("lines", c(list(x=d.o$x, y=dn), parNorm, list(...)))
+    }
+    invisible()
+}
+
 
 r.norMix <- function(obj, x = NULL, xlim = NULL, n = 511,
 		     xy.return = TRUE, ...)
