@@ -11,6 +11,31 @@
     {think about "deriv" !}
 
 
-  o  n = 3 is allowed (R & Fortran) but always (?) returns NaN  ??
+  o  n = 3 is allowed (R & Fortran) and seems +- ok  (?)
     e.g.
          str(lokerns(c(1:2,4),c(2,1,7), n.out=8),vec.len=10)
+
+  o  Fortran compilation gives warnings, even with "only"  -Wall :
+
+     g77   -fPIC  -g -O2 -Wall -fno-f90  -c auxkerns.f -o auxkerns.o
+     auxkerns.f: In subroutine `kernfa':
+     auxkerns.f:246: warning: `jl' might be used uninitialized in this function
+     auxkerns.f:246: warning: `jr' might be used uninitialized in this function
+     auxkerns.f:249: warning: `wr' might be used uninitialized in this function
+     auxkerns.f: In subroutine `kernfp':
+     auxkerns.f:433: warning: `jl' might be used uninitialized in this function
+     auxkerns.f:433: warning: `jr' might be used uninitialized in this function
+     auxkerns.f:435: warning: `q' might be used uninitialized in this function
+     auxkerns.f:437: warning: `wr' might be used uninitialized in this function
+     auxkerns.f: In subroutine `lreg':
+     auxkerns.f:685: warning: `qq' might be used uninitialized in this function
+
+     g77   -fPIC  -g -O2 -Wall -fno-f90  -c glkerns.f -o glkerns.o
+     glkerns.f: In subroutine `glkerns':
+     glkerns.f:25: warning: `bmin' might be used uninitialized in this function
+     glkerns.f:25: warning: `bmax' might be used uninitialized in this function
+     glkerns.f:25: warning: `ex' might be used uninitialized in this function
+
+     g77   -fPIC  -g -O2 -Wall -fno-f90  -c lokerns.f -o lokerns.o
+
+   Since "lokerns.f" seems ok, I should really compare how  glkerns() differs!
