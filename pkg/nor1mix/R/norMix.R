@@ -68,8 +68,9 @@ var.norMix <- function(x, ...)
   ## Purpose: 'true' Variance, i.e. E[(X- E[X])^2]  for X ~ normal mixture.
   if(!is.norMix(x)) stop("'x' must be a 'Normal Mixture' object!")
   w <- x[,"w"]
-  mu <- w %*% x[,"mu"]
-  w %*% (x[,"sig2"] + (x[,"mu"]-mu)^2)
+  mj <- x[,"mu"]
+  mu <- w %*% mj
+  w %*% (x[,"sig2"] + (mj - mu)^2)
 }
 
 print.norMix <- function(x, ...)
@@ -102,25 +103,14 @@ dnorMix <- function(obj, x = NULL, xlim = NULL, n = 511)
     }
     x <- seq(xlim[1], xlim[2], length = n)
   }
+  w <- obj[,"w"]; mu <- obj[,"mu"]; sd <- sqrt(obj[,"sig2"])
   m <- m.norMix(obj) #-- number of components
   y <- numeric(length(x))
-  w <- obj[,"w"]; mu <- obj[,"mu"]; sd <- sqrt(obj[,"sig2"])
   for(j in 1:m)
     y <- y + w[j] * dnorm(x, mean = mu[j], sd = sd[j])
   list(x = x, y = y)
 }
 
-
-## This is based on rmultz2() from S-news by Alan Zaslavsky & Scott Chasalow
-## see also /usr/local/app/R/R_local/src/combinat/R/rmultz2.R
-## Arg.names like  rbinom();  returns  n x p matrix
-                                        # ---> ~/R/MM/STATISTICS/multinom-Dist.R
-rmultinom <- function(n, size, prob) {
-    K <- length(prob) # #{classes}
-    matrix(tabulate(sample(K, n * size, repl = TRUE, prob) + K * 0:(n - 1),
-                    nbins = n * K),
-           nrow = n, ncol = K, byrow = TRUE)
-}
 
 rnorMix <- function(n, obj)
 {
@@ -136,6 +126,37 @@ rnorMix <- function(n, obj)
                          function(j) rnorm(nj[j], mean = mu[j], sd = sd[j]))))
 }
 
+## From: Erik Jørgensen <Erik.Jorgensen@agrsci.dk>
+## Date: Thu, 13 Nov 2003 02:06:27 +0100
+##
+## ....... Please, feel free to use them.
+##
+## Erik Jørgensen
+## Danish Institute of Agricultural Sciences
+
+pnorMix <- function(obj, q)
+{
+    if (!is.norMix(obj))
+        stop("'obj' must be a 'Normal Mixture' object!")
+    sd <- sqrt(obj[,"sig2"])
+    ## q can be a vector!
+    c(pnorm(sweep(outer(q, obj[,"mu"], "-"), 2, sd, "/")) %*% obj[, "w"])
+}
+
+qnorMix <- function(obj, p)
+{
+  if (!is.norMix(obj))
+     stop("'obj' must be a 'Normal Mixture' object!")
+   mu <- obj[, "mu"]
+   sd <- sqrt(obj[, "sig2"])
+   n <- nrow(obj)
+
+  ## vectorize in `p' :
+  sapply(p, function(p) {
+      uniroot(function(l) pnorMix(obj,l) - p,
+              interval = range(qnorm(p,mu,sd)))$root
+  })
+}
 
 plot.norMix <-
     function(x, type = "l", n = 511, xout = NULL, xlim = NULL,
@@ -148,12 +169,17 @@ plot.norMix <-
     ## Purpose: plot method for  "norMix" objects (normal mixtures)
     ## -------------------------------------------------------------------------
     ## Author: Martin Maechler, Date: 20 Mar 1997
-    d.o <- dnorMix(x, n=n, x = xout)
+    if(!is.null(xlim) && is.null(xout)) ## determine xout
+        xout <- seq(xlim[1], xlim[2], length = n)
+    d.o <- dnorMix(x, n = n, x = xout)
     if(p.norm)
         dn <- dnorm(d.o$x, mean = mean.norMix(x), sd = sqrt(var.norMix(x)))
-    plot(d.o, type=type, xlim = xlim, ylim = c(0,max(d.o$y, if(p.norm) dn)),
+    if(!is.null(ll <- list(...)[["log"]]) && "y" %in% strsplit(ll,"")[[1]])
+        y0 <- max(1e-50, min(d.o$y, if(p.norm) dn))
+    else y0 <- 0
+    plot(d.o, type = type, xlim = xlim, ylim = c(y0, max(d.o$y, if(p.norm) dn)),
          main = main, xlab = xlab, ylab = ylab, lwd = lwd, ...)
-    if(p.norm)	do.call("lines",  c(list(x=d.o$x, y=dn), parNorm))
+    if(p.norm)	do.call("lines",  c(list(x = d.o$x, y = dn), parNorm))
     if(p.h0)	do.call("abline", c(list(h = 0), parH0))
     invisible(x)
 }
@@ -167,10 +193,10 @@ lines.norMix <-
     ## Author: Martin Maechler, Date: 27 Jun 2002, 16:10
     xlim <- if(is.null(xout)) par("usr")[1:2] # else NULL
     d.o <- dnorMix(x, n = n, x = xout, xlim = xlim)
-    lines(d.o, type=type, lwd = lwd, ...)
+    lines(d.o, type = type, lwd = lwd, ...)
     if(p.norm) {
         dn <- dnorm(d.o$x, mean = mean.norMix(x), sd = sqrt(var.norMix(x)))
-        do.call("lines", c(list(x=d.o$x, y=dn), parNorm))
+        do.call("lines", c(list(x = d.o$x, y = dn), parNorm))
     }
     invisible()
 }
@@ -181,7 +207,7 @@ r.norMix <- function(obj, x = NULL, xlim = NULL, n = 511, xy.return = TRUE)
   ## Purpose: Compute r := f / f0; f = normal mixture; f0 = "best" normal approx
   ## Author : Martin Maechler, Date: 20 Mar 97, 10:14
   if(!is.norMix(obj)) stop("'obj' must be a 'Normal Mixture' object!")
-  d.o <- dnorMix(obj, x=x, xlim=xlim, n=n)
+  d.o <- dnorMix(obj, x = x, xlim = xlim, n = n)
   dn  <- dnorm(d.o$x, mean = mean.norMix(obj), sd = sqrt(var.norMix(obj)))
-  if(xy.return) list(x = d.o$x, y= d.o$y / dn, f0 = dn) else d.o$y / dn
+  if(xy.return) list(x = d.o$x, y = d.o$y / dn, f0 = dn) else d.o$y / dn
 }
