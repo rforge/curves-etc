@@ -1,4 +1,4 @@
-#include <math.h>
+#include <Rmath.h>
 
 void plugin(double *x, int *n, double *z, int *m, double *f, double *h)
 {
@@ -27,8 +27,8 @@ void plugin(double *x, int *n, double *z, int *m, double *f, double *h)
  **************************************************************************/
 
     const double I_7 = 1./7.;
-    const double rt2pi = sqrt(6.28318529);
-    const double rtpi2 = sqrt(3.141592645)*2.0;
+    const double rt2pi = sqrt(2 * M_PI);
+    const double rtpi2 = 2. * M_SQRT_PI;
 
     const int iter = 5;
 
@@ -43,8 +43,8 @@ void plugin(double *x, int *n, double *z, int *m, double *f, double *h)
 
     /* estimate inflation constant c */
 
-    h2=(0.920*xiqr)/pow(nx, I_7);
-    h3=(0.912*xiqr)/pow(nx, 1./9.);
+    h2=(0.920 * xiqr)/ pow(nx, I_7);
+    h3=(0.912 * xiqr)/ pow(nx, 1./9.);
 
     s2 = s3 = 0.;
     for (i = 0; i <= nx-2 ; i++) {
@@ -60,9 +60,13 @@ void plugin(double *x, int *n, double *z, int *m, double *f, double *h)
     }
     rhat2 = 2.*s2/(rt2pi*n2*pow(h2,5)) + 3./(rt2pi*nx*pow(h2,5));
     rhat3 =-2.*s3/(rt2pi*n2*pow(h3,7)) + 15./(rt2pi*nx*pow(h3,7));
-    co1=1.357*pow(rhat2/rhat3, I_7);
-    co2=1./rtpi2;
+    co1= 1.357 * pow(rhat2/rhat3, I_7);
+    co2= 1./rtpi2;
     a = 1.132795764/(pow(rhat3, I_7)* sqrt(nx));
+
+/* MM: FIXME?  below we drop all terms  exp(-t^2 / 2) as soon as |t| > 5;
+       -----   where exp(- 25/2) is "only" 3.727e-6
+ */
 
     /* loop over iterations */
 
@@ -70,7 +74,7 @@ void plugin(double *x, int *n, double *z, int *m, double *f, double *h)
 	s2=0.;
 	for (i = 0; i <= nx-2; i++) {
 	    for (j=i+1; j <= nx-1; j++) {
-		t = (x[i]-x[j])/a;
+		t = (x[i] - x[j])/a;
 		d2= t*t;
 		if (d2 > 50) break;
 		s2 += exp(-d2/2.)*(3.+d2*(-6.+d2));
@@ -91,7 +95,7 @@ void plugin(double *x, int *n, double *z, int *m, double *f, double *h)
     for (i = 0; i < *m; i++) {
 	s = 0.;
 	for(j = jbegin; j <= jend ; j++) {
-	    t=(z[i]-x[j])/(*h);
+	    t=(z[i] - x[j])/(*h);
 	    if(t > 5. && j < nx-1) {
 		jbegin++;
 		continue;
@@ -99,12 +103,11 @@ void plugin(double *x, int *n, double *z, int *m, double *f, double *h)
 	    s += exp(-t*t/2.);
 	}
 	for (jend = j; jend <= nx-1 ; jend++) {
-	    t=(z[i]-x[jend])/(*h);
+	    t=(z[i] - x[jend])/(*h);
 	    if(t < -5.) break;
 	    s += exp(-t*t/2.);
 	}
-	f[i]= s/(nx*(*h)*rt2pi);
+	f[i] = s/(nx*(*h)*rt2pi);
 	jend--;
     }
-
 }
