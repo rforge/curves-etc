@@ -28,22 +28,22 @@
   Number 16 has been added by Jansen et al.
 }
 \usage{
- MW.nm1
- MW.nm2
- MW.nm3
- MW.nm4
- MW.nm5
- MW.nm6
- MW.nm7
- MW.nm8
- MW.nm9
- MW.nm10
- MW.nm11
- MW.nm12
- MW.nm13
- MW.nm14
- MW.nm15
- MW.nm16
+ MW.nm1	 # Gaussian
+ MW.nm2	 # Skewed
+ MW.nm3	 # Str Skew
+ MW.nm4	 # Kurtotic
+ MW.nm5	 # Outlier
+ MW.nm6	 # Biomdal
+ MW.nm7	 # Separated (bimodal)
+ MW.nm8	 # Aymmettric Bimodal
+ MW.nm9	 # Trimodal
+ MW.nm10 # Claw
+ MW.nm11 # Double Claw
+ MW.nm12 # Asymmetric Claw
+ MW.nm13 # Asymm. Double Claw
+ MW.nm14 # Smooth   Comb
+ MW.nm15 # Discrete Comb
+ MW.nm16 # Distant Bimodal
 }
 \source{
   The first part % 1..15 ??
