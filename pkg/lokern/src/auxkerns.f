@@ -1,8 +1,8 @@
 ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
-cc     several kernel smoothing subroutines which are used by 
+cc     several kernel smoothing subroutines which are used by
 cc     glkern.f and lokern.f, version oct 1996
 cc
-cc     glkerns() & lokerns() directly only call the first 3 and coff()
+cc     glkerns() & lokerns() directly only call the first 3 and constVec()
 ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 cc     this file contains:
 cc
@@ -44,11 +44,11 @@ cc     subroutine coffb(nue,kord,q,iboun,c)
 cc                kernel coefficient of polynomial boundary kernels
 cc                used by kernfa and kerncl
 cc---------------------------------------------------------------------
-cc     subroutine coff(x,n,fa)
+cc     subroutine constVec(x,n,fa)
 cc                simple subroutine for array initialization
 ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
-      subroutine resest(t,x,n,res,snr,sigma2)
+      subroutine resest(t,x,n, res,snr,sigma2)
 c-----------------------------------------------------------------------
 c       version: june, 1996
 c
@@ -56,23 +56,28 @@ c       purpose:
 c
 c       computes one-leave-out residuals for nonparametric estimation
 c       of residual variance (local linear approximation followed by
-c       reweighting) 
+c       reweighting)
 c
 c     parameters:
 c
-c     input   t(n)      abscissae (ordered: t(i)<=t(i+1))
+c     input   t(n)      abscissae (ordered: t(i) <= t(i+1))
 c     input   x(n)      data
 c     input   n         length of data ( >2 )
 c     output  res(n)    residuals at t(1),...,t(n)
 c     output  snr       explained variance of the true curve
-c     output  sigma2    estimation of sigma**2 (residual variance)
+c     output  sigma2    estimation of sigma^2 (residual variance)
 c
 c-----------------------------------------------------------------------
-      implicit double precision (a-h,o-z)
-      dimension x(n),t(n),res(n)
-c-
+      implicit none
+c Arguments
+      integer n
+      double precision x(n),t(n), res(n), snr, sigma2
+c Var
+      integer i
+      double precision ex,ex2,tt,g1,g2,sx,dn
+c
       sigma2=0.
-      ex=x(1)*(t(2)-t(1))
+      ex =x(1)*(t(2)-t(1))
       ex2=x(1)*ex
       do 1 i=2,n-1
          tt=t(i+1)-t(i-1)
@@ -84,8 +89,8 @@ c-
          g2=1.-g1
          res(i)=(x(i)-g1*x(i-1)-g2*x(i+1))/sqrt(1.+g1*g1+g2*g2)
          sigma2=sigma2+res(i)*res(i)
-         sx=x(i)*tt
-         ex=ex+sx
+         sx = x(i)*tt
+         ex =ex + sx
          ex2=ex2+x(i)*sx
  1    continue
 c     first points (ex & ex2 done at beginning)
@@ -111,12 +116,12 @@ c     last points
 c- snr := explained variance
       sx=x(n)*(t(n)-t(n-1))
       dn=2.*(t(n)-t(1))
-      ex=(ex+sx)/dn
+      ex =(ex + sx    )/dn
       ex2=(ex2+x(n)*sx)/dn
       if(ex2.gt.0) then
-         snr=1-sigma2/(ex2-ex*ex)
+         snr= 1 - sigma2/(ex2-ex*ex)
       else
-         snr=0.
+         snr= 0.
       endif
       return
       end
@@ -126,7 +131,7 @@ c-----------------------------------------------------------------------
 c       short-version may, 1995
 c
 c       driver subroutine for kernel smoothing,
-c       chooses between standard and O(n) algorithm 
+c       chooses between standard and O(n) algorithm
 c
 c  parameters :
 c
@@ -167,8 +172,8 @@ c-----------------------------------------------------------------------
 c       short-version january, 1997
 c
 c       driver subroutine for kernel smoothing, chooses between
-c       standard and O(n) algorithm 
-c       without using boundary kernels 
+c       standard and O(n) algorithm
+c       without using boundary kernels
 c
 c  parameters :
 c
@@ -211,7 +216,7 @@ c
 c       purpose:
 c
 c       computation of kernel estimate using O(n) algorithm based on
-c       legendre polynomials, general spaced design and local 
+c       legendre polynomials, general spaced design and local
 c       bandwidth allowed. (new initialisations of the legendre sums
 c       for numerical reasons)
 c
@@ -234,7 +239,7 @@ c
 c-----------------------------------------------------------------------
       integer n,nue,kord,ny,m
       double precision t(n),x(n),s(0:n),tt(m),y(m),b
- 
+
       integer j,k,iord,init,icall,i,iboun
       integer jl,jr,jnr,jnl
       double precision c(7),sw(7),xf(7),dold
@@ -322,7 +327,7 @@ c------ compare old sum with new smoothing intervall tt(i)-b,tt(i)+b
 201           continue
 2011      end if
           if(s(jl-1).lt.wwl) then
-            do 301 j=jl,jr      
+            do 301 j=jl,jr
               call dreg(sw,a1,a2,iord,x(j),s(j-1),s(j),tt(i-1),wido,-1)
               jnl=j+1
               if(s(j).ge.wwl) goto 3011
@@ -400,7 +405,7 @@ c
 c       purpose:
 c
 c       computation of kernel estimate using o(n) algorithm based on
-c       legendre polynomials, general spaced design and local 
+c       legendre polynomials, general spaced design and local
 c       bandwidth allowed. (new initialisations of the legendre sums
 c       for numerical reasons) without boundary kernels, just normalizing
 c
@@ -477,7 +482,7 @@ c------ no boundary
           xnor=1.d0
         end if
 c-
-c------ compute normalizing constant 
+c------ compute normalizing constant
         if(iboun.ne.0) then
           if(iboun.eq.1) q=(tt(i)-s(0))/wid
           if(iboun.eq.-1) q=(s(n)-tt(i))/wid
@@ -487,7 +492,7 @@ c------ compute normalizing constant
              q=q*qq
 3            xnor=xnor+c(k)*(1.d0+q)
           iboun=0
-        end if 
+        end if
 c-
 c------ initialisation for init=0
         if(init.eq.0) then
@@ -522,7 +527,7 @@ c------ compare old sum with new smoothing intervall tt(i)-b,tt(i)+b
 201           continue
 2011      end if
           if(s(jl-1).lt.wwl) then
-            do 301 j=jl,jr      
+            do 301 j=jl,jr
               call dreg(sw,a1,a2,iord,x(j),s(j-1),s(j),tt(i-1),wido,-1)
               jnl=j+1
               if(s(j).ge.wwl) goto 3011
@@ -667,7 +672,7 @@ c               dold      :  d       previous step
 c               q         :  new bandwidth divided by old bandwidth
 c                          **************    work   *******************
 c
-c               a3(7,7)   :  matrix (p*q*p)**(-1)        
+c               a3(7,7)   :  matrix (p*q*p)**(-1)
 c               c(7,6)    :  matrix of coefficients
 c                          **************   output   ******************
 c
@@ -944,7 +949,7 @@ c-
 c-----------------------------------------------------------------------
 c       short-version january 1995
 c
-c       performs one smoothing step 
+c       performs one smoothing step
 c
 c  parameters :
 c
@@ -958,7 +963,7 @@ c  input    iord          order of kernel polynomial
 c  input    iboun         type of boundary
 c  input    ist          index of first point of smoothing interval
 c  input    s1           left boundary of smoothing interval
-c  input    c(7)         kernel coefficients 
+c  input    c(7)         kernel coefficients
 c  output   y            smoothed value at tau
 c  work     wo(7)        work array
 c
@@ -1112,7 +1117,7 @@ c-
 c-----------------------------------------------------------------------
 c       short-version january 1995
 c
-c       performs one smoothing step 
+c       performs one smoothing step
 c
 c  parameters :
 c
@@ -1126,7 +1131,7 @@ c  input    iord          order of kernel polynomial
 c  input    iboun         type of boundary
 c  input    ist          index of first point of smoothing interval
 c  input    s1           left boundary of smoothing interval
-c  input    c(7)         kernel coefficients 
+c  input    c(7)         kernel coefficients
 c  output   y            smoothed value at tau
 c  work     wo(7)        work array
 c
@@ -1148,7 +1153,7 @@ c------  compute initial kernel values
         yy=(tau-s1)/wid
         wo(ibeg)=yy
         yy=yy*yy
-        if(nue.eq.1.or.nue.eq.3) wo(ibeg)=yy        
+        if(nue.eq.1.or.nue.eq.3) wo(ibeg)=yy
         do 1 i=ibeg,iord-incr,incr
 1         wo(i+incr)=wo(i)*yy
       else
@@ -1273,7 +1278,7 @@ c
 c       purpose:
 c
 c       computes coefficients of polynomial boundary kernels,
-c       following gasser + mueller preprint 38 sfb 123 heidelberg
+c       following Gasser + Mueller preprint 38 SFB 123, Heidelberg
 c       and unpublished results
 c
 c  parameters:
@@ -1286,14 +1291,21 @@ c                    > 0 left boundary of data
 c  output c(7)       polynomial kernel coefficients
 c
 c-----------------------------------------------------------------------
-      implicit double precision (a-h,o-z)
-      double precision c(7)
+      implicit none
+c Arguments
+      integer nue,kord,iboun
+      double precision q, c(7)
+c Var
+      integer i,j
+      double precision p,p1,p3,p12,p6,d
 c
       do 10 i=1,7
 10       c(i)=0.
       p=-q
       p1=1.+q
       p3=p1*p1*p1
+c
+c Compute c(j) depending on derivative and kernel order  (nue, kord) :
 c
       if(nue.eq.0.and.kord.eq.2) then
         d=1./(p3*p1)
@@ -1410,7 +1422,7 @@ c
       return
       end
 
-      subroutine coff(x,n,fa)
+      subroutine constVec(x,n,fa)
       double precision  x(n),fa
       integer i,n
       do 1 i=1,n
