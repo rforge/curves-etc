@@ -11,12 +11,19 @@ c       Computation of iterative plug-in algorithm for global bandwidth
 c       selection for kernels with
 c       (nue,kord) = (0,2), (0,4), (1,3) or (2,4).
 c-----------------------------------------------------------------------
-c  used subroutines: constVec, resest, kernel with further subroutines
+c  used subroutines: constV, resest, kernel with further subroutines
 c-----------------------------------------------------------------------
-      implicit double precision (a-h,o-z)
-      dimension x(n),t(n),tt(m),y(m),wn(0:n,5),s(0:n)
-      dimension w1(m1,3)
-      dimension bias(2,0:2),vark(2,0:2),fak2(2:4)
+c Args
+      integer n, m, nue,kord, ihom,irnd,ismo, m1
+
+      double precision t(n),x(n), tt(m),y(m), tl,tu, s(0:n), sig
+      double precision wn(0:n,5),w1(m1,3),b
+c Var
+      integer nyg, inputs, i,ii,iil,itt,il,iu,isort,itende,it, j,
+     1  kk,kk2, nn
+      double precision bias(2,0:2),vark(2,0:2),fak2(2:4),
+     1     rvar, s0,sn, b2,bmin,bmax,bres,bs,alpha,ex,exs,exsvi,
+     2     r2,snr,vi,ssi,const,fac, q,tll,tuu, xi,xmy2
 c-
 c-------- 1. initialisations
       data bias/.2,.04762,.4286,.1515,1.33,.6293/
@@ -138,7 +145,7 @@ c-------- 9. estimating variance and smoothed pseudoresiduals
          call kernel(t,wn(1,2),n,bres,0,kk2,nyg,s,
      .        wn(il,3),nn,wn(il,4))
       else
-         call constVec(wn(1,4),n,sig)
+         call constV(wn(1,4),n,sig)
       end if
 c-
 c-------- 10. [LOOP:] estimate/compute integral constant
@@ -232,6 +239,6 @@ c-------- 17. variance check
       if(q.le.2.) return
       if(q.gt.5..and.r2.gt..95) rvar=rvar*.5
       sig=rvar
-      call constVec(wn(1,4),n,sig)
+      call constV(wn(1,4),n,sig)
       goto 100
       end
