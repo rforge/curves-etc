@@ -165,17 +165,17 @@ data(xSim)## linear plus an exponential peak, see help(xSim)
 n <- length(xSim)
 tt <- ((1:n) - 1/2)/n # equidistant x ==> is.rand = FALSE
 str(gk <- glkerns(tt, xSim, is.rand = FALSE))
-cat("glkerns() bandwidth:",format(gk$bandwidth, dig =10),"\n")
+cat("glkerns() bandwidth:",format(gk$bandwidth, dig=10),"\n")
 ## local bandwidth: fit is very similar :
 str(lk <- lokerns(tt, xSim, is.rand = FALSE))
 
 cols <- c(gl="PaleGreen", lo="Firebrick")
-plot(lk$x.out, lk$bandwidth, axes = F, xlab="", ylab="",
+plot(lk$x.out, lk$bandwidth, axes = FALSE, xlab="", ylab="",
      ylim=c(0,max(lk$bandwidth)), type="h", col = "gray90")
 axis(4); mtext("bandwidth(s)", side=4)
 lines(lk$x.out, lk$bandwidth, col = cols["lo"], lty = 3)
 abline(     h = gk$bandwidth, col = cols["gl"], lty = 4)
-par(new=T)
+par(new=TRUE)
 plot(tt, xSim, main = "global and local bandwidth kernel regression")
 lines(gk$x.out, gk$est, col = cols["gl"], lwd = 1.5)
 lines(lk$x.out, lk$est, col = cols["lo"])
