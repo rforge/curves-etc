@@ -7,8 +7,10 @@
   (\bold{gl}obal) plug-in bandwidth.
 }
 \usage{
-glkerns(x, y, deriv = 0, n.out = 300, x.out=NULL, korder=NULL,
-        hetero=FALSE, is.rand=TRUE, inputb=FALSE, m1=400, xl=NULL, xu=NULL,
+glkerns(x, y, deriv = 0, n.out = 300, x.out=NULL, korder= deriv + 2,
+        hetero=FALSE, is.rand=TRUE,
+        inputb= is.numeric(bandwidth) && bandwidth > 0,
+        m1 = 400, xl=NULL, xu=NULL,
         s=NULL, sig=NULL, bandwidth=NULL)
 }
 %% FIXME : The argument list of lokerns() and glkerns() are identical
@@ -26,9 +28,8 @@ glkerns(x, y, deriv = 0, n.out = 300, x.out=NULL, korder=NULL,
   \item{x.out}{vector of output design points where the function has to
     be estimated.  The default is an equidistant grid of n.out points
     from min(x) to max(x).}
-  \item{korder}{
-    nonnegative integer giving the kernel order; it defaults to
-    \code{korder = deriv+2} or \eqn{k = \nu + 2} where \eqn{k - \nu}
+  \item{korder}{nonnegative integer giving the kernel order \eqn{k};
+    defaults to \code{korder = deriv+2} or \eqn{k = \nu + 2} where \eqn{k - \nu}
     must be even.  The maximal possible values are for automatic
     smoothing, \eqn{k \le 4}{k <= 4}, whereas for smoothing with input
     bandwidth array, \eqn{k \le 6}{k <= 6}.
@@ -47,8 +48,8 @@ glkerns(x, y, deriv = 0, n.out = 300, x.out=NULL, korder=NULL,
   }
   \item{inputb}{
     logical: if true, a local input bandwidth array is used; if
-    \code{FALSE} (default), a data-adaptive local plug-in bandwidths
-    array is calculated and used.
+    \code{FALSE} (by default when \code{bandwidth} is not specified), a
+    data-adaptive local plug-in bandwidths array is calculated and used.
   }
   \item{m1}{
     integer, the number of grid points for integral approximation when
