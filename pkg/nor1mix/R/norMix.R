@@ -5,7 +5,8 @@
 #### Author: Martin Maechler, 20 Mar 1997
 #### -------------------------------------------------------------------------
 
-norMix <- function(mu, sig2, w = NULL, name = NULL, long.name = FALSE)
+norMix <- function(mu, sig2 = rep(1, m), w = NULL,
+                   name = NULL, long.name = FALSE)
 {
     ## Purpose: Constructor for 'norMix' (normal mixture) objects
     ## -------------------------------------------------------------------------
@@ -62,13 +63,13 @@ mean.norMix <- function(x, ...)
   x[,"w"] %*% x[,"mu"]
 }
 
-var.norMix <- function(obj)
+var.norMix <- function(x, ...)
 {
   ## Purpose: 'true' Variance, i.e. E[(X- E[X])^2]  for X ~ normal mixture.
-  if(!is.norMix(obj)) stop("'obj' must be a 'Normal Mixture' object!")
-  w <- obj[,"w"]
-  mu <- w %*% obj[,"mu"]
-  w %*% (obj[,"sig2"] + (obj[,"mu"]-mu)^2)
+  if(!is.norMix(x)) stop("'x' must be a 'Normal Mixture' object!")
+  w <- x[,"w"]
+  mu <- w %*% x[,"mu"]
+  w %*% (x[,"sig2"] + (x[,"mu"]-mu)^2)
 }
 
 print.norMix <- function(x, ...)
@@ -87,11 +88,11 @@ print.norMix <- function(x, ...)
     invisible(ox)
 }
 
-dnorMix <- function(obj, x = NULL, xlim = NULL, n = 511,...)
+dnorMix <- function(obj, x = NULL, xlim = NULL, n = 511)
 {
   ## Purpose: density evaluation for "norMix" objects (normal mixtures)
   ## -------------------------------------------------------------------------
-  ## Arguments: obj: Normal Mixture object;  x: abscissa values where to eval
+  ## Arguments: obj: Normal Mixture object;  x:
   ## -------------------------------------------------------------------------
   ## Author: Martin Maechler, Date: 20 Mar 97, 10:14
   if(!is.norMix(obj)) stop("'obj' must be a 'Normal Mixture' object!")
@@ -103,31 +104,15 @@ dnorMix <- function(obj, x = NULL, xlim = NULL, n = 511,...)
   }
   m <- m.norMix(obj) #-- number of components
   y <- numeric(length(x))
-  w <- obj[,"w"]; mu <- obj[,"mu"]; sig2 <- obj[,"sig2"]
+  w <- obj[,"w"]; mu <- obj[,"mu"]; sd <- sqrt(obj[,"sig2"])
   for(j in 1:m)
-    y <- y + w[j] * dnorm(x, mean = mu[j], sd = sqrt(sig2[j]))
+    y <- y + w[j] * dnorm(x, mean = mu[j], sd = sd[j])
   list(x = x, y = y)
 }
 
-###---- This is /usr/local/app/R/R_local/src/combinat/R/rmultz2.R :
-"rmultz2"<-
-function(n, p, draws = length(n))
-{
-# 19 Feb 1997: From s-news 14 Feb 1997, Alan Zaslavsky
-# 11 Mar 1997: Modified by Scott D. Chasalow
-#
-# Generate random samples from a multinomial(n, p) distn: varying n,
-# fixed p case.
-#
-	n <- rep(n, length = draws)
-	lenp <- length(p)
-	tab <- tabulate(sample(lenp, sum(n), TRUE, p) + lenp * rep(1:draws - 1, n),
-		nbins = draws * lenp)
-	dim(tab) <- c(lenp, draws)
-	tab
-}
-###----- "rmultz2"
 
+## This is based on rmultz2() from S-news by Alan Zaslavsky & Scott Chasalow
+## see also /usr/local/app/R/R_local/src/combinat/R/rmultz2.R
 ## Arg.names like  rbinom();  returns  n x p matrix
                                         # ---> ~/R/MM/STATISTICS/multinom-Dist.R
 rmultinom <- function(n, size, prob) {
@@ -164,14 +149,12 @@ plot.norMix <-
     ## -------------------------------------------------------------------------
     ## Author: Martin Maechler, Date: 20 Mar 1997
     d.o <- dnorMix(x, n=n, x = xout)
+    if(p.norm)
+        dn <- dnorm(d.o$x, mean = mean.norMix(x), sd = sqrt(var.norMix(x)))
     plot(d.o, type=type, xlim = xlim, ylim = c(0,max(d.o$y, if(p.norm) dn)),
          main = main, xlab = xlab, ylab = ylab, lwd = lwd, ...)
-    if(p.norm) {
-        dn <- dnorm(d.o$x, mean = mean.norMix(x), sd = sqrt(var.norMix(x)))
-        do.call("lines",  c(list(x=d.o$x, y=dn), parNorm))
-    }
-    if(p.h0)
-        do.call("abline", c(list(h = 0), parH0))
+    if(p.norm)	do.call("lines",  c(list(x=d.o$x, y=dn), parNorm))
+    if(p.h0)	do.call("abline", c(list(h = 0), parH0))
     invisible(x)
 }
 
@@ -184,10 +167,10 @@ lines.norMix <-
     ## Author: Martin Maechler, Date: 27 Jun 2002, 16:10
     xlim <- if(is.null(xout)) par("usr")[1:2] # else NULL
     d.o <- dnorMix(x, n = n, x = xout, xlim = xlim)
-    lines(d.o, type=type, col = col, lty = lty, lwd = lwd)
+    lines(d.o, type=type, lwd = lwd, ...)
     if(p.norm) {
         dn <- dnorm(d.o$x, mean = mean.norMix(x), sd = sqrt(var.norMix(x)))
-        do.call("lines", c(list(x=d.o$x, y=dn), parNorm, list(...)))
+        do.call("lines", c(list(x=d.o$x, y=dn), parNorm))
     }
     invisible()
 }

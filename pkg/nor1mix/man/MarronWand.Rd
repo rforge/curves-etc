@@ -1,4 +1,5 @@
 \name{MarronWand}
+\alias{MarronWand}% to use as "link"
 %% Note: These are ``datasets'' , but cannot be handled as strictly
 %%       as such since they  *require* the normix package.
 \alias{MW.nm1}
@@ -24,6 +25,7 @@
   simulation study have been used in quite a few subsequent studies,
   can all be written as normal mixtures and provided here for
   convenience and didactical examples of normal mixtures.
+  Number 16 has been added by Jansen et al.
 }
 \usage{
  MW.nm1
@@ -57,6 +59,7 @@
   Janssen, et. al. (...) %% FIXME
 }
 \examples{
+MW.nm10
 plot(MW.nm14)
 
 ## How are they defined:
@@ -65,13 +68,17 @@ plot(MW.nm14)
 require(normix)
 ppos <- which("package:normix" == search())
 nms <- ls(pat="^MW.nm", pos = ppos)
-for(n in nms) { cat("\n",n,":\n"); print(get(n, pos = ppos))}
+nms <- nms[order(as.numeric(substring(nms,6)))]
+for(n in nms) {
+   cat("\n",n,":\n"); print(get(n, pos = ppos))
+}
 
 ## Plot all of them:
-op <- par(mfrow=c(4,4), mgp = c(1.5, 0.6,0),
-         mar = .1 + c(2,2,2,1), oma = c(0,0,3,0))
+op <- par(mfrow=c(4,4), mgp = c(1.2, 0.5, 0), tcl = -0.2,
+          mar = .1 + c(2,2,2,1), oma = c(0,0,3,0))
 for(n in nms) { plot(get(n, pos = ppos))}
-mtext("The Marron-Wand Densities")
+mtext("The Marron-Wand Densities", outer = TRUE,
+      font = 2, cex = 1.6)
 par(op)
 }
 \keyword{datasets}

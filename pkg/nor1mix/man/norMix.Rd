@@ -1,35 +1,64 @@
 \name{norMix}
 \alias{norMix}
-%- Also NEED an `\alias' for EACH other topic documented here.
-\title{ ~~function to do ... ~~ }
+\alias{is.norMix}
+\alias{m.norMix}
+\alias{mean.norMix}
+\alias{var.norMix}
+\alias{print.norMix}
+\title{Mixtures of Univariate Normal Distributions}
 \description{
-  ~~ A concise (1-5 lines) description of what the function does. ~~
+  Objects of class \code{norMix} represent finite mixtures of
+  (univariate) normal (aka Gaussian) distributions.  Methods for
+  construction, printing, plotting, and basic computations are provided.
 }
 \usage{
-norMix(mu, sig2, w = NULL, name = NULL, long.name = FALSE)
+norMix(mu, sig2 = NULL, w = NULL, name = NULL, long.name = FALSE)
+
+is.norMix(obj)
+m.norMix(obj)
+mean.norMix(x, \dots)
+var.norMix(x, \dots)
+\method{print}{norMix}(x, \dots)
 }
-%- maybe also `usage' for other objects documented here.
 \arguments{
-  \item{mu}{ ~~Describe \code{mu} here~~ }
-  \item{sig2}{ ~~Describe \code{sig2} here~~ }
-  \item{w}{ ~~Describe \code{w} here~~ }
-  \item{name}{ ~~Describe \code{name} here~~ }
+  \item{mu}{numeric vector of length \eqn{K}, say, specifying the means
+    \eqn{\mu} of the \eqn{K} normal components.}
+  \item{sig2}{numeric vector of length \eqn{K}, specifying the variances
+    \eqn{\sigma^2} of the \eqn{K} normal components.}
+  \item{w}{numeric vector of length \eqn{K}, specifying the mixture proportions
+    \eqn{\pi_j}{p[j]} of the normal components, \eqn{j = 1,\dots,K}.
+    Defaults to equal proportions}
+  \item{name}{optional name tag of the result (used for printing).}
   \item{long.name}{ ~~Describe \code{long.name} here~~ }
+
+  \item{obj,x }{an object of class \code{norMix}.}
+  \item{\dots}{further arguments passed to methods.}
 }
 \details{
-  ~~ If necessary, more details than the __description__  above ~~
+  The (one dimensional) normal mixtures, \R objects of class
+  \code{"norMix"}, are constructed by \code{norMix} and tested for by
+  \code{is.norMix}.  \code{m.norMix()} returns the number of mixture
+  components,
+  ....
+ %% FIXME
+  For further methods see below. %% seealso
 }
 \value{
-  ~Describe the value returned
-  If it is a LIST, use
-  \item{comp1 }{Description of `comp1'}
-  \item{comp2 }{Description of `comp2'}
-  ...
+  \code{norMix} returns objects of class \code{"norMix"} which are
+  currently implemented as 3-column matrix with column names \code{mu},
+  \code{sig2}, and \code{w}, and further attributes.
+  The user should rarely need to access the underlying structure
+  directly.
 }
 \author{Martin Maechler}
-\seealso{ ~~objects to SEE ALSO as \code{\link{~~fun~~}}, ~~~ }
+\seealso{\code{\link{dnorMix}} for the density, \code{\link{rnorMix}}
+  for random numbers and \code{\link{print.norMix}}, the plot method.
 
+  \code{\link{MarronWand}} has the Marron-Wand densities as normal mixtures.
+}
 \examples{
-  norMix(c(1,2,5), c(1,1,1))
+ex <- norMix(mu = c(1,2,5))# s^2 = 1, equal proportions
+ex
+plot(ex)# looks like a mixture of only 2
 }
 \keyword{distribution}
