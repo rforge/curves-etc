@@ -117,4 +117,4 @@ MW.nm16 <- norMix(name = "#16 Dist Bim",
 		  w    = c(.5, .5))
 
 ## clean up:
-rm(n, mu, sig, sig2, w, il,irv,di)
+rm(n, mu, sig, sig2, w, il,ir,irv,di)
