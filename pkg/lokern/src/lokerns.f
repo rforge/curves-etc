@@ -1,5 +1,5 @@
-      subroutine lokerns(t,x,n,tt,m,nue,kord,ihetero,irnd,
-     .     ismo,m1,tl,tu,s,sig,wn,w1, wm,ban, y)
+      subroutine lokerns(t,x,tt,n,m,nue,kord, hetero,isrand,
+     .     smo,m1,tl,tu,s,sig,wn,w1, wm,ban, y)
 c----------------------------------------------------------------------*
 c-----------------------------------------------------------------------
 c       Short-version: January 1997
@@ -14,14 +14,15 @@ c-----------------------------------------------------------------------
 c  used subroutines: constV, resest, kernel with further subroutines
 c-----------------------------------------------------------------------
 c Args
-      integer n, m, nue,kord, ihetero,irnd,ismo, m1
-      double precision t(n),x(n), tt(m), s(0:n)
-      double precision tl,tu,sig
+      integer n, m, nue,kord
+      double precision t(n),x(n), tt(m), tl,tu, s(0:n), sig
+      logical hetero, isrand, smo
+      integer m1
       double precision wn(0:n,5), w1(m1,3), wm(m),ban(m), y(m)
 c Var
-      logical hetero, isrand, smo, inputs, needsrt
+      logical inputs, needsrt
       integer nyg, i,ii,iil,itt,il,iu,itende,it, j,
-     1  kk,kk2, kordv, nn, nuev,nyl
+     1     kk,kk2, kordv, nn, nuev,nyl
       double precision bias(2,0:2),vark(2,0:2),fak2(2:4),
      1     rvar, s0,sn, b,b2,bmin,bmax,bres,bvar,bs,alpha,ex,exs,exsvi,
      2     r2,snr,vi,ssi,const,fac, g1,g2,dist, q,tll,tuu, wstep,
@@ -33,9 +34,6 @@ c-------- 1. initialisations
       data fak2/4.,36.,576./
       nyg=0
       inputs = .false.
-      hetero = ihetero .ne. 0
-      isrand = irnd .ne. 0
-      smo = ismo .ne. 0
 
 c Stop for invalid inputs (impossible when called from R's lokerns())
 
@@ -147,8 +145,9 @@ c-------- 9. estimating variance and smoothed pseudoresiduals
         call resest(t,x,n,wn(1,2),snr,sig)
         bres=max(bmin,.2*nn**(-.2)*(s(iu)-s(il-1)))
         do 91 i=1,n
-          wn(i,3)=t(i)
-91        wn(i,2)=wn(i,2)*wn(i,2)
+           wn(i,3)=t(i)
+           wn(i,2)=wn(i,2)*wn(i,2)
+ 91     continue
         call kernel(t,wn(1,2),n,bres,0,kk2,nyg,s, wn(1,3),n,wn(1,4))
       else
 c       not hetero
@@ -235,11 +234,11 @@ c-------- 17. variance check
             if(j.le.m) goto 171
          end if
          wn(ii,3)=x(i)-y(j)+(y(j)-y(j-1))*(tt(j)-t(i))/(tt(j)-tt(j-1))
-170    continue
+ 170  continue
       if(iil.eq.0.or.ii-iil.lt.10) then
-        call resest(t(il),wn(1,3),nn,wn(1,4),snr,rvar)
+         call resest(t(il),wn(1,3),nn,wn(1,4),snr,rvar)
       else
-        call resest(t(iil),wn(1,3),ii,wn(1,4),snr,rvar)
+         call resest(t(iil),wn(1,3),ii,wn(1,4),snr,rvar)
       end if
       q=sig/rvar
       if(q.le.2.) call constV(wn(1,4),n,sig)
