@@ -1,4 +1,4 @@
 Makefile
 00-orig-src
-R/.*\.s
+Orig
 man/.*\.d
