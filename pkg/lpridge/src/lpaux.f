@@ -1,5 +1,7 @@
 C---------- LP auxiliary routines   used BOTH in   lpridge()  and  lpepa() ---------
-
+C---
+C--- Separated out by Martin Maechler, Jan.2000
+C---
       subroutine lpadd(t,s,to,x,tbar,xbar,p,pmax,n,bin,iu,io)
 
 ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
