@@ -1,7 +1,10 @@
 # system("R COMPILE plugin.f")
-system("R SHLIB plugin.c")
-print( dyn.load("/u/maechler/src/Gasser-et-al/plugin-density/plugin.so"))
+system("cd /u/maechler/src/Gasser-et-al/plugin-density; R SHLIB plugin.c")
+dyn.load("/u/maechler/src/Gasser-et-al/plugin-density/plugin.so")
 
+
+## Idea : Change this to only estimate the bandwidth !
+## ----> incorporate into base R
 
 plugin.density <- function(x, nout = 201, xout = NULL)
 {
@@ -14,21 +17,23 @@ plugin.density <- function(x, nout = 201, xout = NULL)
     ## Author: Martin Maechler, Date: 16 Mar 1998, 18:55
     ## calls is.sorted() from package "SfS"
     n <- length(x <- sort(x))
-    xout <-
         if(is.null(xout)) {
+            ## R's density() here extends the range depending on bandwidth !
             dx <- diff(rx <- range(x))
             if(dx < sqrt(.Machine$double.eps)) dx <- mean(abs(rx))/1000
-            seq(from=rx[1] - dx/10, to=rx[2] + dx/10, length= nout)
-        } else if(!is.sorted(xout))
-            sort(xout)
-    m <- length(xout)
+            m <- as.integer(nout)
+            xout <- seq(from=rx[1] - dx/10, to=rx[2] + dx/10, length= m)
+        } else {
+            m <- length(xout)
+            if(!is.sorted(xout)) xout <- sort(xout)
+        }
     r <- .C("plugin",
             x = as.double(x), n=n,
             z = xout, m=m,
             f= double(m),
             h= double(1))
     structure(list(x= r$z, y= r$f, call = sys.call(), bw = r$h, n=n),
-              class=c("density", "densityEHpi"))# Eva Herrman plug in
+              class=c("densityEHpi", "density"))# Eva Herrman plug in
 }
 
 print.densityEHpi <- function(x, digits = getOption("digits"), ...)
