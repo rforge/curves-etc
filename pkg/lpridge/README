@@ -1,0 +1,4 @@
+The port of the lpepa and lpridge to R has been done by Martin Maechler,
+see ./DESCRIPTION.
+
+The original fortran routines
