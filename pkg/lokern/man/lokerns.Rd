@@ -7,7 +7,7 @@
   plug-in bandwidth function.
 }
 \usage{
-lokerns(x , y, deriv=0, n.out=300, x.out=NULL, korder=NULL,
+lokerns(x , y, deriv = 0, n.out=300, x.out=NULL, korder=NULL,
         ihetero=FALSE, irnd=TRUE, inputb=FALSE, m1=400, xl=NULL, xu=NULL,
         s=NULL, sig=NULL, bandwidth=NULL)
 }
@@ -16,69 +16,65 @@ lokerns(x , y, deriv=0, n.out=300, x.out=NULL, korder=NULL,
   \item{y}{vector of observations of the same length as x.}
   \item{deriv}{order of derivative of the regression function to be
     estimated. Only deriv=0,1,2 are allowed for automatic smoothing,
-    whereas deriv=0,1,2,3,4  is possible
-    smoothing with input bandwidth array.
-    The default value is deriv=0.
-  }
+    whereas deriv=0,1,2,3,4  is possible when smoothing with an input
+    bandwidth array. The default value is deriv=0.}
   \item{n.out}{
-    number of output design points, where the function has to be estimated.
+    number of output design points where the function has to be estimated.
     The default value is n.out=300.
   }
   \item{x.out}{
-    vector of output design points, where the function has to be estimated. 
+    vector of output design points where the function has to be estimated. 
     The default is an equidistant grid of n.out points from min(x) to max(x).
   }
   \item{korder}{
-    kernel order.  The default value is korder=deriv+2. Here, korder-deriv has
-    to be an even number.  For automatic smoothing, korder has to be
-    equal or less than 4, for smoothing with input bandwidth array,
-    korder has to be equal or less than 6. 
+    nonnegative integer giving the kernel order; it defaults to
+    \code{korder = deriv+2} or \eqn{k = \nu + 2} where \eqn{k - \nu}
+    must be even.  The maximal possible values are for automatic
+    smoothing, \eqn{k \le 4}{k <= 4}, whereas for smoothing with input
+    bandwidth array, \eqn{k \le 6}{k <= 6}. 
   }
   \item{ihetero}{
-    logical value: if TRUE, heteroscedastic error variables are assumed for 
+    logical: if TRUE, heteroscedastic error variables are assumed for 
     variance estimation, if FALSE the variance estimation is optimized for 
     homoscedasticity. Default value is ihetero=FALSE.
   }
   \item{irnd}{
-    logical value: if TRUE, random x are assumed and the s-array of the convolution
-    estimator is computed as smoothed quantile estimators in order to adapt
-    this variability. If FALSE, the s-array
-    is choosen as mid-point sequences as the classical Gasser-Mueller estimator,
-    this will be better for equidistant and fixed design. Default value is irnd=TRUE.
+    logical: if \code{TRUE} (default), random x are assumed and the
+    s-array of the convolution estimator is computed as smoothed
+    quantile estimators in order to adapt this variability.  If FALSE,
+    the s-array is choosen as mid-point sequences as the classical
+    Gasser-Mueller estimator, this will be better for equidistant and
+    fixed design.
   }
   \item{inputb}{
-    logical value: if TRUE, a local input bandwidth array is used, if 
-    FALSE a data-adaptive local
-    plug-in bandwidths array is calculated and used. Default value is inputb=FALSE.
+    logical: if true, a local input bandwidth array is used; if 
+    \code{FALSE} (default), a data-adaptive local plug-in bandwidths
+    array is calculated and used.
   }
   \item{m1}{
-    number of grid points for integral approximation when estimating the plug-in
-    bandwidth. Default value is m1=400. This value may be increased if a very
-    large number of observations are available.
+    integer, the number of grid points for integral approximation when
+    estimating the plug-in bandwidth. The default, 400, may be increased
+    if a very large number of observations are available.
   }
-  \item{xl}{
-    lower bound for integral approximation and variance estimation when 
-    estimating the plug-in bandwidth. If xl and xu are not given by input 
-    the 87\% middle part of [xmin,xmax] is used.
-  }
-  \item{xu}{
-    upper bound for integral approximation and variance estimation when 
-    estimating the plug-in bandwidth. If xl and xu are not given by input 
-    the 87\% middle part of [xmin,xmax] is used.
+  \item{xl, xu}{
+    numeric (scalars), the lower and upper bounds for integral
+    approximation and variance estimation when estimating the plug-in
+    bandwidth. By default (when \code{xl} and \code{xu} are not specified),
+    the 87\% middle part of \eqn{[xmin,xmax]} is used.
   }
   \item{s}{
     s-array of the convolution kernel estimator. If it is not given by input
     it is calculated as midpoint-sequence of the ordered design points for
-    irnd=FALSE or as quantiles estimators of the design density for irnd=TRUE.
+    \code{irnd=FALSE} or as quantiles estimators of the design density
+    for \code{irnd=TRUE}.
   }
-  \item{sig}{
-    variance of the error variables. If it is not given by input or if ihetero=TRUE
-    (no default) it is calculated by the nonparametric variance estimator.
-  }
+  \item{sig}{variance of the error variables.  If it is not given by
+    input or if \code{ihetero=TRUE} (no default) it is calculated by a
+    nonparametric variance estimator.}
   \item{bandwidth}{
-    local bandwidth array for kernel regression estimation. If it is not given by
-    input or if inputb=FALSE a data-adaptive local plug-in bandwidth array is used 
-    instead.
+    \emph{local} bandwidth array for kernel regression estimation.  If it is
+    not given by input or if \code{inputb=FALSE} a data-adaptive local
+    plug-in bandwidth array is used instead.
   }
 }
 \value{
@@ -100,9 +96,8 @@ lokerns(x , y, deriv=0, n.out=300, x.out=NULL, korder=NULL,
     regression estimator.}
 }
 \details{
-  This function calls an efficient
-  and fast algorithm for automatically adaptive nonparametric
-  regression estimation with a kernel method.
+  This function calls an efficient and fast algorithm for automatically
+  adaptive nonparametric regression estimation with a kernel method.
 
   Roughly spoken, the method performs a local averaging of the
   observations when estimating the regression function. Analogously, one
@@ -120,9 +115,10 @@ lokerns(x , y, deriv=0, n.out=300, x.out=NULL, korder=NULL,
   bandwidths. Therefore, one has to estimate the variance for
   homoscedastic error variables and a functional of a smooth variance
   function for heteroscedastic error variables, respectively. Also, one
-  has to estimate an integral functional of the squared k-th derivative
-  of the regression function (k=korder) for the global bandwidth and the
-  squared k-th derivative itself for the local bandwidths.
+  has to estimate an integral functional of the squared \eqn{k}-th derivative
+  of the regression function (\eqn{k=\code{korder}}) for the global
+  bandwidth and the squared \eqn{k}-th derivative itself for the local
+  bandwidths. 
 
   Here, a further kernel estimator for this derivative is used with a
   bandwidth which is adapted iteratively to the regression function.  A
@@ -133,8 +129,8 @@ lokerns(x , y, deriv=0, n.out=300, x.out=NULL, korder=NULL,
   and boundary kernels are used with a fast and stable updating
   algorithm for kernel regression estimation.
 
-  More details can be found in the refered papers and on the www-page
-  http://www.unizh.ch/biostat/Software/kernsplus.html.
+  More details can be found in the references and on 
+  \url{http://www.unizh.ch/biostat/Software/kernsplus.html}.
 }
 \references{
   All the references in \code{\link{glkerns}}, and additionally,
@@ -152,7 +148,7 @@ myfit <- lokerns(speed, dist)
 plot(speed, dist)
 lines(myfit$x.out, myfit$est, col=2)
 }
-\keyword{smoothing}
-% Converted by Sd2Rd version 1.19.
+\keyword{smooth}
+
 
 
