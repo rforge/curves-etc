@@ -1,6 +1,5 @@
-
-###----- The first part of this is from  Steve Marron,
-###--  from
+### The first part of this is from  Steve Marron,
+### from his Matlab code
 ###         ftp://ftp.stat.unc.edu/pub/papers/marron/parameters/nmpar.m
 ##
 ##    For generating Normal mixture parameters,
@@ -8,10 +7,6 @@
 ##      from Marron and Wand (1992),
 ##      plus number 16 from Janssen, et. al.
 ##
-
-## Load Martin Maechler's   'Normal Mixtures' package :
-source("/u/maechler/R/MM/STATISTICS/NorMix.S")
-##source("/u/maechler/S/STATISTICS/NorMix.S")
 
 MW.nm1 <- NorMix(name = "#1 Gaussian",
 		 mu = 0, sig2 = 1, w = 1)
@@ -119,3 +114,5 @@ MW.nm16 <- NorMix(name = "#16 Dist Bim",
 		  mu   = c(-2.5, 2.5),
 		  sig2 = c(1/36, 1/36),
 		  w    = c(.5, .5))
+
+rm(n, mu, sig, sig2, w, il,irv,di)
