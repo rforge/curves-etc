@@ -109,5 +109,5 @@ lines(epa.sd$x.out, epa.sd$est,  col="red")
 lines(lowess(speed,dist, f= .5), col="orange")
 detach()
 }
-\keyword{smoothing}
+\keyword{smooth}
 
