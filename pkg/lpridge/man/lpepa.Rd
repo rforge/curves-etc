@@ -47,14 +47,16 @@ lpepa(x, y, bandwidth, deriv = 0, n.out = 200, x.out = NULL,
   \item{est.var}{estimator of the variance of est (proportional to
     residual variance).}
 }
-\details{More details are described in the reference SBE\&G below.  In
-  the S\&G a bad finite sample behaviour of local polynomials for random
-  designs was found.
+\details{More details are described in the first reference SBE\&G (1994)
+  below.  In S\&G, a bad finite sample behaviour of local polynomials
+  for random designs was found.
   For practical use, we therefore propose local polynomial regression
   fitting with ridging, as implemented in the function
   \code{\link{lpridge}}.  In \code{lpepa}, several parameters described
   in SBE\&G are fixed either in the fortran
   routine or in the \R-function.  There, you find comments how to change them.
+
+  %% MM: FIXME -- make this more transparent and user configurable
 
   For \code{var=TRUE}, the variance of the estimator proportional to the
   residual variance is computed, i.e., the exact finite sample variance of the
