@@ -1,0 +1,37 @@
+This is the README file for loading the Splus function lpridge (local 
+polynomial regression fitting with ridging).
+Version 11. 04. 95
+
+You should now have the following files:
+
+	lpridge.f		fortran-code
+	lpridge.s		interface function that calls lpridge.f
+	lpridge.d		Splus help file for lpridge
+	lpridge.input		source file to create the functions 
+
+To load the functions start Splus in this directory and run:
+
+	> source("lpridge.input")
+
+In every new Splus session you have to load the fortran routine again:
+
+	> dyn.load("lpridge.o")
+
+We are interested in any information on the numerical and statistical
+behavior of our routine. Any suggestion, how to make the function more 
+user-friendly, or how to implement it into other software, are welcome.
+Questions and comments should be directed to 
+
+	Burkhardt Seifert
+	Department of Biostatistics ISPM
+	University of Z"urich
+	Sumatrastrasse 30
+	CH-8006 Z"urich
+
+e-mail: seifert@ifspm.unizh.ch
+
+Thank you!
+
+Permission to use, copy, modify, and distribute, this software for any 
+non-commercial purpose is granted, provided the authors, Seifert, 
+Brockmann, Engel and Gasser are appropriately acknowledged.
