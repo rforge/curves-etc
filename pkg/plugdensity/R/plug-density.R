@@ -1,9 +1,3 @@
-# system("R COMPILE plugin.f")
-PIdir <- "/u/maechler/src/Gasser-et-al/plugin-density"
-PIdir <- "/u/maechler/R/STATISTICS"
-system(paste("cd",PIdir,"; R SHLIB plug-density.c"))
-dyn.load(file.path(PIdir,"plug-density.so"))
-
 ## Idea : Change this to only estimate the bandwidth !
 ## ----> incorporate into base R
 
@@ -16,7 +10,7 @@ plugin.density <- function(x, nout = 201, xout = NULL)
     ##          xout : explicit output abscissae
     ## -------------------------------------------------------------------------
     ## Author: Martin Maechler, Date: 16 Mar 1998, 18:55
-    ## calls is.sorted() from package "SfS"
+
     n <- length(x <- sort(x))
         if(is.null(xout)) {
             ## R's density() here extends the range depending on bandwidth !
@@ -26,13 +20,14 @@ plugin.density <- function(x, nout = 201, xout = NULL)
             xout <- seq(from=rx[1] - dx/10, to=rx[2] + dx/10, length= m)
         } else {
             m <- length(xout)
-            if(!is.sorted(xout)) xout <- sort(xout)
+            if(is.unsorted(xout)) xout <- sort(xout)
         }
     r <- .C("plugin",
             x = as.double(x), n=n,
             z = xout, m=m,
             f= double(m),
-            h= double(1))
+            h= double(1),
+            PACKAGE = "plugdensity")
     structure(list(x= r$z, y= r$f, call = sys.call(), bw = r$h, n=n),
               class=c("densityEHpi", "density"))# Eva Herrman plug in
 }
@@ -46,18 +41,3 @@ print.densityEHpi <- function(x, digits = getOption("digits"), ...)
     str(x[1:2], digits = digits, ...)
     invisible(x)
 }
-
-data(co2)
-plot(dco2 <- density(co2), ylim = c(0, 0.03))
-(pdco2 <- plugin.density(co2, xout = dco2$x))
-lines(pdco2, col = "red")
-
-plot.density(pdco2)
-
-str(pdco2 <- plugin.density(co2))
-xo <- pdco2 $x
-str(d.co2 <- density(co2, n = length(xo), from=xo[1],to=max(xo),
-                     width= 4 * pdco2$bw))
-all.equal(d.co2, pdco2[c("x","y")])
-# close: [1] "Component y: Mean relative difference: 0.0009028029"
-
