@@ -1,6 +1,8 @@
 ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
-cc     several kernel smoothing subroutines which are used by glkern.f 
-cc     and lokern.f, version oct 1996
+cc     several kernel smoothing subroutines which are used by 
+cc     glkern.f and lokern.f, version oct 1996
+cc
+cc     glkerns() & lokerns() directly only call the first 3 and coff()
 ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 cc     this file contains:
 cc
@@ -74,33 +76,48 @@ c-
       ex2=x(1)*ex
       do 1 i=2,n-1
          tt=t(i+1)-t(i-1)
-         if(tt.ne.0.) g1=(t(i+1)-t(i))/tt
-         if(tt.eq.0.) g1=.5
+         if(tt.ne.0.) then
+            g1=(t(i+1)-t(i))/tt
+         else
+            g1=.5
+         endif
          g2=1.-g1
          res(i)=(x(i)-g1*x(i-1)-g2*x(i+1))/sqrt(1.+g1*g1+g2*g2)
          sigma2=sigma2+res(i)*res(i)
          sx=x(i)*tt
          ex=ex+sx
          ex2=ex2+x(i)*sx
-1        continue
+ 1    continue
+c     first points (ex & ex2 done at beginning)
       tt=t(3)-t(2)
-      if(tt.ne.0.) g1=(t(1)-t(2))/tt
-      if(tt.eq.0.) g1=.5
+      if(tt.ne.0.) then
+         g1=(t(1)-t(2))/tt
+      else
+         g1=.5
+      endif
       g2=1.-g1
       res(1)=(x(1)-g1*x(3)-g2*x(2))/sqrt(1.+g1*g1+g2*g2)
+c     last points
       tt=t(n-1)-t(n-2)
-      if(tt.ne.0.) g1=(t(n-1)-t(n))/tt
-      if(tt.eq.0.) g1=.5
+      if(tt.ne.0.) then
+         g1=(t(n-1)-t(n))/tt
+      else
+         g1=.5
+      endif
       g2=1.-g1
       res(n)=(x(n)-g1*x(n-2)-g2*x(n-1))/sqrt(1.+g1*g1+g2*g2)
-      sigma2=(sigma2+res(1)*res(1)+res(n)*res(n))/n
-c-
+
+      sigma2=(sigma2+ res(1)*res(1)+ res(n)*res(n))/n
+c- snr := explained variance
       sx=x(n)*(t(n)-t(n-1))
       dn=2.*(t(n)-t(1))
       ex=(ex+sx)/dn
       ex2=(ex2+x(n)*sx)/dn
-      if(ex2.eq.0) snr=0.
-      if(ex2.gt.0) snr=1-sigma2/(ex2-ex*ex)
+      if(ex2.gt.0) then
+         snr=1-sigma2/(ex2-ex*ex)
+      else
+         snr=0.
+      endif
       return
       end
 
@@ -108,8 +125,8 @@ c-
 c-----------------------------------------------------------------------
 c       short-version may, 1995
 c
-c       driver subroutine for kernel smoothing, chooses between
-c       standard and o(n) algorithm 
+c       driver subroutine for kernel smoothing,
+c       chooses between standard and O(n) algorithm 
 c
 c  parameters :
 c
@@ -122,8 +139,7 @@ c  input    kord         order of kernel (<=6); default is kord=nue+2
 c  input    ny           0: global bandwidth (default)
 c                        1: variable bandwidths, given in y as input
 c  input    s(0:n)       interpolation sequence
-c  input    tt(m)        output grid. must be part of input grid for
-c                        ieq=0
+c  input    tt(m)        output grid. must be part of input grid for ieq=0
 c  input    m            number of points where function is estimated,
 c                         or  length of tt. default is m=400
 c  input    y(m)         bandwith sequence for ny=1, dummy for ny=0
@@ -131,18 +147,17 @@ c  output   y(m)         estimated regression function
 c
 c-----------------------------------------------------------------------
 
-      double precision t(n),x(n),b,s(0:n),tt(m),y(m),chan
       integer n,nue,kord,ny,m
-c-
+      double precision t(n),x(n),b,s(0:n),tt(m),y(m), chan
+c
 c------  computing change point
       chan=(5.+kord)*max(1.,sqrt(float(n)/float(m)))
 c------
       if(b*(n-1)/(t(n)-t(1)).lt.chan) then
-            call kerncl(t,x,n,b,nue,kord,ny,s,tt,m,y)
-         else
-            call kernfa(t,x,n,b,nue,kord,ny,s,tt,m,y)
-       end if
-c-
+         call kerncl(t,x,n,b,nue,kord,ny,s,tt,m,y)
+      else
+         call kernfa(t,x,n,b,nue,kord,ny,s,tt,m,y)
+      end if
       return
       end
 
@@ -152,7 +167,8 @@ c-----------------------------------------------------------------------
 c       short-version january, 1997
 c
 c       driver subroutine for kernel smoothing, chooses between
-c       standard and o(n) algorithm without using boundary kernels 
+c       standard and O(n) algorithm 
+c       without using boundary kernels 
 c
 c  parameters :
 c
@@ -165,8 +181,7 @@ c  input    kord         order of kernel (<=6); default is kord=nue+2
 c  input    ny           0: global bandwidth (default)
 c                        1: variable bandwidths, given in y as input
 c  input    s(0:n)       interpolation sequence
-c  input    tt(m)        output grid. must be part of input grid for
-c                        ieq=0
+c  input    tt(m)        output grid. must be part of input grid for ieq=0
 c  input    m            number of points where function is estimated,
 c                         or  length of tt. default is m=400
 c  input    y(m)         bandwith sequence for ny=1, dummy for ny=0
@@ -181,11 +196,11 @@ c------  computing change point
       chan=(5.+kord)*max(1.,sqrt(float(n)/float(m)))
 c------
       if(b*(n-1)/(t(n)-t(1)).lt.chan) then
-            call kerncp(t,x,n,b,nue,kord,ny,s,tt,m,y)
-         else
-            call kernfp(t,x,n,b,nue,kord,ny,s,tt,m,y)
-       end if
-c-
+         call kerncp(t,x,n,b,nue,kord,ny,s,tt,m,y)
+      else
+         call kernfp(t,x,n,b,nue,kord,ny,s,tt,m,y)
+      end if
+c
       return
       end
 
@@ -195,7 +210,7 @@ c       short-version: may, 1995
 c
 c       purpose:
 c
-c       computation of kernel estimate using o(n) algorithm based on
+c       computation of kernel estimate using O(n) algorithm based on
 c       legendre polynomials, general spaced design and local 
 c       bandwidth allowed. (new initialisations of the legendre sums
 c       for numerical reasons)
@@ -218,9 +233,10 @@ c
 c
 c-----------------------------------------------------------------------
       integer n,nue,kord,ny,m
+      double precision t(n),x(n),s(0:n),tt(m),y(m),b
+ 
       integer j,k,iord,init,icall,i,iboun
       integer jl,jr,jnr,jnl
-      double precision x(n),t(n),s(0:n),tt(m),y(m),b
       double precision c(7),sw(7),xf(7),dold
       double precision a(7,7),a1(7),a2(7),a3(7,7),cm(7,6)
       double precision bmin,bmax,bb,wwl,wwr,wid,wr,wido
@@ -606,8 +622,10 @@ c
 c        sw(iord)  :   new sum of data weights for legendre polynom.
 c
 c-----------------------------------------------------------------------
-      integer iord,iflop,k
+      integer iord,iflop
       double precision sw(7),a1(7),a2(7),x,sl,sr,t,b
+
+      integer k
       double precision p(7,2)
 c-
 c------  compute legendre polynomials
@@ -616,10 +634,10 @@ c------  compute legendre polynomials
       p(2,1)=1.5d0*p(1,1)*p(1,1)-.5d0
       p(2,2)=1.5d0*p(1,2)*p(1,2)-.5d0
       do 1 k=3,iord
-        p(k,1)=a1(k)*p(k-1,1)*p(1,1)+a2(k)*p(k-2,1)
-1       p(k,2)=a1(k)*p(k-1,2)*p(1,2)+a2(k)*p(k-2,2)
-c-
-c------  compute new legendre sums
+         p(k,1)=a1(k)*p(k-1,1)*p(1,1)+ a2(k)*p(k-2,1)
+ 1       p(k,2)=a1(k)*p(k-1,2)*p(1,2)+ a2(k)*p(k-2,2)
+c     -
+c------compute new legendre sums
       if(iflop.eq.1) then
         do 2 k=1,iord
 2         sw(k)=sw(k)+(p(k,1)-p(k,2))*x
