@@ -1,5 +1,5 @@
-      subroutine glkerns(t,x,n,tt,m,nue,kord,ihetero,irnd,
-     .     ismo,m1,tl,tu,s,sig,wn,w1,b,y)
+      subroutine glkerns(t,x,tt,n,m,nue,kord, hetero,isrand,
+     .     smo,m1,tl,tu,s,sig,wn,w1,b,y)
 c----------------------------------------------------------------------*
 c-----------------------------------------------------------------------
 c       Short-version: Oct 1996
@@ -14,13 +14,14 @@ c-----------------------------------------------------------------------
 c  used subroutines: constV, resest, kernel with further subroutines
 c-----------------------------------------------------------------------
 c Args
-      integer n, m, nue,kord, ihetero,irnd,ismo, m1
-      double precision t(n),x(n), tt(m),y(m), tl,tu, s(0:n), sig
-      double precision wn(0:n,5),w1(m1,3),b
+      integer n, m, nue,kord
+      double precision t(n),x(n), tt(m), tl,tu, s(0:n), sig
+      logical hetero, isrand, smo
+      integer m1
+      double precision wn(0:n,5),w1(m1,3), b, y(m)
 c Var
-      logical hetero,isrand,smo, inputs, needsrt
-      integer nyg, i,ii,iil,itt,il,iu,itende,it, j,
-     1  kk,kk2, nn
+      logical inputs, needsrt
+      integer nyg, i,ii,iil,itt,il,iu,itende,it, j, kk,kk2, nn
       double precision bias(2,0:2),vark(2,0:2),fak2(2:4),
      1     rvar, s0,sn, b2,bmin,bmax,bres,bs,alpha,ex,exs,exsvi,
      2     r2,snr,vi,ssi,const,fac, q,tll,tuu, xi,xmy2
@@ -31,9 +32,6 @@ c-------- 1. initialisations
       data fak2/4.,36.,576./
       nyg=0
       inputs = .false.
-      hetero = ihetero .ne. 0
-      isrand = irnd .ne. 0
-      smo = ismo .ne. 0
 
 c Stop for invalid inputs (impossible when called from R's lokerns())
 
@@ -141,8 +139,9 @@ c-------- 8. compute constants for iteration
 c-
 c-------- 9. estimating variance and smoothed pseudoresiduals
       rvar=sig
-      if(sig.le..0 .and. .not.hetero)
-     .     call resest(t(il),x(il),nn,wn(il,2),r2,sig)
+      if(sig .le. 0. .and. .not.hetero) then
+        call resest(t(il),x(il),nn,wn(il,2),r2,sig)
+      endif
       if(hetero) then
          call resest(t,x,n,wn(1,2),snr,sig)
          bres=max(bmin,.2*nn**(-.2)*(s(iu)-s(il-1)))
@@ -153,7 +152,8 @@ c-------- 9. estimating variance and smoothed pseudoresiduals
          call kernel(t,wn(1,2),n,bres,0,kk2,nyg,s,
      .        wn(il,3),nn,wn(il,4))
       else
-         call constV(wn(1,4),n,sig)
+c       not hetero
+        call constV(wn(1,4),n,sig)
       end if
 c-
 c-------- 10. [LOOP:] estimate/compute integral constant
@@ -168,7 +168,7 @@ c-------- 11. refinement of s-sequence for random design
           wn(i,5)=dble(i)/dble(n+1)
           wn(i,2)=(dble(i)+.5)/dble(n+1)
           wn(i,3)=wn(i,2)
- 110   continue
+ 110    continue
         exs= -dble(3*kord+1) / dble(6*kord+3)
         exsvi=dble(kord)     / dble(6*kord+3)
         bs=0.1*(vi/(sn-s0)**2)**exsvi * n**exs
@@ -183,7 +183,7 @@ c-------- 11. refinement of s-sequence for random design
               s(i)=ssi
               needsrt=.true.
            end if
- 112    continue
+112     continue
         if(needsrt) goto 111
         if(smo) goto 160
       end if
