@@ -64,7 +64,6 @@ MW.nm10
 plot(MW.nm14)
 
 ## These are defined as norMix() calls in  ../R/zMarrWand-dens.R
-require("nor1mix")
 ppos <- which("package:nor1mix" == search())
 nms <- ls(pat="^MW.nm", pos = ppos)
 nms <- nms[order(as.numeric(substring(nms,6)))]
@@ -76,8 +75,17 @@ for(n in nms) {
 op <- par(mfrow=c(4,4), mgp = c(1.2, 0.5, 0), tcl = -0.2,
           mar = .1 + c(2,2,2,1), oma = c(0,0,3,0))
 for(n in nms) { plot(get(n, pos = ppos))}
-mtext("The Marron-Wand Densities", outer = TRUE,
+mtext("The Marron-Wand Densities", outer= TRUE, font= 2, cex= 1.6)
+
+## and their Q-Q-plots (not really fast):
+prob <- ppoints(N <- 100)
+for(n in nms) {
+   D <- get(n, pos = ppos)
+   qqnorm(qnorMix(D, prob), main = n)
+}
+mtext("QQ-plots of Marron-Wand Densities", outer = TRUE,
       font = 2, cex = 1.6)
+
 par(op)
 }
 \keyword{datasets}
