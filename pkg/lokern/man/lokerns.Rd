@@ -1,6 +1,6 @@
 \name{lokerns}
 \alias{lokerns}
-\title{Kernel Regression Smoothing with Local Plug-in Bandwidth} 
+\title{Kernel Regression Smoothing with Local Plug-in Bandwidth}
 \description{
   Nonparametric estimation of regression functions and their derivatives
   with kernel regression estimators and automatically adapted \bold{local}
@@ -8,7 +8,7 @@
 }
 \usage{
 lokerns(x , y, deriv = 0, n.out=300, x.out=NULL, korder=NULL,
-        ihetero=FALSE, irnd=TRUE, inputb=FALSE, m1=400, xl=NULL, xu=NULL,
+        hetero=FALSE, is.rand=TRUE, inputb=FALSE, m1=400, xl=NULL, xu=NULL,
         s=NULL, sig=NULL, bandwidth=NULL)
 }
 %% FIXME : The argument list of lokerns() and glkerns() are identical
@@ -31,14 +31,14 @@ lokerns(x , y, deriv = 0, n.out=300, x.out=NULL, korder=NULL,
     \code{korder = deriv+2} or \eqn{k = \nu + 2} where \eqn{k - \nu}
     must be even.  The maximal possible values are for automatic
     smoothing, \eqn{k \le 4}{k <= 4}, whereas for smoothing with input
-    bandwidth array, \eqn{k \le 6}{k <= 6}. 
+    bandwidth array, \eqn{k \le 6}{k <= 6}.
   }
-  \item{ihetero}{
-    logical: if TRUE, heteroscedastic error variables are assumed for 
-    variance estimation, if FALSE the variance estimation is optimized for 
-    homoscedasticity. Default value is ihetero=FALSE.
+  \item{hetero}{
+    logical: if TRUE, heteroscedastic error variables are assumed for
+    variance estimation, if FALSE the variance estimation is optimized for
+    homoscedasticity. Default value is hetero=FALSE.
   }
-  \item{irnd}{
+  \item{is.rand}{
     logical: if \code{TRUE} (default), random x are assumed and the
     s-array of the convolution estimator is computed as smoothed
     quantile estimators in order to adapt this variability.  If FALSE,
@@ -47,7 +47,7 @@ lokerns(x , y, deriv = 0, n.out=300, x.out=NULL, korder=NULL,
     fixed design.
   }
   \item{inputb}{
-    logical: if true, a local input bandwidth array is used; if 
+    logical: if true, a local input bandwidth array is used; if
     \code{FALSE} (default), a data-adaptive local plug-in bandwidths
     array is calculated and used.
   }
@@ -65,11 +65,11 @@ lokerns(x , y, deriv = 0, n.out=300, x.out=NULL, korder=NULL,
   \item{s}{
     s-array of the convolution kernel estimator. If it is not given by input
     it is calculated as midpoint-sequence of the ordered design points for
-    \code{irnd=FALSE} or as quantiles estimators of the design density
-    for \code{irnd=TRUE}.
+    \code{is.rand=FALSE} or as quantiles estimators of the design density
+    for \code{is.rand=TRUE}.
   }
   \item{sig}{variance of the error variables.  If it is not given by
-    input or if \code{ihetero=TRUE} (no default) it is calculated by a
+    input or if \code{hetero=TRUE} (no default) it is calculated by a
     nonparametric variance estimator.}
   \item{bandwidth}{
     \emph{local} bandwidth array for kernel regression estimation.  If it is
@@ -86,8 +86,8 @@ lokerns(x , y, deriv = 0, n.out=300, x.out=NULL, korder=NULL,
   \item{x.out}{vector of ordered output design points.}
   \item{est}{vector of estimated regression function or its derivative.}
   \item{sig}{variance estimation which was used for calculating the
-    plug-in bandwidths if ihetero=TRUE (default) and either inputb=FALSE
-    (default) or irnd=TRUE (default).}
+    plug-in bandwidths if hetero=TRUE (default) and either inputb=FALSE
+    (default) or is.rand=TRUE (default).}
   \item{deriv}{derivative of the regression function which was estimated.}
   \item{korder}{order of the kernel function which was used.}
   \item{xl}{lower bound for integral approximation and variance estimation.}
@@ -118,7 +118,7 @@ lokerns(x , y, deriv = 0, n.out=300, x.out=NULL, korder=NULL,
   has to estimate an integral functional of the squared \eqn{k}-th derivative
   of the regression function (\eqn{k=\code{korder}}) for the global
   bandwidth and the squared \eqn{k}-th derivative itself for the local
-  bandwidths. 
+  bandwidths.
 
   Here, a further kernel estimator for this derivative is used with a
   bandwidth which is adapted iteratively to the regression function.  A
@@ -129,7 +129,7 @@ lokerns(x , y, deriv = 0, n.out=300, x.out=NULL, korder=NULL,
   and boundary kernels are used with a fast and stable updating
   algorithm for kernel regression estimation.
 
-  More details can be found in the references and on 
+  More details can be found in the references and on
   \url{http://www.unizh.ch/biostat/Software/kernsplus.html}.
 }
 \references{

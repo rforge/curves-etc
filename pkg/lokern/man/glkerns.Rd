@@ -8,7 +8,7 @@
 }
 \usage{
 glkerns(x, y, deriv = 0, n.out = 300, x.out=NULL, korder=NULL,
-        ihetero=FALSE, irnd=TRUE, inputb=FALSE, m1=400, xl=NULL, xu=NULL,
+        hetero=FALSE, is.rand=TRUE, inputb=FALSE, m1=400, xl=NULL, xu=NULL,
         s=NULL, sig=NULL, bandwidth=NULL)
 }
 %% FIXME : The argument list of lokerns() and glkerns() are identical
@@ -31,13 +31,13 @@ glkerns(x, y, deriv = 0, n.out = 300, x.out=NULL, korder=NULL,
     \code{korder = deriv+2} or \eqn{k = \nu + 2} where \eqn{k - \nu}
     must be even.  The maximal possible values are for automatic
     smoothing, \eqn{k \le 4}{k <= 4}, whereas for smoothing with input
-    bandwidth array, \eqn{k \le 6}{k <= 6}. 
+    bandwidth array, \eqn{k \le 6}{k <= 6}.
   }
-  \item{ihetero}{logical: if TRUE, heteroscedastic error variables are
+  \item{hetero}{logical: if TRUE, heteroscedastic error variables are
     assumed for variance estimation, if FALSE the variance estimation is
-    optimized for homoscedasticity.  Default value is ihetero=FALSE.
+    optimized for homoscedasticity.  Default value is hetero=FALSE.
   }
-  \item{irnd}{
+  \item{is.rand}{
     logical: if \code{TRUE} (default), random x are assumed and the
     s-array of the convolution estimator is computed as smoothed
     quantile estimators in order to adapt this variability.  If FALSE,
@@ -46,7 +46,7 @@ glkerns(x, y, deriv = 0, n.out = 300, x.out=NULL, korder=NULL,
     fixed design.
   }
   \item{inputb}{
-    logical: if true, a local input bandwidth array is used; if 
+    logical: if true, a local input bandwidth array is used; if
     \code{FALSE} (default), a data-adaptive local plug-in bandwidths
     array is calculated and used.
   }
@@ -64,11 +64,11 @@ glkerns(x, y, deriv = 0, n.out = 300, x.out=NULL, korder=NULL,
   \item{s}{
     s-array of the convolution kernel estimator. If it is not given by input
     it is calculated as midpoint-sequence of the ordered design points for
-    \code{irnd=FALSE} or as quantiles estimators of the design density
-    for \code{irnd=TRUE}.
+    \code{is.rand=FALSE} or as quantiles estimators of the design density
+    for \code{is.rand=TRUE}.
   }
   \item{sig}{variance of the error variables.  If it is not given by
-    input or if \code{ihetero=TRUE} (no default) it is calculated by a
+    input or if \code{hetero=TRUE} (no default) it is calculated by a
     nonparametric variance estimator.}
   \item{bandwidth}{
     \emph{global} bandwidth for kernel regression estimation.  If it is
@@ -151,7 +151,7 @@ glkerns(x, y, deriv = 0, n.out = 300, x.out=NULL, korder=NULL,
   B. Seifert, M. Brockmann, J. Engel & T. Gasser (1994)
   Fast algorithms for nonparametric curve estimation.
   \emph{J. Computational and Graphical Statistics} \bold{3}, 192--213.
-  
+
   - on the special kernel estimator for random design point:\cr
   E. Herrmann (1996)
   \emph{On the convolution type kernel regression estimator};
@@ -163,11 +163,11 @@ glkerns(x, y, deriv = 0, n.out = 300, x.out=NULL, korder=NULL,
 \examples{
 data(xSim)## linear plus an exponential peak, see help(xSim)
 n <- length(xSim)
-tt <- ((1:n) - 1/2)/n # equidistant x ==> irnd = FALSE
-str(gk <- glkerns(tt, xSim, irnd = FALSE))
+tt <- ((1:n) - 1/2)/n # equidistant x ==> is.rand = FALSE
+str(gk <- glkerns(tt, xSim, is.rand = FALSE))
 cat("glkerns() bandwidth:",format(gk$bandwidth, dig =10),"\n")
 ## local bandwidth: fit is very similar :
-str(lk <- lokerns(tt, xSim, irnd = FALSE))
+str(lk <- lokerns(tt, xSim, is.rand = FALSE))
 
 cols <- c(gl="PaleGreen", lo="Firebrick")
 plot(lk$x.out, lk$bandwidth, axes = F, xlab="", ylab="",
@@ -182,16 +182,16 @@ lines(lk$x.out, lk$est, col = cols["lo"])
 # the red curve (local bw) is very slightly better
 legend(0.7,4.4, c("global bw","local bw"), col = cols, lwd=1)
 
-## This should look 
+## This should look
 op <- par(mfrow = c(3,1), mar = .1 + c(4,4,2,1), oma = c(0,0,3,0),
           mgp = c(1.5, 0.6,0))
 plot(gk, main = expression(paste("Data & ", hat(f))))
 lines(gk$x.out, gk$est, col = "blue", lwd = 1.5)
-gk1 <- glkerns(tt, xSim, deriv = 1, irnd = FALSE)
+gk1 <- glkerns(tt, xSim, deriv = 1, is.rand = FALSE)
 plot(gk1$x.out, gk1$est, col = "green", lwd = 1.5, type = "l",
      main = expression(widehat(paste(f,"'"))))
 abline(h=0, col="gray", lty = 3)
-gk2 <- glkerns(tt, xSim, deriv = 2, irnd = FALSE)
+gk2 <- glkerns(tt, xSim, deriv = 2, is.rand = FALSE)
 plot(gk2$x.out, gk2$est, col = "orange", lwd = 1.5, type = "l",
      main = expression(widehat(paste(f,"''"))))
 abline(h=0, col="gray", lty = 3)
@@ -202,7 +202,7 @@ par(op)
 data(cars)
 plot(dist ~ speed, data = cars,
      main = "Global Plug-In Bandwidth")
-myfit <- glkerns(cars$ speed, cars$ dist)		
+myfit <- glkerns(cars$ speed, cars$ dist)
 lines(myfit$x.out, myfit$est, col=2)
 mtext(paste("bandwidth = ", format(myfit$bandwidth, dig = 4)))
 }
