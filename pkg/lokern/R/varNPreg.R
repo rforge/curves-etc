@@ -32,7 +32,7 @@ varest <- function(x,y)
     ##     output  sigma2    estimation of sigma^2 (residual variance)
 
     ## Author: Martin Maechler, Date:  9 Jul 2001, 14:47
-    if(2 >= n <- length(x)) stop("n := length(x)  must be at least 3")
+    if(2 >= (n <- length(x))) stop("n := length(x)  must be at least 3")
     if(is.unsorted(x)) stop("`x' must be ordered increasingly")
     if(n != length(y)) stop("`x' and `y' must have same length")
     .Fortran("resest",

@@ -1,53 +1,35 @@
 \name{varest}
 \alias{varest}
-%- Also NEED an `\alias' for EACH other topic documented here.
-\title{ ~~function to do ... ~~ }
+\title{Nonparametric Variance Estimator}
 \description{
-  ~~ A concise (1-5 lines) description of what the function does. ~~
+  Estimates the error variance \eqn{\sigma^2} nonparametrically in the model
+  \deqn{Y_i = m(x_i) + E_i,} where
+  \eqn{E_i \sim N(0,\sigma^2)}{E_i ~ N(0,sigma^2)},
+  using leave-one-out residuals.
 }
 \usage{
 varest(x, y)
 }
-%- maybe also `usage' for other objects documented here.
 \arguments{
-  \item{x}{ ~~Describe \code{x} here~~ }
-  \item{y}{ ~~Describe \code{y} here~~ }
+  \item{x}{abscissae values, ordered increasingly.}
+  \item{y}{observations at \code{y[i]} at \code{x[i]}.}
 }
-\details{
-  ~~ If necessary, more details than the __description__  above ~~
+\note{
+  This is an \R interface to the \code{resest} Fortran subroutine, used
+  in \code{\link{lokerns}} and \code{\link{glkerns}}, see their help
+  pages for references and context.
 }
 \value{
-  ~Describe the value returned
-  If it is a LIST, use
-  \item{comp1 }{Description of `comp1'}
-  \item{comp2 }{Description of `comp2'}
-  ...
+  A list with components
+  \item{res}{numeric; residuals at \code{x[]} of length \code{n}.}
+  \item{snr}{explained variance of the true curve}
+  \item{sigma2}{estimation of residual variance, \eqn{\hat\sigma^2}{sigma^2}.}
 }
-\references{ ~put references to the literature/web site here ~ }
-\author{ ~~who you are~~ }
-\note{ ~~further notes~~ }
-
- ~Make other sections like WARNING with \section{WARNING }{....} ~
-
-\seealso{ ~~objects to SEE ALSO as \code{\link{~~fun~~}}, ~~~ }
-
+\author{Martin Maechler}
+\seealso{\code{\link{lokerns}}, \code{\link{glkerns}}.}
 \examples{
-##---- Should be DIRECTLY executable !! ----
-##-- ==>  Define data, use random,
-##--	     or do  help(data=index)  for the standard data sets.
-
-## The function is currently defined as
-function (x, y) 
-{
-    if (2 >= n <- length(x)) 
-        stop("n := length(x)  must be at least 3")
-    if (is.unsorted(x)) 
-        stop("`x' must be ordered increasingly")
-    if (n != length(y)) 
-        stop("`x' and `y' must have same length")
-    .Fortran("resest", as.double(x), as.double(y), n, res = double(n), 
-        snr = double(1), sigma2 = double(1))[4:6]
-  }
+ x <- sort(runif(100))
+ y <- sin(pi*x) + rnorm(100)/10
+ str(ve <- varest(x,y))
 }
-\keyword{ ~kwd1 }% at least one, from doc/KEYWORDS
-\keyword{ ~kwd2 }% __ONLY ONE__ keyword per line
+\keyword{nonparametric}
