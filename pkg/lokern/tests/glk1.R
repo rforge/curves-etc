@@ -1,5 +1,7 @@
 require(lokern)
 data(xSim)
+xSim # `test' for the dataset
+
 n <- length(xSim)
 tt <- ((1:n) - 1/2)/n # equidistant x
 
