@@ -7,8 +7,10 @@
   plug-in bandwidth function.
 }
 \usage{
-lokerns(x , y, deriv = 0, n.out=300, x.out=NULL, korder=NULL,
-        hetero=FALSE, is.rand=TRUE, inputb=FALSE, m1=400, xl=NULL, xu=NULL,
+lokerns(x , y, deriv = 0, n.out=300, x.out=NULL, korder= deriv + 2,
+        hetero=FALSE, is.rand=TRUE,
+        inputb= is.numeric(bandwidth) && bandwidth > 0,
+        m1 = 400, xl=NULL, xu=NULL,
         s=NULL, sig=NULL, bandwidth=NULL)
 }
 %% FIXME : The argument list of lokerns() and glkerns() are identical
@@ -133,12 +135,7 @@ lokerns(x , y, deriv = 0, n.out=300, x.out=NULL, korder=NULL,
   \url{http://www.unizh.ch/biostat/Software/kernsplus.html}.
 }
 \references{
-  All the references in \code{\link{glkerns}}, and additionally,
-  about \emph{local plug-in bandwidth estimators}:
-  \cr
-  B. Seifert, M. Brockmann, J. Engel, and T. Gasser (1994)
-  Fast algorithms for nonparametric curve estimation.
-  \emph{J. Computational and Graphical Statistics} \bold{3}, 192--213.
+  All the references in \code{\link{glkerns}}.
 }
 \seealso{\code{\link{glkerns}} for \bold{gl}obal bandwidth computation.}
 \examples{
