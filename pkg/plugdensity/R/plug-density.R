@@ -1,7 +1,8 @@
 # system("R COMPILE plugin.f")
-system("cd /u/maechler/src/Gasser-et-al/plugin-density; R SHLIB plugin.c")
-dyn.load("/u/maechler/src/Gasser-et-al/plugin-density/plugin.so")
-
+PIdir <- "/u/maechler/src/Gasser-et-al/plugin-density"
+PIdir <- "/u/maechler/R/STATISTICS"
+system(paste("cd",PIdir,"; R SHLIB plug-density.c"))
+dyn.load(file.path(PIdir,"plug-density.so"))
 
 ## Idea : Change this to only estimate the bandwidth !
 ## ----> incorporate into base R
