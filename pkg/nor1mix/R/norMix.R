@@ -176,19 +176,12 @@ lines.norMix <-
 }
 
 
-r.norMix <- function(obj, x = NULL, xlim = NULL, n = 511,
-		     xy.return = TRUE, ...)
+r.norMix <- function(obj, x = NULL, xlim = NULL, n = 511, xy.return = TRUE)
 {
   ## Purpose: Compute r := f / f0; f = normal mixture; f0 = "best" normal approx
-  ## -------------------------------------------------------------------------
-  ## Author: Martin Maechler, Date: 20 Mar 97, 10:14
+  ## Author : Martin Maechler, Date: 20 Mar 97, 10:14
   if(!is.norMix(obj)) stop("'obj' must be a 'Normal Mixture' object!")
-  m <- m.norMix(obj) #-- number of components
   d.o <- dnorMix(obj, x=x, xlim=xlim, n=n)
   dn  <- dnorm(d.o$x, mean = mean.norMix(obj), sd = sqrt(var.norMix(obj)))
   if(xy.return) list(x = d.o$x, y= d.o$y / dn, f0 = dn) else d.o$y / dn
 }
-
-### ---> ./norMix-ex.R  for calling these
-###      ./MarrWand-dens.S  built on this,
-### and  ./MarrWand-dens-ex.R  using the latter.
