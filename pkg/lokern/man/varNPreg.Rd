@@ -1,14 +1,16 @@
-\name{varest}
-\alias{varest}
+\name{varNPreg}
+\alias{varNPreg}
 \title{Nonparametric Variance Estimator}
 \description{
   Estimates the error variance \eqn{\sigma^2} nonparametrically in the model
   \deqn{Y_i = m(x_i) + E_i,} where
-  \eqn{E_i \sim N(0,\sigma^2)}{E_i ~ N(0,sigma^2)},
-  using leave-one-out residuals.
+  \eqn{E_i \sim (0,\sigma^2)}{E_i ~ (0,sigma^2)}, i.i.d.
+
+  Computes leave-one-out residuals (local linear approximation followed by
+  reweighting) and their variance.
 }
 \usage{
-varest(x, y)
+varNPreg(x, y)
 }
 \arguments{
   \item{x}{abscissae values, ordered increasingly.}
@@ -30,6 +32,7 @@ varest(x, y)
 \examples{
  x <- sort(runif(100))
  y <- sin(pi*x) + rnorm(100)/10
- str(ve <- varest(x,y))
+ str(ve <- varNPreg(x,y))
 }
 \keyword{nonparametric}
+\keyword{regression}
