@@ -1,20 +1,22 @@
 ### glkerns   kernel regression smoothing with bandwidth selection
 
-glkerns <- function(x, y, deriv = 0, n.out = 300, x.out = NULL,
-                    korder = deriv + 2, hetero = FALSE, is.rand = TRUE,
-                    inputb = is.numeric(bandwidth) && bandwidth > 0,
-                    m1 = 400,
-                    xl = NULL, xu = NULL, s = NULL, sig = NULL,
-                    bandwidth = NULL)
+glkerns <- function(x, y=NULL, deriv = 0, n.out = 300, x.out = NULL,
+		    korder = deriv + 2, hetero = FALSE, is.rand = TRUE,
+		    inputb = is.numeric(bandwidth) && bandwidth > 0,
+		    m1 = 400, xl = NULL, xu = NULL, s = NULL, sig = NULL,
+		    bandwidth = NULL)
 {
-    ## control and sort inputgrid x  and data y
+    ## control and sort input (x,y) - new: allowing only y
+    xy <- xy.coords(x,y)
+    x <- xy$x
+    y <- xy$y
     n <- length(x)
-    if (length(y) != n)
-        stop("Input grid `x' and data `y' must have the same length.")
     if (n < 3) stop("must have n >= 3 observations")
-    sorvec <- sort.list(x)
-    x <- x[sorvec]
-    y <- y[sorvec]
+    if(is.unsorted(x)) {
+	sorvec <- sort.list(x)
+	x <- x[sorvec]
+	y <- y[sorvec]
+    }
 
     ## compute/sort outputgrid `x.out' (n.out : length of outputgrid)
 
@@ -27,9 +29,9 @@ glkerns <- function(x, y, deriv = 0, n.out = 300, x.out = NULL,
 
     if(n.out == 0) stop("Must have `n.out' >= 1")
 
-    ## hetero 	homo- or heteroszedasticity of error variables
-    ## is.rand    	random or non-random t-grid
-    ## inputb 	input bandwidth or estimation of plug-in bandwidth
+    ## hetero	homo- or heteroszedasticity of error variables
+    ## is.rand	random or non-random t-grid
+    ## inputb	input bandwidth or estimation of plug-in bandwidth
 
     ## m1 : discretization for integral functional estimation
     if ((m1 <- as.integer(m1)) < 3)# was "10", but fortran has 3
@@ -42,11 +44,10 @@ glkerns <- function(x, y, deriv = 0, n.out = 300, x.out = NULL,
         xu <- 0
     }
 
-    ## s mid-point grid
-    if (is.null(s) || length(s) != n+1)
-        s <- as.double(rep(0, n+1))
+    ## s	mid-point grid :
+    s <- if (is.null(s) || length(s) != n+1) double(n+1) else as.double(s)
 
-    ## sig          input variance
+    ## sig      input variance
     if (is.null(sig)) sig <- 0. #-> Fortran takes 0 = "compute default"
 
     inputb <- as.logical(inputb)
@@ -72,17 +73,17 @@ glkerns <- function(x, y, deriv = 0, n.out = 300, x.out = NULL,
     }
 
     ## calling fortran routine
-    res <- .Fortran("glkerns",
-                    x = as.double(x),
-                    y = as.double(y),
-                    as.integer(n),
-                    x.out = as.double(x.out),
-                    as.integer(n.out),
-                    deriv = as.integer(deriv),
-                    korder = as.integer(korder),
-                    hetero = as.integer(hetero),
-                    is.rand = as.integer(is.rand),
-                    as.integer(inputb),
+    res <- .Fortran("glkerns",			# Fortran arg.names :
+                    x = as.double(x),		# t
+                    y = as.double(y),		# x
+                    x.out = as.double(x.out),	# tt
+                    n,				# n
+                    as.integer(n.out),		# m
+                    deriv = as.integer(deriv),  # nue
+                    korder = as.integer(korder),# kord
+                    hetero = as.logical(hetero),# hetero
+                    is.rand= as.logical(is.rand),# isrand
+                    inputb  = inputb,		# smo
                     m1,
                     xl = as.double(xl),
                     xu = as.double(xu),
@@ -97,8 +98,8 @@ glkerns <- function(x, y, deriv = 0, n.out = 300, x.out = NULL,
     if(res$korder != korder)
         warning(paste("`korder' set to ", res$korder,", internally"))
 
-    return(x = x, y = y, bandwidth = res$bandwidth, x.out = x.out,
-           est = res$est, sig = res$sig,
-           deriv = res$deriv, korder = res$korder,
-           xl = res$xl, xu = res$xu, s = res$s)
+    list(x = x, y = y, bandwidth = res$bandwidth, x.out = x.out,
+	 est = res$est, sig = res$sig,
+	 deriv = res$deriv, korder = res$korder,
+	 xl = res$xl, xu = res$xu, s = res$s)
 }
