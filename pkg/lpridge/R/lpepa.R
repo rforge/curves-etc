@@ -2,7 +2,7 @@
 ##		for regression functions and derivatives
 
 lpepa <- function(x, y, bandwidth,
-                  deriv = 0, n.out = 100, x.out = NULL,
+                  deriv = 0, n.out = 200, x.out = NULL,
                   order = deriv+1, mnew = 100, var = FALSE)
 {
     ## x		inputgrid
