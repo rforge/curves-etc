@@ -161,24 +161,13 @@ glkerns(x, y, deriv = 0, n.out = 300, x.out=NULL, korder=NULL,
 }
 \seealso{\code{\link{lokerns}} for \bold{lo}cal bandwidth computation.}
 \examples{
-## Example from kernf77.html
-##  (simulated data : linear plus an exponential peak)
-x <- c(1.9666, 1.9000, 1.6449, 1.4275, 2.4000, 1.8487,
-       1.3383, 1.9514, 1.5722, 1.1978, 1.3109, 1.6940, 1.0816,
-       1.1070, 1.2650, 1.1143,  .5717,  .9492,  .3116,  .7942,
-        .5670,  .3555,  .3243,  .3242,  .7647,  .4167,  .7583,
-        .9462, 1.4337, 1.8820, 2.3054, 2.1040, 3.8500, 3.7052,
-       4.3047, 4.4505, 4.3425, 4.3516, 3.7578, 4.0112, 3.3286,
-       2.9024, 2.4331, 1.5544, 1.1867,  .6870, -.3630,  .0436,
-       -.8197, -.2883,-1.0559, -.9795,-1.7802,-2.2206,-1.3922,
-      -1.6511,-1.7694,-1.1309,-2.1912,-1.5785,-2.6189,-1.8125,
-      -2.6155,-1.4585,-2.0951,-2.1428,-2.4827,-2.4171,-2.6610,
-      -2.6509,-2.6475,-3.1040,-2.7631,-2.9486,-3.1323)
-n <- length(x)
-tt <- ((1:n) - 1/2)/n # equidistant x
-str(gk <- glkerns(tt, x))
-## local bandwidth almost identical :
-str(lk <- lokerns(tt, x))
+data(xSim)## linear plus an exponential peak, see help(xSim)
+n <- length(xSim)
+tt <- ((1:n) - 1/2)/n # equidistant x ==> irnd = FALSE
+str(gk <- glkerns(tt, xSim, irnd = FALSE))
+cat("glkerns() bandwidth:",format(gk$bandwidth, dig =10),"\n")
+## local bandwidth: fit is very similar :
+str(lk <- lokerns(tt, xSim, irnd = FALSE))
 
 cols <- c(gl="PaleGreen", lo="Firebrick")
 plot(lk$x.out, lk$bandwidth, axes = F, xlab="", ylab="",
@@ -187,12 +176,29 @@ axis(4); mtext("bandwidth(s)", side=4)
 lines(lk$x.out, lk$bandwidth, col = cols["lo"], lty = 3)
 abline(     h = gk$bandwidth, col = cols["gl"], lty = 4)
 par(new=T)
-plot(tt, x, main = "global and local bandwidth kernel regression")
+plot(tt, xSim, main = "global and local bandwidth kernel regression")
 lines(gk$x.out, gk$est, col = cols["gl"], lwd = 1.5)
 lines(lk$x.out, lk$est, col = cols["lo"])
 # the red curve (local bw) is very slightly better
 legend(0.7,4.4, c("global bw","local bw"), col = cols, lwd=1)
 
+## This should look 
+op <- par(mfrow = c(3,1), mar = .1 + c(4,4,2,1), oma = c(0,0,3,0),
+          mgp = c(1.5, 0.6,0))
+plot(gk, main = expression(paste("Data & ", hat(f))))
+lines(gk$x.out, gk$est, col = "blue", lwd = 1.5)
+gk1 <- glkerns(tt, xSim, deriv = 1, irnd = FALSE)
+plot(gk1$x.out, gk1$est, col = "green", lwd = 1.5, type = "l",
+     main = expression(widehat(paste(f,"'"))))
+abline(h=0, col="gray", lty = 3)
+gk2 <- glkerns(tt, xSim, deriv = 2, irnd = FALSE)
+plot(gk2$x.out, gk2$est, col = "orange", lwd = 1.5, type = "l",
+     main = expression(widehat(paste(f,"''"))))
+abline(h=0, col="gray", lty = 3)
+mtext("Example from www.unizh.ch/biostat/..../kernf77.html",side=3,
+      outer = TRUE, cex = 1, font = par("font.main"))
+
+par(op)
 data(cars)
 plot(dist ~ speed, data = cars,
      main = "Global Plug-In Bandwidth")
