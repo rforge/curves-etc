@@ -1,0 +1,16 @@
+
+  o The 2 man pages look very similar;  ``clean up''
+
+  o Both functions now return lists almost identical;
+    this is nice and useful.
+
+    Actually they should give class()ed results which have  print.*,
+    summary.* (maybe lines.*) and plot.* methods.
+
+    plot(): see the extensive  lokerns() and glkerns() examples.
+    {think about "deriv" !}
+
+
+  o  n = 3 is allowed (R & Fortran) but always (?) returns NaN  ??
+    e.g.
+         str(lokerns(c(1:2,4),c(2,1,7), n.out=8),vec.len=10)
