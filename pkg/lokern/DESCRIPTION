@@ -1,0 +1,9 @@
+Package: lokern
+Version: 1.0-0
+Title: Kernel Regression Smoothing with Local and Global Plug-in Bandwidth
+Author: Eva Herrmann <eherrmann@mathematik.tu-darmstadt.de> (F77 & S original);
+	Packaged for R by Martin Maechler
+Maintainer: Martin Maechler <maechler@stat.math.ethz.ch>
+Description: Kernel Regression Smoothing with Local and Global Plug-in Bandwidth
+Depends:
+License: GPL version 2 or later
