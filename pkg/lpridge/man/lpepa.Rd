@@ -1,21 +1,21 @@
-\title{lpepa}{
-Local polynomial regression fitting with Epanechnikov weights
-}
+\name{lpepa}
+\alias{lpepa}
+\title{Local polynomial regression fitting with Epanechnikov weights}
 \usage{
-lpepa(x, y, bandwidth, deriv=0, n.out=200, x.out=NULL,
+lpepa(x, y, bandwidth, deriv = 0, n.out = 200, x.out = NULL,
       order=NULL, mnew=100, var=F)
 }
 \arguments{
   \item{x}{vector of design points, not necessarily ordered.}
   \item{y}{vector of observations of the same length as x.}
   \item{bandwidth}{bandwidth for nonparametric estimation.  Either a
-    number or a vector of the same length as x.out.}
+    number or a vector of the same length as \code{x.out}.}
   \item{deriv}{order of derivative of the regression function to be
     estimated. The default value is deriv=0.}
-  \item{n.out}{number of output design points, where the function has to
+  \item{n.out}{number of output design points where the function has to
     be estimated.  The default value is n.out=200.}
-  \item{x.out}{vector of output design points, where the function has to
-    be estimated.  The default value is an equidistant grid of n.out
+  \item{x.out}{vector of output design points where the function has to
+    be estimated.  The default value is an equidistant grid of \code{n.out}
     points from min(x) to max(x).}
   \item{order}{order of the polynomial used for local polynomials.  The
     default value is order=deriv+1.}
@@ -69,9 +69,15 @@ lpepa(x, y, bandwidth, deriv=0, n.out=200, x.out=NULL,
 }
 \seealso{\code{\link{lpridge}}
 \examples{
-myfit <- lpepa(x,y,b)		# local polynomials
-plot(x,y)
-lines(myfit$x.out,myfit$est)
+data(cars)
+attach(cars)
+
+epa.sd <- lpepa(speed,dist, bandw=5)		# local polynomials
+
+plot(speed, dist, main = "data(cars) & lp epanechnikov regression")
+lines(epa.sd$x.out, epa.sd$est, col="red")
+lines(lowess(speed,dist, f= .5),col="orange")
+detach()
 }
 \keyword{smoothing}
-% Converted by Sd2Rd version 0.2-a1.
+
