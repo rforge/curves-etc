@@ -97,7 +97,9 @@ lpepa(x, y, bandwidth, deriv = 0, n.out = 200, x.out = NULL,
   modifications. in: \emph{Statistical Theory and Computational Aspects
     of Smoothing}, W. Härdle, M. G. Schimek (eds), Physica, 50--127.
 }
-\seealso{\code{\link{lpridge}}
+\seealso{\code{\link{lpridge}, and also \code{\link{lowess}} and
+    \code{\link[modreg]{loess}} (in package \bold{modreg}) which do
+    local linear and quadratic regression quite a bit differently.}
 \examples{
 data(cars)
 attach(cars)
