@@ -3,7 +3,7 @@
 \title{Kernel Regression Smoothing with Local Plug-in Bandwidth} 
 \description{
   Nonparametric estimation of regression functions and their derivatives
-  with kernel regression estimators and automatically adapted local
+  with kernel regression estimators and automatically adapted \bold{local}
   plug-in bandwidth function.
 }
 \usage{
@@ -11,21 +11,21 @@ lokerns(x , y, deriv = 0, n.out=300, x.out=NULL, korder=NULL,
         ihetero=FALSE, irnd=TRUE, inputb=FALSE, m1=400, xl=NULL, xu=NULL,
         s=NULL, sig=NULL, bandwidth=NULL)
 }
+%% FIXME : The argument list of lokerns() and glkerns() are identical
+%% -----   and the \arguments{..} description is 99% identical
+%% ====> Really should  merge these help pages or make one of them very short!
 \arguments{
   \item{x}{vector of design points, not necessarily ordered.}
   \item{y}{vector of observations of the same length as x.}
   \item{deriv}{order of derivative of the regression function to be
-    estimated. Only deriv=0,1,2 are allowed for automatic smoothing,
+    estimated.  Only deriv=0,1,2 are allowed for automatic smoothing,
     whereas deriv=0,1,2,3,4  is possible when smoothing with an input
     bandwidth array. The default value is deriv=0.}
-  \item{n.out}{
-    number of output design points where the function has to be estimated.
-    The default value is n.out=300.
-  }
-  \item{x.out}{
-    vector of output design points where the function has to be estimated. 
-    The default is an equidistant grid of n.out points from min(x) to max(x).
-  }
+  \item{n.out}{number of output design points where the function has to
+    be estimated; default is \code{n.out=300}.}
+  \item{x.out}{vector of output design points where the function has to
+    be estimated.  The default is an equidistant grid of n.out points
+    from min(x) to max(x).}
   \item{korder}{
     nonnegative integer giving the kernel order; it defaults to
     \code{korder = deriv+2} or \eqn{k = \nu + 2} where \eqn{k - \nu}
@@ -143,12 +143,23 @@ lokerns(x , y, deriv = 0, n.out=300, x.out=NULL, korder=NULL,
 \seealso{\code{\link{glkerns}} for \bold{gl}obal bandwidth computation.}
 \examples{
 data(cars)
-attach(cars)
-myfit <- lokerns(speed, dist)		
-plot(speed, dist)
-lines(myfit$x.out, myfit$est, col=2)
+lofit <- lokerns(cars$ speed, cars$ dist)
+(sb <- summary(lofit$bandwidth))
+op <- par(fg = "gray90", tcl = -0.2, mgp = c(3,.5,0))
+plot(lofit$band, ylim=c(0,3*sb["Max."]), type="h",#col="gray90",
+     ann = FALSE, axes = FALSE)
+
+if(R.version$major > 1 || R.version$minor >= 3.0)
+boxplot(lofit$bandwidth, add = TRUE, at = 304, boxwex = 8,
+        col = "gray90",border="gray", pars = list(axes = FALSE))
+axis(4, at = c(0,pretty(sb)), col.axis = "gray")
+par(op)
+par(new=TRUE)
+plot(dist ~ speed, data = cars,
+     main = "Local Plug-In Bandwidth Vector")
+lines(lofit$x.out, lofit$est, col=4)
+mtext(paste("bandwidth in [",
+            paste(format(sb[c(1,6)], dig = 3),collapse=","),
+            "];  Median b.w.=",formatC(sb["Median"])))
 }
 \keyword{smooth}
-
-
-
