@@ -103,5 +103,5 @@ myridge <- lpridge(speed,dist,bandw = 5)		# local pol. ridge
 lines(myridge$x.out,myridge$est,col=3)
 detach()
 }
-\keyword{smoothing}
+\keyword{smooth}
 
