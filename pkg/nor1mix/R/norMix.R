@@ -6,11 +6,11 @@
 #### -------------------------------------------------------------------------
 
 norMix <- function(mu, sig2 = rep(1, m), w = NULL,
-                   name = NULL, long.name = FALSE)
+		   name = NULL, long.name = FALSE)
 {
     ## Purpose: Constructor for 'norMix' (normal mixture) objects
     ## -------------------------------------------------------------------------
-    ## Arguments: mu: vector of means;  sig2: vector of  variances  sigma^2
+    ## Arguments: mu: vector of means;	sig2: vector of	 variances  sigma^2
     ##		w : vector of weights (adding to 1) -- default: equal
     ##		name : name attribute; constructed from (mu,sig2) by default
     ##		long.name : logical used for default \code{name} construction
@@ -21,40 +21,40 @@ norMix <- function(mu, sig2 = rep(1, m), w = NULL,
     m <- length(mu)
     if(length(sig2) == 1) sig2 <- rep(sig2, m)
     if(length(sig2) != m || !is.numeric(sig2)|| any(sig2 <=0))
-        stop("'sig2' = sigma^2  must be > 0 with same length as 'mu'")
+	stop("'sig2' = sigma^2	must be > 0 with same length as 'mu'")
     if(is.null(w))
-        w <- rep(1/m, m)
+	w <- rep(1/m, m)
     else {
-        if(length(w) != m || !is.numeric(w) || any(w<0))
-            stop("'w' must be >= 0  with same length as 'mu'")
-        s <- sum(w)
-        if(abs(s-1) > 10*.Machine$double.eps) w <- w / sum(w)
+	if(length(w) != m || !is.numeric(w) || any(w<0))
+	    stop("'w' must be >= 0  with same length as 'mu'")
+	s <- sum(w)
+	if(abs(s-1) > 10*.Machine$double.eps) w <- w / sum(w)
     }
     if(is.null(name)) {
-        sformat <- function(v) sapply(v, format, digits=1)
-        pPar <- function(pp) {
-            if(long.name)
-                paste("(",paste(sformat(pp),  collapse= ","),")", sep="")
-            else
-                paste(sformat(pp), collapse= "")
-        }
-        name <- paste("NM",format(m),".",
-                      pPar(mu), "_", pPar(sig2), sep="")
+	sformat <- function(v) sapply(v, format, digits=1)
+	pPar <- function(pp) {
+	    if(long.name)
+		paste("(",paste(sformat(pp),  collapse= ","),")", sep="")
+	    else
+		paste(sformat(pp), collapse= "")
+	}
+	name <- paste("NM",format(m),".",
+		      pPar(mu), "_", pPar(sig2), sep="")
     }
     structure(name = name, class = "norMix",
-              .Data = cbind(mu = mu, sig2 = sig2, w = w))
+	      .Data = cbind(mu = mu, sig2 = sig2, w = w))
 }
 
 is.norMix <- function(obj)
 {
-  ## Purpose: is 'obj' a "norMix", i.e.  Normal Mixture object ?
+  ## Purpose: is 'obj' a "norMix", i.e.	 Normal Mixture object ?
   ## Author: Martin Maechler, Date: 20 Mar 97, 10:38
   inherits(obj, "norMix") &&
   (!is.null(w <- obj[,"w"])) &&
   is.numeric(w) && all(w >= 0) && abs(sum(w)-1) < 1000*.Machine$double.eps
 }
 
-m.norMix <- function(obj) nrow(obj) ##  Number of components of  normal mixture
+m.norMix <- function(obj) nrow(obj) ##	Number of components of	 normal mixture
 
 mean.norMix <- function(x, ...)
 {
@@ -81,7 +81,7 @@ print.norMix <- function(x, ...)
     ox <- x
     has.nam <- !is.null(nam <- attr(x,"name"))
     cat("'Normal Mixture' object",
-        if(has.nam) paste("\t ``", nam, "''", sep=''), "\n")
+	if(has.nam) paste("\t ``", nam, "''", sep=''), "\n")
     if(has.nam) attr(x, "name") <- NULL
     cl <- class(x);  cl <- cl[ cl != "norMix"] #- the remaining classes
     class(x) <- if(length(cl)>0) cl ## else NULL
@@ -123,7 +123,7 @@ rnorMix <- function(n, obj)
     ## Easy version: *round* the `nj' to the nearest integers
     ## this is *inaccurate* for small n !
     sample(unlist(sapply(seq(nj),
-                         function(j) rnorm(nj[j], mean = mu[j], sd = sd[j]))))
+			 function(j) rnorm(nj[j], mean = mu[j], sd = sd[j]))))
 }
 
 ## From: Erik Jørgensen <Erik.Jorgensen@agrsci.dk>
@@ -137,7 +137,7 @@ rnorMix <- function(n, obj)
 pnorMix <- function(obj, q)
 {
     if (!is.norMix(obj))
-        stop("'obj' must be a 'Normal Mixture' object!")
+	stop("'obj' must be a 'Normal Mixture' object!")
     sd <- sqrt(obj[,"sig2"])
     ## q can be a vector!
     c(pnorm(sweep(outer(q, obj[,"mu"], "-"), 2, sd, "/")) %*% obj[, "w"])
@@ -147,38 +147,40 @@ qnorMix <- function(obj, p)
 {
   if (!is.norMix(obj))
      stop("'obj' must be a 'Normal Mixture' object!")
-   mu <- obj[, "mu"]
-   sd <- sqrt(obj[, "sig2"])
-   n <- nrow(obj)
+  mu <- obj[, "mu"]
+  sd <- sqrt(obj[, "sig2"])
+  ## m <- m.norMix(obj)
+### FIXME: it's not clear that the `interval = range(.)' below is ok!
 
   ## vectorize in `p' :
   sapply(p, function(p) {
+      if(p <= 0) -Inf else if(p >= 1) +Inf else
       uniroot(function(l) pnorMix(obj,l) - p,
-              interval = range(qnorm(p,mu,sd)))$root
+	      interval = range(qnorm(p,mu,sd)))$root
   })
 }
 
 plot.norMix <-
     function(x, type = "l", n = 511, xout = NULL, xlim = NULL,
-             xlab = "x", ylab = "f(x)", main = attr(x,"name"), lwd = 1.4,
-             p.norm = TRUE, p.h0 = TRUE,
-             parNorm = list(col = 2, lty = 2, lwd = 0.4),
-             parH0   = list(col = 3, lty = 3, lwd = 0.4),
-             ...)
+	     xlab = "x", ylab = "f(x)", main = attr(x,"name"), lwd = 1.4,
+	     p.norm = TRUE, p.h0 = TRUE,
+	     parNorm = list(col = 2, lty = 2, lwd = 0.4),
+	     parH0   = list(col = 3, lty = 3, lwd = 0.4),
+	     ...)
 {
-    ## Purpose: plot method for  "norMix" objects (normal mixtures)
+    ## Purpose: plot method for	 "norMix" objects (normal mixtures)
     ## -------------------------------------------------------------------------
     ## Author: Martin Maechler, Date: 20 Mar 1997
     if(!is.null(xlim) && is.null(xout)) ## determine xout
-        xout <- seq(xlim[1], xlim[2], length = n)
+	xout <- seq(xlim[1], xlim[2], length = n)
     d.o <- dnorMix(x, n = n, x = xout)
     if(p.norm)
-        dn <- dnorm(d.o$x, mean = mean.norMix(x), sd = sqrt(var.norMix(x)))
+	dn <- dnorm(d.o$x, mean = mean.norMix(x), sd = sqrt(var.norMix(x)))
     if(!is.null(ll <- list(...)[["log"]]) && "y" %in% strsplit(ll,"")[[1]])
-        y0 <- max(1e-50, min(d.o$y, if(p.norm) dn))
+	y0 <- max(1e-50, min(d.o$y, if(p.norm) dn))
     else y0 <- 0
     plot(d.o, type = type, xlim = xlim, ylim = c(y0, max(d.o$y, if(p.norm) dn)),
-         main = main, xlab = xlab, ylab = ylab, lwd = lwd, ...)
+	 main = main, xlab = xlab, ylab = ylab, lwd = lwd, ...)
     if(p.norm)	do.call("lines",  c(list(x = d.o$x, y = dn), parNorm))
     if(p.h0)	do.call("abline", c(list(h = 0), parH0))
     invisible(x)
@@ -186,7 +188,7 @@ plot.norMix <-
 
 lines.norMix <-
     function(x, type = "l", n = 511, xout = NULL, lwd = 1.4,
-             p.norm = FALSE, parNorm = list(col = 2, lty = 2, lwd = 0.4), ...)
+	     p.norm = FALSE, parNorm = list(col = 2, lty = 2, lwd = 0.4), ...)
 {
     ## Purpose: lines method for "norMix" objects (normal mixtures)
     ## -------------------------------------------------------------
@@ -195,8 +197,8 @@ lines.norMix <-
     d.o <- dnorMix(x, n = n, x = xout, xlim = xlim)
     lines(d.o, type = type, lwd = lwd, ...)
     if(p.norm) {
-        dn <- dnorm(d.o$x, mean = mean.norMix(x), sd = sqrt(var.norMix(x)))
-        do.call("lines", c(list(x = d.o$x, y = dn), parNorm))
+	dn <- dnorm(d.o$x, mean = mean.norMix(x), sd = sqrt(var.norMix(x)))
+	do.call("lines", c(list(x = d.o$x, y = dn), parNorm))
     }
     invisible()
 }
