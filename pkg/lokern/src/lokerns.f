@@ -123,17 +123,17 @@ c-------- 8. compute constants for iteration
       kk=kk2/2
 c-
 c-------- 9. estimating variance and smoothed pseudoresiduals
-      if(sig .le. 0. .and. ihom .eq. 0)
-     .     call resest(t(il),x(il),nn,wn(il,2),r2,sig)
-      if(ihom.ne.0) then
+      if(sig .le. 0. .and. ihom .eq. 0) then
+        call resest(t(il),x(il),nn,wn(il,2),r2,sig)
+      else if(ihom.ne.0) then
         call resest(t,x,n,wn(1,2),snr,sig)
         bres=max(bmin,.2*nn**(-.2)*(s(iu)-s(il-1)))
         do 91 i=1,n
           wn(i,3)=t(i)
 91        wn(i,2)=wn(i,2)*wn(i,2)
-        call kernel(t,wn(1,2),n,bres,0,kk2,nyg,s,
-     .            wn(1,3),n,wn(1,4))
+        call kernel(t,wn(1,2),n,bres,0,kk2,nyg,s, wn(1,3),n,wn(1,4))
       else
+c       ihom == 0 & sig > 0
         call constV(wn(1,4),n,sig)
       end if
 c-
