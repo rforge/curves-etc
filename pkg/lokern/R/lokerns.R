@@ -21,7 +21,7 @@ lokerns <- function(x, y, deriv = 0, n.out = 300, x.out = NULL, korder = NULL,
     ## n.out length of outputgrid
 
     ## compute and sort outputgrid
-    if (is.null(x.out)) { 
+    if (is.null(x.out)) {
         n.out <- as.integer(n.out)
         x.out <- seq(min(x), max(x), length = n.out)
     }
@@ -51,34 +51,34 @@ lokerns <- function(x, y, deriv = 0, n.out = 300, x.out = NULL, korder = NULL,
     ## xl           lower bound for integral approximation and variance estimation
     ## xu           upper bound for integral approximation and variance estimation
 
-    if (is.null(xl)||is.null(xu)) 
+    if (is.null(xl)||is.null(xu))
     {
         xl <- as.double(1)
-        xu <- as.double(0) 
+        xu <- as.double(0)
     }
-    
+
     ## s		mid-point grid
     if (length(s) != length(x)+1)
         s <- as.double(rep(0, n+1))
-    if (is.null(s)) 
+    if (is.null(s))
         s <- as.double(rep(0, n+1))
 
     ## sig          input variance
-    if (is.null(sig)) sig <- as.double(0)
+    if (is.null(sig)) sig <- as.double(0)#-> Fortran takes 0 = "compute default"
 
     ## bandwidth    input bandwidth function
-    if (is.null(bandwidth)) 
-    {
+    if (is.null(bandwidth)) {
         inputb <- as.integer(0)
-        bandwidth <- as.double(rep(0, n.out))
+        bandwidth <- double(n.out)
     }
-    if (length(bandwidth) != length(x.out)) 
-    {
+    else if (length(bandwidth) != n.out) {
+        warning("`bandwidth' has wrong length; computing default BW...")
         inputb <- as.integer(0)
-        bandwidth <- as.double(rep(0, n.out))
+        bandwidth <- double(n.out)
     }
 
-    if (deriv > 2 & as.integer(inputb) == 0) stop("Order of derivative is too large.")
+    if (deriv > 2 & as.integer(inputb) == 0)
+        stop("Order of derivative is too large.")
     if (korder > 4 & as.integer(inputb) == 0) korder <- deriv+2
 
     ## internal parameters and arrays for fortran routine
@@ -110,11 +110,11 @@ lokerns <- function(x, y, deriv = 0, n.out = 300, x.out = NULL, korder = NULL,
                     as.double(work1),
                     as.double(work2),
                     as.double(work3),
-                    bandwidth = as.double(bandwidth),         
+                    bandwidth = as.double(bandwidth),
                     est = as.double(est)
                     )
 
     return(x = x, y = y, bandwidth = res$bandwidth, x.out = x.out,
-           est = res$est, sig = res$sig, 
+           est = res$est, sig = res$sig,
            deriv = deriv, korder = korder, xl = res$xl, xu = res$xu, s = res$s)
 }
