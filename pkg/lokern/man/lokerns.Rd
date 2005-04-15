@@ -146,7 +146,6 @@ op <- par(fg = "gray90", tcl = -0.2, mgp = c(3,.5,0))
 plot(lofit$band, ylim=c(0,3*sb["Max."]), type="h",#col="gray90",
      ann = FALSE, axes = FALSE)
 
-if(R.version$major > 1 || R.version$minor >= 3.0)
 boxplot(lofit$bandwidth, add = TRUE, at = 304, boxwex = 8,
         col = "gray90",border="gray", pars = list(axes = FALSE))
 axis(4, at = c(0,pretty(sb)), col.axis = "gray")
