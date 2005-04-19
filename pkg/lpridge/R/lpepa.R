@@ -83,8 +83,8 @@ lpepa <- function(x, y, bandwidth,
                     est.var = double(n.out),
                     PACKAGE = "lpridge", DUP = FALSE)
 
-    return(x = x, y = y, bandwidth = res$bandwidth,
-           deriv = deriv, x.out = x.out, order = order,
-           mnew = mnew, var = var, est = res$est, est.var = res$est.var)
+    list(x = x, y = y, bandwidth = res$bandwidth,
+         deriv = deriv, x.out = x.out, order = order,
+         mnew = mnew, var = var, est = res$est, est.var = res$est.var)
 }
 
