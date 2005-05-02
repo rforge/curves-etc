@@ -1,4 +1,5 @@
 \name{lpepa}
+\encoding{latin1}% ä
 \alias{lpepa}
 \title{Local polynomial regression fitting with Epanechnikov weights}
 \description{
@@ -28,7 +29,7 @@ lpepa(x, y, bandwidth, deriv = 0, n.out = 200, x.out = NULL,
   \item{mnew}{integer forcing to restart the algorithm after \code{mnew}
     updating steps.
     The default is \code{mnew = 100}.  For \code{mnew = 1} you get a numerically
-    ``super-stable'' algorithm (see reference SBE\&G below).}
+    \dQuote{super-stable} algorithm (see reference SBE\&G below).}
   \item{var}{logical flag: if \code{TRUE}, the variance of the estimator
     proportional to the residual variance is computed (see details).}
 }
@@ -100,8 +101,8 @@ lpepa(x, y, bandwidth, deriv = 0, n.out = 200, x.out = NULL,
     of Smoothing}, W. Härdle, M. G. Schimek (eds), Physica, 50--127.
 }
 \seealso{\code{\link{lpridge}}, and also \code{\link{lowess}} and
-  \code{\link[modreg]{loess}} (in package \bold{modreg}) which do
-  local linear and quadratic regression quite a bit differently.
+  \code{\link{loess}} which do local linear and quadratic regression
+  quite a bit differently.
 }
 \examples{
 data(cars)
