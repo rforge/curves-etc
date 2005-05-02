@@ -1,4 +1,5 @@
 \name{pnorMix}
+\encoding{latin1}% ø below
 \alias{pnorMix}
 \alias{qnorMix}
 \title{Normal Mixture Cumulative Distribution and Quantiles}
