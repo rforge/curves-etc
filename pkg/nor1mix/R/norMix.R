@@ -156,7 +156,9 @@ qnorMix <- function(obj, p)
   ## else
 
   ## m <- m.norMix(obj)
+
 ### FIXME: it's not clear that the `interval = range(.)' below is ok!
+### ----- proper FIXME: when 'p' is large, do start by spline-interpolation!
 
   ## vectorize in `p' :
   r <- p
@@ -168,11 +170,15 @@ qnorMix <- function(obj, p)
   ip <- imid[p$ix]
   pp <- p$x
   for(i in seq(along=pp)) {
+      rq <- range(qnorm(pp[i], mu, sd))
       ## since pp[] is increasing, we can start from last 'root':
-      rq <-
-          if(i > 1) c(root, max(qnorm(pp[i], mu, sd)))
-          else range(qnorm(pp[i], mu, sd))
-      root <- uniroot(function(l) pnorMix(obj,l) - pp[i], interval = rq)$root
+      if(i > 1) rq[1] <- root
+      ## make sure, 'lower' is such that f(lower) < 0 :
+      delta.r <- 0.01*abs(rq[1])
+      ff <- function(l) pnorMix(obj,l) - pp[i]
+      while(ff(rq[1]) > 0) rq[1] <- rq[1] - delta.r
+
+      root <- uniroot(ff, interval = rq)$root
       r[ip[i]] <- root
   }
   r
