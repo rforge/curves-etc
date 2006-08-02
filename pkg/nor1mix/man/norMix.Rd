@@ -16,7 +16,7 @@ norMix(mu, sig2 = rep(1,m), w = NULL, name = NULL, long.name = FALSE)
 
 is.norMix(obj)
 m.norMix(obj)
-mean.norMix(x, \dots)
+\method{mean}{norMix}(x, \dots)
 var.norMix(x, \dots)
 \method{print}{norMix}(x, \dots)
 }
@@ -29,8 +29,8 @@ var.norMix(x, \dots)
     \eqn{\pi_j}{p[j]} of the normal components, \eqn{j = 1,\dots,K}.
     Defaults to equal proportions}
   \item{name}{optional name tag of the result (used for printing).}
-  \item{long.name}{ ~~Describe \code{long.name} here~~ }
-
+  \item{long.name}{logical indicating if the \code{name} attribute
+    should use punctuation and hence be slightly larger than by default.}
   \item{obj,x }{an object of class \code{norMix}.}
   \item{\dots}{further arguments passed to methods.}
 }
@@ -38,9 +38,11 @@ var.norMix(x, \dots)
   The (one dimensional) normal mixtures, \R objects of class
   \code{"norMix"}, are constructed by \code{norMix} and tested for by
   \code{is.norMix}.  \code{m.norMix()} returns the number of mixture
-  components,
-  ....
- %% FIXME
+  components; the \code{mean()} method (for \code{\link{class} "norMix"}
+  returns the \code{mu} vector of means and \code{var.norMix()} (not a
+  method, call the function explicitly!) the \code{sig2} vector of
+  variances.
+
   For further methods see below. %% seealso
 }
 \value{
@@ -52,7 +54,7 @@ var.norMix(x, \dots)
 }
 \author{Martin Maechler}
 \seealso{\code{\link{dnorMix}} for the density, \code{\link{rnorMix}}
-  for random numbers and \code{\link{print.norMix}}, the plot method.
+  for random numbers and \code{\link{plot.norMix}}, the plot method.
 
   \code{\link{MarronWand}} has the Marron-Wand densities as normal mixtures.
 }
