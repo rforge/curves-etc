@@ -9,12 +9,16 @@
 }
 \usage{
 pnorMix(obj, q)
-qnorMix(obj, p)
+qnorMix(obj, p,
+        tol = .Machine$double.eps^0.25, maxiter = 1000)
+
 }
 \arguments{
   \item{obj}{an object of class \code{norMix}.}
   \item{p}{numeric vector of probabilities.}
   \item{q}{numeric vector of quantiles}.
+  \item{tol, maxiter}{determine the root finding algorithm, see
+    \code{\link{uniroot}}.}
 }
 \details{
   Whereas the distribution function \code{pnorMix} is the trivial sum of
