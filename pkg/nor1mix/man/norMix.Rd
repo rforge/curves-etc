@@ -16,8 +16,8 @@ norMix(mu, sig2 = rep(1,m), w = NULL, name = NULL, long.name = FALSE)
 
 is.norMix(obj)
 m.norMix(obj)
-\method{mean}{norMix}(x, \dots)
 var.norMix(x, \dots)
+\method{mean}{norMix}(x, \dots)
 \method{print}{norMix}(x, \dots)
 }
 \arguments{
@@ -53,8 +53,11 @@ var.norMix(x, \dots)
   directly.
 }
 \author{Martin Maechler}
-\seealso{\code{\link{dnorMix}} for the density, \code{\link{rnorMix}}
-  for random numbers and \code{\link{plot.norMix}}, the plot method.
+\seealso{\code{\link{dnorMix}} for the density,
+  \code{\link{pnorMix}} for the cumulative distribution
+  and the quantile function (\code{qnorMix}), and
+  \code{\link{rnorMix}} for random numbers and
+  \code{\link{plot.norMix}}, the plot method.
 
   \code{\link{MarronWand}} has the Marron-Wand densities as normal mixtures.
 }
