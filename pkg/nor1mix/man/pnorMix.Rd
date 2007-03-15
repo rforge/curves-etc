@@ -8,14 +8,18 @@
   normal mixture specified as \code{\link{norMix}} object.
 }
 \usage{
-pnorMix(q, obj)
-qnorMix(p, obj,
+pnorMix(q, obj, lower.tail = TRUE, log.p = FALSE)
+
+qnorMix(p, obj, lower.tail = TRUE, log.p = FALSE,
         tol = .Machine$double.eps^0.25, maxiter = 1000)
 }
 \arguments{
   \item{obj}{an object of class \code{norMix}.}
   \item{p}{numeric vector of probabilities.}
   \item{q}{numeric vector of quantiles}.
+  \item{lower.tail}{logical; if TRUE (default), probabilities are
+    \eqn{P[X \le x]}{P[X <= x]}, otherwise, \eqn{P[X > x]}{P[X > x]}.}
+  \item{log.p}{logical; if TRUE, probabilities p are given as log(p).}
   \item{tol, maxiter}{determine the root finding algorithm, see
     \code{\link{uniroot}}.}
 }
