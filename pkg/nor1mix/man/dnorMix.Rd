@@ -6,13 +6,13 @@
   \code{\link{norMix}} object.
 }
 \usage{
-dnorMix(obj, x = NULL, xlim = NULL, n = 511)
+dnorMix(x = NULL, obj, xlim = NULL, n = 511)
 }
 \arguments{
   \item{obj}{an object of class \code{norMix}.}
   \item{x}{numeric vector with abscissa values where to evaluate the
-    density. Default is constructed from \code{n} (and \code{xlim} if
-    specified).}
+    density.  By default, when \code{NULL}, it is constructed from
+    \code{n} (and \code{xlim} if that is specified).}
   \item{xlim}{range of abscissa values, used if \code{x == NULL}.  By default,
     xlim taken as mean plus/minus 3 standard deviations of the normal mixture.}
   \item{n}{number of abscissa values to generate if \code{x} is not specified.}
@@ -27,7 +27,7 @@ dnorMix(obj, x = NULL, xlim = NULL, n = 511)
   particularly \code{\link{plot.norMix}} which makes use \code{dnorMix}.
 }
 \examples{
- ff <- dnorMix(MW.nm7)
+ ff <- dnorMix(, MW.nm7)
  str(ff)
  plot(ff, type = "h") # rather use plot(ff, ...)
 }
