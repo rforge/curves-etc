@@ -53,6 +53,11 @@ var.norMix(x, \dots)
   directly.
 }
 \author{Martin Maechler}
+\note{
+  For \emph{estimation} of the parameters of a normal mixture
+  distribution, I recommend using other \R packages,
+  notably package \pkg{mclust}.
+}
 \seealso{\code{\link{dnorMix}} for the density,
   \code{\link{pnorMix}} for the cumulative distribution
   and the quantile function (\code{qnorMix}), and
