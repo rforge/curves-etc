@@ -84,31 +84,54 @@ print.norMix <- function(x, ...)
 	if(has.nam) paste("\t ``", nam, "''", sep=''), "\n")
     if(has.nam) attr(x, "name") <- NULL
     cl <- class(x);  cl <- cl[ cl != "norMix"] #- the remaining classes
-    class(x) <- if(length(cl)>0) cl ## else NULL
+    class(x) <- if(length(cl) > 0) cl ## else NULL
     NextMethod("print", ...)
     invisible(ox)
 }
 
-dnorMix <- function(obj, x = NULL, xlim = NULL, n = 511)
+dnorMix <- function(x, obj, log = FALSE)
+{
+  ## Purpose: density evaluation for "norMix" objects (normal mixtures)
+  ## -------------------------------------------------------------------------
+  ## Arguments: x: numeric; obj: Normal Mixture object
+  ## -------------------------------------------------------------------------
+  ## Author: Martin Maechler, Date: 20 Mar 97, 10:14
+  if(!is.norMix(obj)) {
+      ## Old version had (obj, x, ..):
+      if(is.norMix(x)) { ## swap the first two arguments
+          tmp <- x ; x <- obj; obj <- tmp
+          warning("Deprecated use of dnorMix(obj, x, ..);
+  Either use dnorMixL(), or the new argument order (x, obj, ...) and
+  note that dnorMix() returns a numeric vector (not a list).")
+      }
+      else stop("'obj' must be a 'Normal Mixture' object!")
+  }
+  w <- obj[,"w"]; mu <- obj[,"mu"]; sd <- sqrt(obj[,"sig2"])
+  m <- m.norMix(obj) #-- number of components
+  if(m == 1)
+      return(dnorm(x, mean = mu[1], sd = sd[1], log = log))
+  ## else
+  y <- numeric(length(x))
+  for(j in 1:m)
+    y <- y + w[j] * dnorm(x, mean = mu[j], sd = sd[j])
+  if(log) log(y) else y
+}
+
+dnorMixL <- function(obj, x = NULL, log = FALSE, xlim = NULL, n = 511)
 {
   ## Purpose: density evaluation for "norMix" objects (normal mixtures)
   ## -------------------------------------------------------------------------
   ## Arguments: obj: Normal Mixture object;  x:
   ## -------------------------------------------------------------------------
   ## Author: Martin Maechler, Date: 20 Mar 97, 10:14
-  if(!is.norMix(obj)) stop("'obj' must be a 'Normal Mixture' object!")
+  if(!is.norMix(obj))
+    stop("'obj' must be a 'Normal Mixture' object!")
   if(is.null(x)) {
-    if(is.null(xlim)) { ##-- construct "reasonable" abscissa values
+    if(is.null(xlim)) ##-- construct "reasonable" abscissa values
       xlim <- mean.norMix(obj) + c(-3,3)*sqrt(var.norMix(obj))
-    }
     x <- seq(xlim[1], xlim[2], length = n)
   }
-  w <- obj[,"w"]; mu <- obj[,"mu"]; sd <- sqrt(obj[,"sig2"])
-  m <- m.norMix(obj) #-- number of components
-  y <- numeric(length(x))
-  for(j in 1:m)
-    y <- y + w[j] * dnorm(x, mean = mu[j], sd = sd[j])
-  list(x = x, y = y)
+  list(x = x, y = dnorMix(x, obj, log=log))
 }
 
 
@@ -134,51 +157,72 @@ rnorMix <- function(n, obj)
 ## Erik Jørgensen
 ## Danish Institute of Agricultural Sciences
 
-pnorMix <- function(obj, q)
+pnorMix <- function(q, obj, lower.tail = TRUE, log.p = FALSE)
 {
-    if (!is.norMix(obj))
-	stop("'obj' must be a 'Normal Mixture' object!")
+    if (!is.norMix(obj)) {
+        ## Old version had (obj, q):
+        if(is.norMix(q)) { ## swap the first two arguments
+            tmp <- q ; q <- obj; obj <- tmp
+            warning("Deprecated use of pnorMix(obj, q, ..); NEW argument order is (q, obj, ...)")
+        }
+        else stop("'obj' must be a 'Normal Mixture' object!")
+    }
     sd <- sqrt(obj[,"sig2"])
-    ## q can be a vector!
-    c(pnorm(sweep(outer(q, obj[,"mu"], "-"), 2, sd, "/")) %*% obj[, "w"])
+    ## if log.p just log(.) at the end [to be more accurate, need much more..]
+    cc <- if(log.p) function(m) log(c(m)) else c
+    ## q can be a vector: -> outer
+    cc(pnorm(sweep(outer(q, obj[,"mu"], "-"), 2, sd, "/"),
+             lower.tail= lower.tail) %*% obj[, "w"])
 }
 
-qnorMix <- function(obj, p)
+qnorMix <-
+    function(p, obj, lower.tail = TRUE, log.p = FALSE,
+             tol = .Machine$double.eps^0.25, maxiter = 1000)
+    ## NOTE: keep defaults consistent with 'uniroot':
 {
-  if (!is.norMix(obj))
-     stop("'obj' must be a 'Normal Mixture' object!")
+  if (!is.norMix(obj)) {
+    ## Old version had (obj, p):
+    if(is.norMix(p)) { ## swap the first two arguments
+      tmp <- p ; p <- obj; obj <- tmp
+      warning("Deprecated use of qnorMix(obj, p, ..); NEW argument order is (p, obj, ...)")
+    }
+    else stop("'obj' must be a 'Normal Mixture' object!")
+  }
   mu <- obj[, "mu"]
   sd <- sqrt(obj[, "sig2"])
-  k <- nrow(obj)# = #{components}
-  if(k == 1) # one component
-      return(qnorm(p, mu, sd))
+  m <- m.norMix(obj)
+  if(m == 1) # one component
+      return(qnorm(p, mu, sd, lower.tail=lower.tail, log.p=log.p))
 
   ## else
-
-  ## m <- m.norMix(obj)
 
 ### FIXME: it's not clear that the `interval = range(.)' below is ok!
 ### ----- proper FIXME: when 'p' is large, do start by spline-interpolation!
 
   ## vectorize in `p' :
   r <- p
-  left  <- p <= 0 ; r[left] <- -Inf
-  right <- p >= 1 ; r[right] <- Inf
+  if(log.p) left <- rep(FALSE, length(p))
+  else { left <- p <= 0 ; r[left] <- -Inf }
+  right <- p >= if(log.p) 0 else 1 ; r[right] <- Inf
   imid <- which(mid <- !left & !right) # 0 < p < 1
   ## p[] increasing for easier root finding start:
   p <- sort(p[mid], index.return = TRUE)
   ip <- imid[p$ix]
   pp <- p$x
   for(i in seq(along=pp)) {
-      rq <- range(qnorm(pp[i], mu, sd))
+      rq <- range(qnorm(pp[i], mu, sd, lower.tail=lower.tail, log.p=log.p))
       ## since pp[] is increasing, we can start from last 'root':
       if(i > 1) rq[1] <- root
       ## make sure, 'lower' is such that f(lower) < 0 :
       delta.r <- 0.01*abs(rq[1])
-      ff <- function(l) pnorMix(obj,l) - pp[i]
-      while(ff(rq[1]) > 0) rq[1] <- rq[1] - delta.r
-
-      root <- uniroot(ff, interval = rq)$root
+      ff <- function(l)
+          pnorMix(l, obj, lower.tail=lower.tail, log.p=log.p) - pp[i]
+      while(ff(rq[1]) > 0) {
+	  rq[1] <- rq[1] - delta.r
+	  delta.r <- 2 * delta.r
+      }
+      root <- uniroot(ff, interval = rq,
+                      tol = .Machine$double.eps^0.25, maxiter = 1000)$root
       r[ip[i]] <- root
   }
   r
@@ -197,7 +241,7 @@ plot.norMix <-
     ## Author: Martin Maechler, Date: 20 Mar 1997
     if(!is.null(xlim) && is.null(xout)) ## determine xout
 	xout <- seq(xlim[1], xlim[2], length = n)
-    d.o <- dnorMix(x, n = n, x = xout)
+    d.o <- dnorMixL(x, x = xout, n = n)
     if(p.norm)
 	dn <- dnorm(d.o$x, mean = mean.norMix(x), sd = sqrt(var.norMix(x)))
     if(!is.null(ll <- list(...)[["log"]]) && "y" %in% strsplit(ll,"")[[1]])
@@ -218,7 +262,7 @@ lines.norMix <-
     ## -------------------------------------------------------------
     ## Author: Martin Maechler, Date: 27 Jun 2002, 16:10
     xlim <- if(is.null(xout)) par("usr")[1:2] # else NULL
-    d.o <- dnorMix(x, n = n, x = xout, xlim = xlim)
+    d.o <- dnorMixL(x, x = xout, n = n, xlim = xlim)
     lines(d.o, type = type, lwd = lwd, ...)
     if(p.norm) {
 	dn <- dnorm(d.o$x, mean = mean.norMix(x), sd = sqrt(var.norMix(x)))
@@ -233,7 +277,7 @@ r.norMix <- function(obj, x = NULL, xlim = NULL, n = 511, xy.return = TRUE)
   ## Purpose: Compute r := f / f0; f = normal mixture; f0 = "best" normal approx
   ## Author : Martin Maechler, Date: 20 Mar 97, 10:14
   if(!is.norMix(obj)) stop("'obj' must be a 'Normal Mixture' object!")
-  d.o <- dnorMix(obj, x = x, xlim = xlim, n = n)
+  d.o <- dnorMixL(obj, x, xlim = xlim, n = n)
   dn  <- dnorm(d.o$x, mean = mean.norMix(obj), sd = sqrt(var.norMix(obj)))
   if(xy.return) list(x = d.o$x, y = d.o$y / dn, f0 = dn) else d.o$y / dn
 }
