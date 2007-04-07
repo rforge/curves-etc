@@ -1,0 +1,38 @@
+2007-04-07  Martin Maechler  <maechler@stat.math.ethz.ch>
+
+	* R/lpepa.R (lpepa): do not use as.double(.) with DUP=FALSE when
+	the variable is changed in compiled code.  Clean up in light of
+	non-copying as.double()
+
+2005-05-02  Martin Maechler  <maechler@stat.math.ethz.ch>
+
+	* man/lpepa.Rd: encoding{latin1}
+
+2005-04-19  Martin Maechler  <maechler@stat.math.ethz.ch>
+
+	* R/{lpridge.R,lpepa.R}: list(<key=<val>,...) instead of return(...)
+
+2003-11-05  Martin Maechler  <maechler@stat.math.ethz.ch>
+
+	* DESCRIPTION (Version): 1.0-2 for CRAN
+
+	* R/lpepa.R (lpepa): default 'order = deriv+1' & 'n.out = 200' :
+	  finally the code works as the docs say it does!
+	* lpepa.Rd:  <ditto>
+
+2002-05-02  Martin Maechler  <maechler@stat.math.ethz.ch>
+
+	* DESCRIPTION (Description): no local bw!
+
+2002-03-08  Martin Maechler  <maechler@stat.math.ethz.ch>
+
+	* lpridge.Rd: example: legend...
+
+2001-12-14  Martin Maechler  <maechler@stat.math.ethz.ch>
+
+	* DESCRIPTION (Version): release 1.0-1 (for R 1.4.0)
+
+2001-08-18  Martin Maechler  <maechler@stat.math.ethz.ch>
+
+	* man/lpepa.Rd: fix missing brace
+
