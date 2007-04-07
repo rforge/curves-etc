@@ -13,8 +13,8 @@ lpepa <- function(x, y, bandwidth,
     if (length(y) != n)
         stop("Input grid and data must have the same length.")
     sorvec <- sort.list(x)
-    x <- x[sorvec]
-    y <- y[sorvec]
+    x <- as.double(x)[sorvec]
+    y <- as.double(y)[sorvec]
 
     ## bandwidth	bandwidth for estimation
 
@@ -29,14 +29,18 @@ lpepa <- function(x, y, bandwidth,
         x.out <- seq(min(x),max(x),length = n.out)
     }
     else {
+        x.out <- as.double(x.out)
         n.out <- length(x.out)
     }
 
-    ## compute vector of bandwiths
+    ## compute vector of bandwidths
     if (length(bandwidth) == 1)
-        bandwidth <- as.double(rep(bandwidth,n.out))
-    if (length(bandwidth) != n.out)
-        stop("Length of bandwith is not equal to length of output grid.")
+	bandwidth <- rep(as.double(bandwidth), n.out)
+    else {
+	if (length(bandwidth) != n.out)
+	    stop("Length of bandwidth is not equal to length of output grid.")
+	storage.mode(bandwidth) <- "double"
+    }
 
     ## sort outputgrid and bandwidth
     sorvec <- sort.list(x.out)
@@ -49,36 +53,31 @@ lpepa <- function(x, y, bandwidth,
     if (deriv > order)
         stop("Order of derivative is larger than polynomial order.")
 
-    ## mnew		force of restart
-
     ## var		switch for variance estimation
     var <- as.logical(var)
-
-    ## internal parameters and arrays (see code in ../src/lpepa.f)
-    leng <- 10
-    nmoms <- as.integer(length(x)/leng+1)
-    imoms <- integer(nmoms)
-    moms <- double(nmoms*4*(2+order+as.integer(var)))
 
     ## check internal limitations from fortran routine
     if (2 + order > 12)
         stop("Polynomial order exceeds 10.")
 
+    ## internal parameters and arrays (see code in ../src/lpepa.f)
+    leng <- 10
+    nmoms <- as.integer(n/leng + 1)
     res <- .Fortran("lpepa",
-                    x = as.double(x),
-                    y = as.double(y),
+                    x,
+                    y,
                     as.integer(n),
-                    bandwidth = as.double(bandwidth),
+		    bandwidth = bandwidth,
                     deriv = as.integer(deriv),
                     order = as.integer(order),
-                    x.out = as.double(x.out),
+                    x.out = x.out,
                     as.integer(n.out),
-                    mnew = as.integer(mnew),
-                    as.integer(imoms),
-                    as.double(moms),
+                    as.integer(mnew),    ## mnew : force of restart
+                    integer(nmoms), # imoms
+                    double(nmoms*4*(2+order+as.integer(var))), # moms
                     est = double(n.out),
                     as.integer(leng),
-                    as.integer(nmoms),
+                    nmoms,
                     var = as.integer(var),
                     est.var = double(n.out),
                     PACKAGE = "lpridge", DUP = FALSE)
