@@ -1,3 +1,7 @@
+2007-06-12  Martin Maechler  <maechler@stat.math.ethz.ch>
+
+	* DESCRIPTION (Version): 1.0-4 to finally release, after > 2 years
+
 2007-04-07  Martin Maechler  <maechler@stat.math.ethz.ch>
 
 	* R/lpepa.R (lpepa): do not use as.double(.) with DUP=FALSE when
