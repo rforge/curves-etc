@@ -1,5 +1,5 @@
 \name{pnorMix}
-\encoding{latin1}% ø below
+\encoding{latin1}% Danish oe below
 \alias{pnorMix}
 \alias{qnorMix}
 \title{Normal Mixture Cumulative Distribution and Quantiles}
