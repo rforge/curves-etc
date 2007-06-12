@@ -1,5 +1,5 @@
 \name{lpepa}
-\encoding{latin1}% ä
+\encoding{latin1}% for a"
 \alias{lpepa}
 \title{Local polynomial regression fitting with Epanechnikov weights}
 \description{
