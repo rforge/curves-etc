@@ -196,8 +196,7 @@ qnorMix <-
 
   ## else
 
-### FIXME: it's not clear that the `interval = range(.)' below is ok!
-### ----- proper FIXME: when 'p' is large, do start by spline-interpolation!
+### FIXME: Speedup: if 'p' is large, do start by spline-interpolation!
 
   ## vectorize in `p' :
   r <- p
@@ -214,15 +213,14 @@ qnorMix <-
       ## since pp[] is increasing, we can start from last 'root':
       if(i > 1) rq[1] <- root
       ## make sure, 'lower' is such that f(lower) < 0 :
-      delta.r <- 0.01*abs(rq[1])
       ff <- function(l)
           pnorMix(l, obj, lower.tail=lower.tail, log.p=log.p) - pp[i]
+      delta.r <- 0.01*abs(rq[1])
       while(ff(rq[1]) > 0) {
 	  rq[1] <- rq[1] - delta.r
 	  delta.r <- 2 * delta.r
       }
-      root <- uniroot(ff, interval = rq,
-                      tol = .Machine$double.eps^0.25, maxiter = 1000)$root
+      root <- uniroot(ff, interval = rq, tol = tol, maxiter = maxiter)$root
       r[ip[i]] <- root
   }
   r
