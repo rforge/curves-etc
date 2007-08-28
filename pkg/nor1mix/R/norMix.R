@@ -177,7 +177,8 @@ pnorMix <- function(q, obj, lower.tail = TRUE, log.p = FALSE)
 
 qnorMix <-
     function(p, obj, lower.tail = TRUE, log.p = FALSE,
-             tol = .Machine$double.eps^0.25, maxiter = 1000)
+             tol = .Machine$double.eps^0.25, maxiter = 1000,
+             traceRootsearch = 0, np.cutoff = 50)
     ## NOTE: keep defaults consistent with 'uniroot':
 {
   if (!is.norMix(obj)) {
@@ -198,30 +199,122 @@ qnorMix <-
 
 ### FIXME: Speedup: if 'p' is large, do start by spline-interpolation!
 
-  ## vectorize in `p' :
+  ## vectorize in 'p'
   r <- p
-  if(log.p) left <- rep(FALSE, length(p))
-  else { left <- p <= 0 ; r[left] <- -Inf }
-  right <- p >= if(log.p) 0 else 1 ; r[right] <- Inf
+  ## Solve the left/right extremes p \in {0 , 1}
+  left <- if(log.p) rep(FALSE, length(p)) else p <= 0
+  right <- p >= if(log.p) 0 else 1
+  r[left] <- -Inf ; r[right] <- Inf
   imid <- which(mid <- !left & !right) # 0 < p < 1
-  ## p[] increasing for easier root finding start:
-  p <- sort(p[mid], index.return = TRUE)
-  ip <- imid[p$ix]
-  pp <- p$x
-  for(i in seq(along=pp)) {
-      rq <- range(qnorm(pp[i], mu, sd, lower.tail=lower.tail, log.p=log.p))
-      ## since pp[] is increasing, we can start from last 'root':
-      if(i > 1) rq[1] <- root
-      ## make sure, 'lower' is such that f(lower) < 0 :
-      ff <- function(l)
-          pnorMix(l, obj, lower.tail=lower.tail, log.p=log.p) - pp[i]
-      delta.r <- 0.01*abs(rq[1])
-      while(ff(rq[1]) > 0) {
-	  rq[1] <- rq[1] - delta.r
-	  delta.r <- 2 * delta.r
+  np <- length(imid)
+  if(np) {
+      ## p[] increasing for easier root finding start:
+      p <- sort(p[mid], index.return = TRUE)
+      ip <- imid[p$ix]
+      pp <- p$x
+
+      f.make <- function(p.i) {
+          if(traceRootsearch)
+              function(l) {
+                  p <- pnorMix(l, obj,
+                               lower.tail=lower.tail, log.p=log.p)
+                  cat(sprintf("%- 20.16g  %- 20.16g\n", l, p))
+                  p - p.i
+              }
+          else
+              function(l) pnorMix(l, obj, lower.tail=lower.tail,
+                                  log.p=log.p) - p.i
       }
-      root <- uniroot(ff, interval = rq, tol = tol, maxiter = maxiter)$root
-      r[ip[i]] <- root
+      outRange <- function(p.i)
+          range(qnorm(p.i, mu, sd, lower.tail=lower.tail, log.p=log.p))
+
+      saveUroot <- function (f, interval,
+                             lower = min(interval), upper = max(interval),
+                             tol=tol, maxiter=maxiter, ...)
+      {
+          ## make sure we have f(lower) < 0 and f(upper) > 0:
+          delta.r <- 0.01*max(1e-7, abs(lower))
+          while(f(lower) > 0) {
+              lower <- lower - delta.r
+              if(traceRootsearch)
+                  cat(sprintf(" .. modified lower: %g\n",lower))
+              delta.r <- 2 * delta.r
+          }
+          delta.r <- 0.01*max(1e-7, abs(upper))
+          while(f(upper) < 0) {
+              upper <- upper + delta.r
+              if(traceRootsearch)
+                  cat(sprintf(" .. modified upper: %g\n",upper))
+              delta.r <- 2 * delta.r
+          }
+          ## Since we've already check f(lower), f(upper),
+          ## we short cut here:
+
+          ## Instead of
+          ## uniroot(f, lower=lower, upper=upper,
+          ##         tol=tol, maxiter=maxiter, ...)
+
+
+          ## we have
+          val <- .Internal(zeroin(f, lower, upper, tol, as.integer(maxiter)))
+          iter <- as.integer(val[2])
+          if (iter < 0) {
+              warning("_NOT_ converged in ", maxiter, " iterations")
+              iter <- maxiter
+          }
+          list(root = val[1], f.root = f(val[1], ...), iter = iter,
+               estim.prec = val[3])
+      }
+
+
+      if(np < np.cutoff)
+          for(i in seq(along=pp)) {
+              ff <- f.make(pp[i])
+              rq <- outRange(pp[i])
+              ## since pp[] is increasing, we can start from last 'root':
+              if(i > 1) rq[1] <- root
+              if(traceRootsearch)
+                  cat(sprintf("search in [%g,%g]\n", rq[1],rq[2]))
+              root <- saveUroot(ff, interval = rq, tol=tol, maxiter=maxiter)$root
+              if(traceRootsearch) cat("\n")
+              r[ip[i]] <- root
+      }
+      else { ## np >= np.cutoff
+          rr <- pp #- rr will contain = q..mix(pp, *)
+          rr[1] <- saveUroot(f.make(pp[1]), interval = outRange(pp[1]),
+                             tol=tol, maxiter=maxiter)$root
+          rr[np] <- saveUroot(f.make(pp[np]), interval = outRange(pp[np]),
+                             tol=tol, maxiter=maxiter)$root
+          ni <- length(iDone <- as.integer(c(1,np)))
+          while(ni < np) { ## not "done";  ni == length(iDone)
+              oi <- iDone
+              i.1 <- oi[-ni]
+              i.2 <- oi[-1]
+              l.new <- i.2 > i.1 + 1L # those "need new"
+              ii <- which(l.new)
+              iN <- (i.1 + i.2 + 1L) %/% 2
+              stopifnot( (i.1 < iN)[ii], (iN < i.2)[ii])
+              for(j in ii) {
+                  if(traceRootsearch)
+                      cat(sprintf("search in [%g,%g]\n", pp[i.1[j]],pp[i.2[j]]))
+                  ## look in between i.1[j] .. i.2[j]
+                  ## NB: we can prove that  i.1[j] < iN[j] < i.2[j]
+                  rr[iN[j]] <- saveUroot(f.make(pp[iN [j]]),
+                                         lower= pp[i.1[j]],
+                                         upper= pp[i.2[j]],
+                                         tol=tol, maxiter=maxiter)$root
+                  if(traceRootsearch) cat("\n")
+              }
+
+              ## update iDone[]:
+              seq_old <- seq_len(ni)
+              ni <- ni + length(ii)
+              iDone <- integer(ni)
+              iDone[seq_old       + c(0L, cumsum(l.new))] <- oi
+              iDone[seq_along(ii) + ii                  ] <- iN[ii]
+          }
+          r[ip] <- rr
+      }
   }
   r
 }
