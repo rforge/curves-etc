@@ -1,7 +1,7 @@
 \name{MarronWand}
 \alias{MarronWand}% to use as "link"
 %% Note: These are ``datasets'' , but cannot be handled as strictly
-%%       as such since they  *require* the normix package.
+%%       as such since they  *require* the nor1mix package.
 \alias{MW.nm1}
 \alias{MW.nm2}
 \alias{MW.nm3}
@@ -19,7 +19,7 @@
 \alias{MW.nm15}
 \alias{MW.nm16}
 \non_function{}
-\title{Marron-Wand Densities as `norMix' Objects}
+\title{Marron-Wand Densities as 'norMix' Objects}
 \description{
   The fifteen density examples used in Marron and Wand (1992)'s
   simulation study have been used in quite a few subsequent studies,
@@ -79,10 +79,8 @@ mtext("The Marron-Wand Densities", outer= TRUE, font= 2, cex= 1.6)
 
 ## and their Q-Q-plots (not really fast):
 prob <- ppoints(N <- 100)
-for(n in nms) {
-   D <- get(n, pos = ppos)
-   qqnorm(qnorMix(D, prob), main = n)
-}
+for(n in nms)
+   qqnorm(qnorMix(prob, get(n, pos = ppos)), main = n)
 mtext("QQ-plots of Marron-Wand Densities", outer = TRUE,
       font = 2, cex = 1.6)
 
