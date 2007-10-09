@@ -18,7 +18,6 @@
 \alias{MW.nm14}
 \alias{MW.nm15}
 \alias{MW.nm16}
-\non_function{}
 \title{Marron-Wand Densities as 'norMix' Objects}
 \description{
   The fifteen density examples used in Marron and Wand (1992)'s
