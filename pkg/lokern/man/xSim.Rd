@@ -1,6 +1,5 @@
 \name{xSim}
 \alias{xSim}
-\non_function{}
 \title{Simulated Linear plus Exponential Peak}
 \usage{data(xSim)}
 \format{
