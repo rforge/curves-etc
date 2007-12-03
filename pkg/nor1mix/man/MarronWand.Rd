@@ -32,9 +32,9 @@
  MW.nm3	 # Str Skew
  MW.nm4	 # Kurtotic
  MW.nm5	 # Outlier
- MW.nm6	 # Biomdal
+ MW.nm6	 # Bimodal
  MW.nm7	 # Separated (bimodal)
- MW.nm8	 # Aymmettric Bimodal
+ MW.nm8	 # Asymmetric Bimodal
  MW.nm9	 # Trimodal
  MW.nm10 # Claw
  MW.nm11 # Double Claw
@@ -63,27 +63,29 @@ MW.nm10
 plot(MW.nm14)
 
 ## These are defined as norMix() calls in  ../R/zMarrWand-dens.R
-ppos <- which("package:nor1mix" == search())
-nms <- ls(pat="^MW.nm", pos = ppos)
+nms <- ls(pat="^MW.nm", "package:nor1mix")
 nms <- nms[order(as.numeric(substring(nms,6)))]
 for(n in nms) {
-   cat("\n",n,":\n"); print(get(n, pos = ppos))
+   cat("\n",n,":\n"); print(get(n, "package:nor1mix"))
 }
 
 ## Plot all of them:
 op <- par(mfrow=c(4,4), mgp = c(1.2, 0.5, 0), tcl = -0.2,
           mar = .1 + c(2,2,2,1), oma = c(0,0,3,0))
-for(n in nms) { plot(get(n, pos = ppos))}
+for(n in nms) plot(get(n, "package:nor1mix"))
 mtext("The Marron-Wand Densities", outer= TRUE, font= 2, cex= 1.6)
 
 ## and their Q-Q-plots (not really fast):
 prob <- ppoints(N <- 100)
 for(n in nms)
-   qqnorm(qnorMix(prob, get(n, pos = ppos)), main = n)
+   qqnorm(qnorMix(prob, get(n, "package:nor1mix")), main = n)
 mtext("QQ-plots of Marron-Wand Densities", outer = TRUE,
       font = 2, cex = 1.6)
-
 par(op)
+
+## "object" overview:
+cbind(sapply(nms, function(n) {o <- get(n)
+      sprintf("\%-18s: K=\%2d",attr(o, "name"), nrow(o))}))
 }
 \keyword{datasets}
 \keyword{distribution}
