@@ -142,11 +142,14 @@ rnorMix <- function(n, obj)
     ## Author: Martin Maechler, Date: 27 Jun 2002, 16:03
     mu <- obj[,"mu"]
     sd <- sqrt(obj[,"sig2"])
-    nj <- rmultinom(n=1, size = n, prob = obj[,"w"])
-    ## Easy version: *round* the `nj' to the nearest integers
-    ## this is *inaccurate* for small n !
-    sample(unlist(sapply(seq(along=nj),
-			 function(j) rnorm(nj[j], mean = mu[j], sd = sd[j]))))
+    if(n == 1) {
+	j <- sample(length(mu), size = 1, prob = obj[,"w"])
+	rnorm(1, mean = mu[j], sd = sd[j])
+    } else {
+	nj <- as.vector(rmultinom(n=1, size = n, prob = obj[,"w"]))
+	sample(unlist(lapply(seq(along=nj), function(j)
+			     rnorm(nj[j], mean = mu[j], sd = sd[j]))))
+    }
 }
 
 ## From: Erik Jørgensen <Erik.Jorgensen@agrsci.dk>
@@ -181,7 +184,7 @@ pnorMix <- function(q, obj, lower.tail = TRUE, log.p = FALSE)
 qnorMix <-
     function(p, obj, lower.tail = TRUE, log.p = FALSE,
              tol = .Machine$double.eps^0.25, maxiter = 1000,
-             traceRootsearch = 0, np.cutoff = 50)
+             doInterp = TRUE, traceRootsearch = 0, np.cutoff = 50)
     ## NOTE: keep defaults consistent with 'uniroot':
 {
   if (!is.norMix(obj)) {
@@ -211,13 +214,13 @@ qnorMix <-
   imid <- which(mid <- !left & !right) # 0 < p < 1
   np <- length(imid)
   if(np) {
-      ## p[] increasing for easier root finding start:
+      ## sort p[] increasingly for easier root finding start:
       p <- sort(p[mid], index.return = TRUE)
       ip <- imid[p$ix]
       pp <- p$x
 
       f.make <- function(p.i) {
-          if(traceRootsearch)
+          if(traceRootsearch >= 2)
               function(l) {
                   p <- pnorMix(l, obj,
                                lower.tail=lower.tail, log.p=log.p)
@@ -267,7 +270,7 @@ qnorMix <-
               warning("_NOT_ converged in ", maxiter, " iterations")
               iter <- maxiter
           }
-          if(traceRootsearch) cat("\n")
+          if(traceRootsearch >= 2) cat("\n")
           list(root = val[1], f.root = f(val[1], ...), iter = iter,
                estim.prec = val[3])
       }
@@ -289,6 +292,17 @@ qnorMix <-
           rr[np] <- safeUroot(f.make(pp[np]), interval = outRange(pp[np]),
                              tol=tol, maxiter=maxiter)$root
           ni <- length(iDone <- as.integer(c(1,np)))
+          if(doInterp) { ### reverse interpolate, using fast pnorMix()!
+              ## those mu's that are inside our range
+              mu. <- unique(sort(mu[rr[1] < mu & mu < rr[np]]))
+              k <- length(qs <- c(rr[1], mu., rr[np]))
+              qs. <- qs[-k]
+              dq <- qs[-1] - qs.
+              qi <- c(t(dq %*% t((1:20)/20) + qs.))
+browser()
+              pi <- pnorMix(qi, obj)
+
+          }
           while(ni < np) { ## not "done";  ni == length(iDone)
               oi <- iDone
               i.1 <- oi[-ni]
@@ -297,6 +311,7 @@ qnorMix <-
               ii <- which(l.new)
               iN <- (i.1 + i.2 + 1L) %/% 2
               stopifnot( (i.1 < iN)[ii], (iN < i.2)[ii])
+              if(traceRootsearch) cat("ni new intervals, ni=",ni,"\n")
               for(j in ii) {
                   ## look in between i.1[j] .. i.2[j]
                   ## NB: we can prove that  i.1[j] < iN[j] < i.2[j]
