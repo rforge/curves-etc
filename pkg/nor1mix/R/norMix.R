@@ -117,6 +117,79 @@ dnorMix <- function(x, obj, log = FALSE)
   if(log) log(y) else y
 }
 
+nM2par <- function(obj)
+{
+    ## Purpose: translate norMix object into our parametrization par.vector
+    ## ----------------------------------------------------------------------
+    ## Author: Martin Maechler, Date: 17 Dec 2007
+    stopifnot(is.norMix(obj))
+    ## logit() == qlogis(); log(sqrt(.)) = log(.)/2
+    c(qlogis(obj[-1,"w"]), obj[,"mu"], log(obj[,"sig2"])/2)
+}
+.nM2par <- function(lst)
+{
+    ## Purpose: translate list(mu,sig2,w) into our parametrization par.vector
+    ## ----------------------------------------------------------------------
+    ## Author: Martin Maechler, Date: 18 Dec 2007
+    ## stopifnot(is.list(lst), length(lst) == 3, names(lst) %in% c("w","mu","sig2"))
+    ## logit() == qlogis(); log(sqrt(.)) = log(.)/2
+    c(qlogis(lst$w[-1]), lst$mu, log(lst$sig2)/2)
+}
+
+
+par2norMix <- function(p)
+{
+    ## Purpose: build norMix object from our parametrization par.vector
+    ## ----------------------------------------------------------------------
+    ## Author: Martin Maechler, Date: 17 Dec 2007
+
+    .name <- sprintf("{from %s}", deparse(substitute(p)))
+    lp <- length(p)
+    stopifnot(is.numeric(p), lp %% 3 == 2)
+    m <- (lp + 1L) %/% 3
+    m1 <- m - 1L
+    mu  <- p[m:(m+m1)]
+    sig2 <- exp(2 * p[(m+m):(m+m+m1)]) ## sigma^2 = exp(tau)^2 = exp(2*tau)
+    if(m == 1)
+        norMix(mu, sig2, name= .name)
+    else { ## -- m >= 2
+        pi. <- plogis(p[1:m1]) ## \pi_j = inv_logit(\lambda_j)
+        if((sp <- sum(pi.)) > 1)
+            stop(sprintf("weights sum up to %.3g > 1 !", sp))
+
+        norMix(mu, sig2, w = c(1 - sp, pi.), name = .name)
+    }
+}
+
+llnorMix <- function(p, x, m = (length(p)+1)/3)
+{
+    ## Purpose: log-likelihood
+    ## ----------------------------------------------------------------------
+    ## Arguments: p : parameter vector, specially parametrized:
+    ##		  p = c( lambda_j, mu_j, tau_j)	 where
+    ##		\lambda_j = logit(\pi_j), j=2,..,m; and \pi_1 := 1- sum_j\pi_j
+    ##	    and \tau_j = log(\sigma_j)	such that parameters are unconstrained
+    ## ----------------------------------------------------------------------
+    ## Author: Martin Maechler, Date: 17 Dec 2007, 17:41
+    stopifnot(m == as.integer(m), (m <- as.integer(m)) >= 1, 3*m == length(p)+1)
+    m1 <- m - 1L
+    mu	<- p[m:(m+m1)]
+    sigma <- exp(p[(m+m):(m+m+m1)]) ## sigma = exp(tau)
+    if(m == 1)
+	return( sum(dnorm(x, mean = mu[1], sd = sigma[1], log = TRUE)) )
+
+    ## else -- m >= 2
+    pi. <- plogis(p[1:m1]) ## \pi_j = inv_logit(\lambda_j)
+    if((sp <- sum(pi.)) > 1) return(-Inf) # worst possible value
+    ## pi. <- c(pi., 1 - sp) # \pi_1 := 1 - sum_{j=2}^{m} \pi_j
+    y <- (1 - sp) * dnorm(x, mean = mu[1], sd = sigma[1])
+    for(j in 2:m)
+	y <- y + pi.[j- 1L] * dnorm(x, mean = mu[j], sd = sigma[j])
+    ## return
+    sum(log(y))
+}
+
+
 dnorMixL <- function(obj, x = NULL, log = FALSE, xlim = NULL, n = 511)
 {
   ## Purpose: density evaluation for "norMix" objects (normal mixtures)
@@ -299,6 +372,7 @@ qnorMix <-
               qs. <- qs[-k]
               dq <- qs[-1] - qs.
               qi <- c(t(dq %*% t((1:20)/20) + qs.))
+### FIXME
 browser()
               pi <- pnorMix(qi, obj)
 
