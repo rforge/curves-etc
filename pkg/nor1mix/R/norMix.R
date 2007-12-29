@@ -137,13 +137,13 @@ nM2par <- function(obj)
 }
 
 
-par2norMix <- function(p)
+par2norMix <- function(p, name. = sprintf("{from %s}",
+                          deparse(substitute(p))))
 {
     ## Purpose: build norMix object from our parametrization par.vector
     ## ----------------------------------------------------------------------
     ## Author: Martin Maechler, Date: 17 Dec 2007
 
-    .name <- sprintf("{from %s}", deparse(substitute(p)))
     lp <- length(p)
     stopifnot(is.numeric(p), lp %% 3 == 2)
     m <- (lp + 1L) %/% 3
@@ -151,13 +151,13 @@ par2norMix <- function(p)
     mu  <- p[m:(m+m1)]
     sig2 <- exp(2 * p[(m+m):(m+m+m1)]) ## sigma^2 = exp(tau)^2 = exp(2*tau)
     if(m == 1)
-        norMix(mu, sig2, name= .name)
+        norMix(mu, sig2, name= name.)
     else { ## -- m >= 2
         pi. <- plogis(p[1:m1]) ## \pi_j = inv_logit(\lambda_j)
         if((sp <- sum(pi.)) > 1)
             stop(sprintf("weights sum up to %.3g > 1 !", sp))
 
-        norMix(mu, sig2, w = c(1 - sp, pi.), name = .name)
+        norMix(mu, sig2, w = c(1 - sp, pi.), name = name.)
     }
 }
 
@@ -257,7 +257,7 @@ pnorMix <- function(q, obj, lower.tail = TRUE, log.p = FALSE)
 qnorMix <-
     function(p, obj, lower.tail = TRUE, log.p = FALSE,
              tol = .Machine$double.eps^0.25, maxiter = 1000,
-             doInterp = TRUE, traceRootsearch = 0, np.cutoff = 50)
+             doInterp = FALSE, traceRootsearch = 0, np.cutoff = 50)
     ## NOTE: keep defaults consistent with 'uniroot':
 {
   if (!is.norMix(obj)) {
@@ -335,7 +335,6 @@ qnorMix <-
           ## uniroot(f, lower=lower, upper=upper,
           ##         tol=tol, maxiter=maxiter, ...)
 
-
           ## we have
           val <- .Internal(zeroin(f, lower, upper, tol, as.integer(maxiter)))
           iter <- as.integer(val[2])
@@ -358,7 +357,7 @@ qnorMix <-
               root <- safeUroot(ff, interval = rq, tol=tol, maxiter=maxiter)$root
               r[ip[i]] <- root
       }
-      else { ## np >= np.cutoff
+      else { ## np >= np.cutoff ---- be faster
           rr <- pp #- rr will contain = q..mix(pp, *)
           rr[1] <- safeUroot(f.make(pp[1]), interval = outRange(pp[1]),
                              tol=tol, maxiter=maxiter)$root
