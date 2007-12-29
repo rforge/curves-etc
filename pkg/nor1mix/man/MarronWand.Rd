@@ -86,6 +86,21 @@ par(op)
 ## "object" overview:
 cbind(sapply(nms, function(n) {o <- get(n)
       sprintf("\%-18s: K=\%2d",attr(o, "name"), nrow(o))}))
+
+## Note that Marron-Wand (1992), p.720  give #2 as
+MW.nm2. <- norMix(name = "#2 Skewed(AS)",
+                  mu   = c(0, .5, 13/12),
+                  sig2 = c(1, (2/3)^2, (5/9)^2),
+                  w    = c(.2, .2, .6))
+## which at first looks quite different from MW.nm2,
+## but it's easy to see mu_{nm2} = -.3 + 1.2 * mu_{paper},
+## and correspondigly, s2_{nm2} = 1.2^2 * s2_{paper}
+## such that they are "identical" apart from scale and location:
+op <- par(mfrow=2:1, mgp = c(1.2, 0.5, 0), tcl = -0.2,
+          mar = .1 + c(2,2,2,1))
+plot(MW.nm2)
+plot(MW.nm2.)
+par(op)
 }
 \keyword{datasets}
 \keyword{distribution}
