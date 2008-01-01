@@ -406,6 +406,7 @@ r.norMix <- function(obj, x = NULL, xlim = NULL, n = 511, xy.return = TRUE)
 
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
+
 nM2par <- function(obj)
 {
     ## Purpose: translate norMix object into our parametrization par.vector
@@ -415,6 +416,7 @@ nM2par <- function(obj)
     ## logit() == qlogis(); log(sqrt(.)) = log(.)/2
     c(qlogis(obj[-1,"w"]), obj[,"mu"], log(obj[,"sig2"])/2)
 }
+## FIXME? This is nowhere used
 .nM2par <- function(lst)
 {
     ## Purpose: Fast version of nM2par()
@@ -447,11 +449,22 @@ par2norMix <- function(p, name = sprintf("{from %s}",deparse(substitute(p))))
     }
 }
 
+
+if(FALSE) ## this is not needed -- but mention it on ?llnorMix
+logLiknorMix <- function(obj, x) {
+    ## Purpose: log-likelihood for 'norMix'
+    sum(dnorMix(x, obj, log=TRUE))
+}
+
 llnorMix <- function(p, x, m = (length(p)+1)/3)
 {
     ## Purpose: log-likelihood
     ## ----------------------------------------------------------------------
-    ## Arguments: p : parameter vector, specially parametrized:
+    ## Arguments: p : parameter vector, see below
+    ##            x : data vector
+    ##            m : number of mixture components
+    ##
+    ##  'p' is particularly parametrized:
     ##		  p = c( lambda_j, mu_j, tau_j)	 where
     ##		\lambda_j = logit(\pi_j), j=2,..,m; and \pi_1 := 1- sum_j\pi_j
     ##	    and \tau_j = log(\sigma_j)	such that parameters are unconstrained
