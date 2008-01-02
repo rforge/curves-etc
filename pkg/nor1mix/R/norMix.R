@@ -1,3 +1,5 @@
+####-*- mode: R; kept-old-versions: 12;  kept-new-versions: 20; -*-
+
 ####---- Normal Mixtures  "norMix" -------
 ####---- ~~~~~~~~~~~~~~~   ######  -------
 #### Object-oriented  S/R - functions for dealing with 1D normal mixtures.
