@@ -306,9 +306,16 @@ qnorMix <-
               qs. <- qs[-k]
               dq <- qs[-1] - qs.
               qi <- c(t(dq %*% t((1:20)/20) + qs.))
+              myS <- splinefun(pnorMix(qi, obj), qi)
+
 ### FIXME
 browser()
-              pi <- pnorMix(qi, obj)
+              system.time(qpp <- myS(pp)) ## is very fast
+              r[ip] <- qpp
+              all.equal(r, qp)#-> "Mean rel.diff: 0.000177" -- very good
+              ## now end with a 1-3 Newton steps
+              ## BUT need to know if we solve
+              ## F(x)=0 or -F(x)=0 -- depending on F''() = f'() !
 
           }
           while(ni < np) { ## not "done";  ni == length(iDone)
