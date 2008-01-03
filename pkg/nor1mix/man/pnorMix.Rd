@@ -11,7 +11,8 @@
 pnorMix(q, obj, lower.tail = TRUE, log.p = FALSE)
 
 qnorMix(p, obj, lower.tail = TRUE, log.p = FALSE,
-        tol = .Machine$double.eps^0.25, maxiter = 1000)
+        tol = .Machine$double.eps^0.25, maxiter = 1000, traceRootsearch = 0,
+        method = c("interpspline", "eachRoot", "root2"), l.interp = 20)
 }
 \arguments{
   \item{obj}{an object of class \code{norMix}.}
@@ -20,20 +21,39 @@ qnorMix(p, obj, lower.tail = TRUE, log.p = FALSE,
   \item{lower.tail}{logical; if TRUE (default), probabilities are
     \eqn{P[X \le x]}{P[X <= x]}, otherwise, \eqn{P[X > x]}{P[X > x]}.}
   \item{log.p}{logical; if TRUE, probabilities p are given as log(p).}
-  \item{tol, maxiter}{determine the root finding algorithm, see
-    \code{\link{uniroot}}.}
+  \item{tol, maxiter}{tolerance and maximal number of iterations for the
+    root search algorithm, see \code{method} below and \code{\link{uniroot}}.}
+  \item{traceRootsearch}{logical or integer in \eqn{\{0,1,2,3\}},
+    determining the amount of information printed during root search.}
+  \item{method}{a string specifying which algorithm is used for the
+        \dQuote{root search}. .......}% <<<< FIXME
+  \item{l.interp}{positive integer for \code{method = "interpspline"},
+    determining the number of values in each \dQuote{mu-interval}.}
 }
 \details{
   Whereas the distribution function \code{pnorMix} is the trivial sum of
   weighted normal probabilities (\code{\link{pnorm}}), its inverse is
-  currently computed numerically using \code{\link{uniroot}} to find
-  \code{q} such that \code{pnorMix(obj, q) == p}.
+  computed numerically: For each \code{p} we search for
+  \code{q} such that \code{pnorMix(obj, q) == p}, i.e., \eqn{f(q) = 0}
+  for \code{f(q) := pnorMix(obj, q) - p}.  This is a root finding
+  problem which can be solved by \code{\link{uniroot}(f, lower,upper,*)}.
+  If \code{length(p) <= 2} or \code{method = "eachRoot"}, this happens
+  one for one for the \emph{sorted} p's.  Otherwise, we start by doing
+  this for the outermost non-trivial (\eqn{0 < p < 1}) values of p.
+  %% "root2" may be abandoned, so I'm too lazy to describe it now --- FIXME
+  For \code{method = "interpspline"}, we now compute
+  \code{p. <- \link{pnorMix}(q., obj)} for values \code{q.} which are a grid
+  of length \code{l.interp} in each interval \eqn{[q_j,q_{j+1}]} and
+  then use inverse interpolation (\code{\link{splinefun}(q., p.)}) plus
+  a few (maximally \code{maxiter}, typically one!) Newton steps.
+  This method is faster, particularly for large \code{length(p)}.
 }
 \value{
   a numeric vector of the same length as \code{p} or \code{q}, respectively.
 }
-\author{First version by Erik Jørgensen
-  \email{Erik.Jorgensen@agrsci.dk}.}
+\author{Very first version (for length-1 \code{p,q}) by
+  Erik Jørgensen \email{Erik.Jorgensen@agrsci.dk}.
+}
 \seealso{\code{\link{dnorMix}} for the density function.}
 \examples{
 MW.nm3 # the "strange skew" one
