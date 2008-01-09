@@ -211,7 +211,8 @@ dpnorMix <- function(x, obj, lower.tail = TRUE)
 qnorMix <-
     function(p, obj, lower.tail = TRUE, log.p = FALSE,
              tol = .Machine$double.eps^0.25, maxiter = 1000, traceRootsearch = 0,
-             method = c("interpspline", "eachRoot", "root2"), l.interp=20)
+             method = c("interpQspline", "interpspline", "eachRoot", "root2"),
+             l.interp=20)
     ## NOTE: keep defaults consistent with 'uniroot':
 {
   if (!is.norMix(obj)) {
@@ -306,7 +307,7 @@ qnorMix <-
           rr[np] <- safeUroot(f.make(pp[np]), interval = outRange(pp[np]),
                              tol=tol, maxiter=maxiter)$root
           ni <- length(iDone <- as.integer(c(1,np)))
-          if(method == "interpspline") {
+          if(any(method == c("interpQspline", "interpspline"))) {
               ## reverse interpolate, using relatively fast pnorMix()!
 
               pp. <- pp[-iDone]
@@ -323,15 +324,21 @@ qnorMix <-
               ##        qnorMix() has practically a discontinuity.
               ##        in that case, splinefun() completely "fails"
 
-              ## This is not sufficient --- it happens internally anyway
-              if(FALSE)
-              if(any(dup <- duplicated(ppi))) {
-                  ppi <- ppi[!dup]
-                  qi  <- qi[!dup]
+##               ## This is not sufficient --- it happens internally anyway
+##               if(FALSE)
+##               if(any(dup <- duplicated(ppi))) {
+##                   ppi <- ppi[!dup]
+##                   qi  <- qi[!dup]
+##               }
+
+
+              if(method == "interpspline")
+                  qpp <- splinefun(ppi, qi)(pp.) ## is very fast
+              else { ## "interpQspline
+                  ## logit() transform the P's --> interpolation is more linear
+                  muT <- c(obj[, "w"] %*% mu)
+                  qpp <- splinefun(qlogis(ppi, muT), qi)(qlogis(pp., muT))
               }
-
-              qpp <- splinefun(ppi, qi)(pp.) ## is very fast
-
 
               if(log.p)
                   warning("Newton steps for 'log.p = TRUE' not yet implemented")
