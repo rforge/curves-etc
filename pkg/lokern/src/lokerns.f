@@ -171,9 +171,9 @@ c-------- 11. refinement of s-sequence for random design
         exsvi=dble(kord)     / dble(6*kord+3)
         bs=0.1*(vi/(sn-s0)**2)**exsvi * n**exs
         call kernel(wn(1,5),t,n,bs,0,2,nyg,wn(0,3),wn(0,2),n+1,s(0))
-        needsrt=.false.
         vi=0.0
-111     do 112 i=1,n
+111     needsrt=.false.
+        do 112 i=1,n
            vi=vi+wn(i,1)*n*(s(i)-s(i-1))**2*wn(i,4)
            if(s(i).lt.s(i-1)) then
               ssi=s(i-1)
