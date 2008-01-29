@@ -1,8 +1,9 @@
 ### lokerns   kernel regression smoothing with local bandwidth selection
 
+if(FALSE) ## FIXME: use  sfsmisc::seqXtend()  -- !
 seqX <- function(x, n.out, xlim = range(x))
 {
-    ## sequence() of desired length `n.out'  *containing*  x
+    ## sequence() of desired length 'n.out'  *containing*  x
 }
 
 lokerns <- function(x, y=NULL, deriv = 0,
@@ -27,7 +28,7 @@ lokerns <- function(x, y=NULL, deriv = 0,
 	y <- y[ord]
     }
 
-    ## compute/sort outputgrid `x.out' (n.out : length of outputgrid)
+    ## compute/sort outputgrid 'x.out' (n.out : length of outputgrid)
 
     if (is.null(x.out)) {
         n.out <- as.integer(n.out)
@@ -58,7 +59,7 @@ lokerns <- function(x, y=NULL, deriv = 0,
         x.inOut <- all(!is.na(ind.x))
     }
 
-    if(n.out == 0) stop("Must have `n.out' >= 1")
+    if(n.out == 0) stop("Must have 'n.out' >= 1")
 
     ## hetero	homo- or heteroszedasticity of error variables
     ## is.rand	random or non-random t-grid
@@ -66,7 +67,7 @@ lokerns <- function(x, y=NULL, deriv = 0,
 
     ## m1 : discretization for integral functional estimation
     if ((m1 <- as.integer(m1)) < 3)# was "10", but fortran has 3
-        stop("number of discretizations `m1' is too small")
+        stop("number of discretizations 'm1' is too small")
 
     ## xl, xu: lower/upper bound for integral approximation and
     ##		variance estimation
@@ -86,7 +87,7 @@ lokerns <- function(x, y=NULL, deriv = 0,
         bandwidth <- double(n.out)
         if(inputb) stop("NULL bandwidth must have inputb = FALSE")
     } else if(length(bandwidth) != n.out)
-        stop("`bandwidth' must be of length `n.out', i.e., ", n.out)
+        stop("'bandwidth' must be of length 'n.out', i.e., ", n.out)
 
     ## deriv          derivative of regression function to be estimated
     ## korder         kernel order
@@ -121,7 +122,7 @@ lokerns <- function(x, y=NULL, deriv = 0,
                     PACKAGE = "lokern"
                     )[-c(1:2, 16:18)]# all but (x,y) & work*
     if(res$korder != korder)
-	warning(paste("`korder' set to ", res$korder,", internally"))
+	warning(paste("'korder' set to ", res$korder,", internally"))
 
     structure(c(xy[c("x","y")], res, # (x,y) possibly unsorted..
                 list(isOrd = isOrd, ord = if(!isOrd) ord,
@@ -139,7 +140,7 @@ fitted.KernS <- function(object, ...) {
              fit <- est[ind.x]
              if(isOrd) fit else fit[order(ord)]
          })
-    else stop("`KernS' fit was done with `x.out' not including data;",
+    else stop("'KernS' fit was done with 'x.out' not including data;",
                 "\n hence cannot provide fitted values or residuals")
 }
 residuals.KernS <- function(object, ...) object$y - fitted(object)
