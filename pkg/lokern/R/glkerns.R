@@ -18,7 +18,7 @@ glkerns <- function(x, y=NULL, deriv = 0, n.out = 300, x.out = NULL,
 	y <- y[sorvec]
     }
 
-    ## compute/sort outputgrid `x.out' (n.out : length of outputgrid)
+    ## compute/sort outputgrid 'x.out' (n.out : length of outputgrid)
 
     if (is.null(x.out)) {
         n.out <- as.integer(n.out)
@@ -27,7 +27,7 @@ glkerns <- function(x, y=NULL, deriv = 0, n.out = 300, x.out = NULL,
     else
         n.out <- length(x.out <- sort(x.out))
 
-    if(n.out == 0) stop("Must have `n.out' >= 1")
+    if(n.out == 0) stop("Must have 'n.out' >= 1")
 
     ## hetero	homo- or heteroszedasticity of error variables
     ## is.rand	random or non-random t-grid
@@ -35,7 +35,7 @@ glkerns <- function(x, y=NULL, deriv = 0, n.out = 300, x.out = NULL,
 
     ## m1 : discretization for integral functional estimation
     if ((m1 <- as.integer(m1)) < 3)# was "10", but fortran has 3
-        stop("number of discretizations `m1' is too small")
+        stop("number of discretizations 'm1' is too small")
 
     ## xl, xu: lower/upper bound for integral approximation and
     ##		variance estimation
@@ -59,13 +59,13 @@ glkerns <- function(x, y=NULL, deriv = 0, n.out = 300, x.out = NULL,
     ## deriv          derivative of regression function to be estimated
     ## korder         kernel order
     if (deriv < 0 || deriv > 4)
-        stop("Order of derivative `deriv' must be in {0,1,..,4}.")
+        stop("Order of derivative 'deriv' must be in {0,1,..,4}.")
     if (deriv > 2 && !inputb)
         stop("Order of derivative must be <= 2  if (! inputb).")
     if (is.null(korder))
         korder <- deriv+2
     else if (korder > 6) {
-        warning("Kernel order `korder' must be <= 6; set to deriv + 2")
+        warning("Kernel order 'korder' must be <= 6; set to deriv + 2")
         korder <- deriv+2
     } else if (korder > 4 && !inputb) {
         warning("Kernel order must be <= 4 if(!inputb); set to deriv+2")
@@ -96,7 +96,7 @@ glkerns <- function(x, y=NULL, deriv = 0, n.out = 300, x.out = NULL,
                     PACKAGE = "lokern"
                     )
     if(res$korder != korder)
-        warning(paste("`korder' set to ", res$korder,", internally"))
+        warning(paste("'korder' set to ", res$korder,", internally"))
 
     list(x = x, y = y, bandwidth = res$bandwidth, x.out = x.out,
 	 est = res$est, sig = res$sig,
