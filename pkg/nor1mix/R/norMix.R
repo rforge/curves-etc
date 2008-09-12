@@ -315,7 +315,7 @@ qnorMix <-
               mu. <- unique(sort(mu[rr[1] < mu & mu < rr[np]]))
               k <- length(qs <- c(rr[1], mu., rr[np]))
               qs. <- qs[-k]
-              dq <- qs[-1] - qs.
+              dq <- qs[-1] - qs. # == delta(qs)
               ## l.interp values between each mu
               qi <- c(t(dq %*% t((1:l.interp)/l.interp) + qs.))
               ppi <- pnorMix(qi, obj, lower.tail=lower.tail, log.p=log.p)
