@@ -12,7 +12,8 @@ pnorMix(q, obj, lower.tail = TRUE, log.p = FALSE)
 
 qnorMix(p, obj, lower.tail = TRUE, log.p = FALSE,
         tol = .Machine$double.eps^0.25, maxiter = 1000, traceRootsearch = 0,
-        method = c("interpspline", "eachRoot", "root2"), l.interp = 20)
+        method = c("interpQspline", "interpspline", "eachRoot", "root2"),
+        l.interp = 20)
 }
 \arguments{
   \item{obj}{an object of class \code{norMix}.}
@@ -27,8 +28,9 @@ qnorMix(p, obj, lower.tail = TRUE, log.p = FALSE,
     determining the amount of information printed during root search.}
   \item{method}{a string specifying which algorithm is used for the
         \dQuote{root search}. .......}% <<<< FIXME
-  \item{l.interp}{positive integer for \code{method = "interpspline"},
-    determining the number of values in each \dQuote{mu-interval}.}
+  \item{l.interp}{positive integer for \code{method = "interQpspline"}
+    or \code{"interpspline"}, determining the number of values in each
+    \dQuote{mu-interval}.}
 }
 \details{
   Whereas the distribution function \code{pnorMix} is the trivial sum of
@@ -40,12 +42,16 @@ qnorMix(p, obj, lower.tail = TRUE, log.p = FALSE,
   If \code{length(p) <= 2} or \code{method = "eachRoot"}, this happens
   one for one for the \emph{sorted} p's.  Otherwise, we start by doing
   this for the outermost non-trivial (\eqn{0 < p < 1}) values of p.
+
   %% "root2" may be abandoned, so I'm too lazy to describe it now --- FIXME
-  For \code{method = "interpspline"}, we now compute
+  For \code{method = "interQpspline"} or \code{"interpspline"}, we now compute
   \code{p. <- \link{pnorMix}(q., obj)} for values \code{q.} which are a grid
   of length \code{l.interp} in each interval \eqn{[q_j,q_{j+1}]} and
-  then use inverse interpolation (\code{\link{splinefun}(q., p.)}) plus
+  then use \emph{montone} inverse interpolation
+  (\code{\link{splinefun}(q., p., method="monoH.FC")}) plus
   a few (maximally \code{maxiter}, typically one!) Newton steps.
+  The default, \code{"interQpspline"}, additionally logit-transforms the
+  \code{p.} values to make the interpolation more linear.
   This method is faster, particularly for large \code{length(p)}.
 }
 \value{
