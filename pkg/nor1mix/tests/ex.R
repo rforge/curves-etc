@@ -28,12 +28,15 @@ ip <- c(0, 1e-11, 3.33e-09, 7.705488e-05, 0.0001670041, 0.00125378934,
         0.01672761627, 0.02067755849, 0.02124092026, 0.03327537558, 0.03527226553,
         0.05365983941, 0.05482289811, 0.05669602608, 0.05982167629)
 qv <- qnorMix(1-ip, MW.nm12, trace=1)
+## now ok
 ##--> divergence in Newton
 ## Error in if (relErr < tol) break : missing value where TRUE/FALSE needed
+## qv <- qnorMix(1-ip, MW.nm12, trace=2)
 
-### FIXME --- lower.tail=FALSE seems completely broken
-qv. <- qnorMix(ip, MW.nm12, lower.tail=FALSE, trace=1)
-## -> infinite loop!
+### FIXME --- lower.tail=FALSE  does not work correctly (now *somewhat* works)
+qv. <- qnorMix(ip, MW.nm12, lower.tail=FALSE, trace=2, maxiter=50)
+## -> infinite loop! --- now "just wrong"
 stopifnot(all.equal(qv, qv.))
+
 
 cat('Time elapsed: ', proc.time(),'\n') # for ``statistical reasons''
