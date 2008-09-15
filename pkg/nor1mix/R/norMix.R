@@ -1,4 +1,4 @@
-####-*- mode: R; kept-old-versions: 12;  kept-new-versions: 20; -*-
+####-*- mode: R; kept-old-versions: 12;  kept-new-versions: 30; -*-
 
 ####---- Normal Mixtures  "norMix" -------
 ####---- ~~~~~~~~~~~~~~~   ######  -------
@@ -239,13 +239,14 @@ qnorMix <-
   r[left] <- -Inf ; r[right] <- Inf
   imid <- which(mid <- !left & !right) # 0 < p < 1
   if(length(imid)) {
+      S <- if(lower.tail) 1 else -1
+
       f.make <- function(p.i) {
 	  if(traceRootsearch >= 3)
 	      function(l) {
 		  p <- pnorMix(l, obj,
 			       lower.tail=lower.tail, log.p=log.p)
 		  cat(sprintf("p(%-19.16g) = %-19.16g\n", l, p))
-		  p - p.i
 	      }
 	  else
 	      function(l) pnorMix(l, obj, lower.tail=lower.tail,
@@ -260,16 +261,17 @@ qnorMix <-
       {
 	  if(traceRootsearch >= 2)
 	      cat(sprintf("search in [%g,%g]\n", lower, upper))
-	  ## make sure we have f(lower) < 0 and f(upper) > 0:
+
+	  ## make sure we have S*f(lower) < 0 and S*f(upper) > 0:
 	  delta.r <- 0.01*max(1e-7, abs(lower))
-	  while((f.lo <- f(lower)) > 0) {
+	  while(S*(f.lo <- f(lower)) > 0) {
 	      lower <- lower - delta.r
 	      if(traceRootsearch)
 		  cat(sprintf(" .. modified lower: %g\n",lower))
 	      delta.r <- 2 * delta.r
 	  }
 	  delta.r <- 0.01*max(1e-7, abs(upper))
-	  while((f.up <- f(upper)) < 0) {
+	  while(S*(f.up <- f(upper)) < 0) {
 	      upper <- upper + delta.r
 	      if(traceRootsearch)
 		  cat(sprintf(" .. modified upper: %g\n",upper))
@@ -352,13 +354,34 @@ qnorMix <-
 		  for(k in 1:maxiter) {
 		      dp <- dpnorMix(qpp, obj, lower.tail=lower.tail)
 		      del.p <- dp$p - pp.
-		      del.q <- del.p/dp$d ## f(q) / f'(q)
+                      ## FIXME: del.p  may suffer from considerable cancellation
+                      relE.f <- abs(del.p)
+                      n0 <- relE.f > 0 & pp. > 0
+                      relE.f[n0] <- (relE.f/pp.)[n0]
+                      ii. <- dp$d > 0 ## & relE.f > tol
+                      del.q <- numeric(length(pp.))
+		      del.q[ii.] <- (del.p/dp$d)[ii.] ## f(q) / f'(q)
 		      ## only modify qpp[] where Newton step is ok:
 		      ## e.g. resulting qpp must remain increasing
-		      qpp <- qpp - del.q
-		      relErr <- sum(abs(del.q)) / sum(abs(qpp))
-		      if(traceRootsearch)
-			  cat(k,": relE =", formatC(relErr),"\n", sep='')
+                      while(length(iF <- which(S*diff(qpp - del.q) <= 0))) {
+                          iF <- c(iF,iF+1L)
+                          del.q[iF] <- del.q[iF] / 2
+                          if(traceRootsearch) cat(",")
+                      }
+		      if(!any(ii.)) {
+			  relErr <- mean(relE.f)
+			  break # not converged though
+		      }
+                      qpp[ii.] <- qpp[ii.] - del.q[ii.]
+		      relErr <- sum(abs(del.q[ii.])) / sum(abs(qpp[ii.]))
+		      if(traceRootsearch) {
+                          cat(k,": relE =", formatC(relErr), sep='')
+                          if(traceRootsearch >= 2) {
+                              cat(" |")
+                              print(del.q / abs(qpp))
+                          }
+                          else cat("\n")
+                      }
 		      if(relErr < tol) break
 		  }
 		  if(relErr >= tol)
