@@ -231,15 +231,15 @@ qnorMix <-
 
   ## else
 
+  S <- if(lower.tail) 1 else -1
   ## vectorize in 'p'
   r <- p
   ## Solve the left/right extremes p \in {0 , 1}
   left <- if(log.p) rep(FALSE, length(p)) else p <= 0
   right <- p >= if(log.p) 0 else 1
-  r[left] <- -Inf ; r[right] <- Inf
+  r[left] <- -Inf*S ; r[right] <- Inf*S
   imid <- which(mid <- !left & !right) # 0 < p < 1
   if(length(imid)) {
-      S <- if(lower.tail) 1 else -1
 
       f.make <- function(p.i) {
 	  if(traceRootsearch >= 3)
@@ -312,83 +312,89 @@ qnorMix <-
 	      rr[i] <- root
 	  }
       }
-      else {
-	  rr[1] <- safeUroot(f.make(pp[1]), interval = outRange(pp[1]),
-			     tol=tol, maxiter=maxiter)$root
-	  rr[np] <- safeUroot(f.make(pp[np]), interval = outRange(pp[np]),
-			     tol=tol, maxiter=maxiter)$root
-	  ni <- length(iDone <- as.integer(c(1,np)))
-	  if(any(method == c("interpQspline", "interpspline"))) {
-	      ## reverse interpolate, using relatively fast pnorMix()!
+      else { ## => np > 2
+	rr[1] <- safeUroot(f.make(pp[1]), interval = outRange(pp[1]),
+                           tol=tol, maxiter=maxiter)$root
+        rr[np] <- safeUroot(f.make(pp[np]), interval = outRange(pp[np]),
+                            tol=tol, maxiter=maxiter)$root
+        ni <- length(iDone <- as.integer(c(1,np)))
+        if(any(method == c("interpQspline", "interpspline"))) {
+            ## reverse interpolate, using relatively fast pnorMix()!
 
-	      pp. <- pp[-iDone]
-	      ## those mu's that are inside our range:
-	      mu. <- unique(sort(mu[rr[1] < mu & mu < rr[np]]))
-	      k <- length(qs <- c(rr[1], mu., rr[np]))
-	      qs. <- qs[-k]
-	      dq <- qs[-1] - qs. # == delta(qs)
-	      ## l.interp values between each mu
-	      qi <- c(t(dq %*% t((1:l.interp)/l.interp) + qs.))
-	      ppi <- pnorMix(qi, obj, lower.tail=lower.tail, log.p=log.p)
+            pp. <- pp[-iDone]
+            ## those mu's that are inside our range:
+            rXtr <- rr[if(lower.tail) c(1L,np) else c(np,1L)]
+            mu. <- unique(sort(mu[rXtr[1] < mu & mu < rXtr[2]]))
+            k <- length(qs <- c(rXtr[1], mu., rXtr[2]))
+            qs. <- qs[-k]
+            dq <- qs[-1] - qs.      # == delta(qs)
+            ## l.interp values between each mu
+            stopifnot(l.interp >= 1)
+            qi <- c(t(dq %*% t(seq_len(l.interp)/l.interp) + qs.))
+            stopifnot(!is.unsorted(qi)) ## << FIXME remove if never triggering
+            ppi <- pnorMix(qi, obj, lower.tail=lower.tail, log.p=log.p)
 
-	      ## in an extreme case, pnorMix() is horizontal; hence
-	      ## qnorMix() has practically a discontinuity there.
-	      ## In that case, splinefun() completely "fails";
-	      ## we do need  *monotone* (spline) interpolation:
-	      mySfun <- {
-		  if(getRversion() < "2.8.0") monoHsplinefun
-		  else function(x, y, ...) splinefun(x,y, ..., method="monoH.FC")
-	      }
-	      if(method == "interpspline")
-		  qpp <- mySfun(ppi, qi)(pp.) ## is very fast
-	      else { ## "interpQspline
-		  ## logit() transform the P's --> interpolation is more linear
-		  muT <- c(obj[, "w"] %*% mu)
-		  qpp <- mySfun(qlogis(ppi, muT), qi)(qlogis(pp., muT))
-	      }
+            ## in an extreme case, pnorMix() is horizontal; hence
+            ## qnorMix() has practically a discontinuity there.
+            ## In that case, splinefun() completely "fails";
+            ## we do need  *monotone* (spline) interpolation:
+            mySfun <- {
+                if(getRversion() < "2.8.0") monoHsplinefun
+                else function(x, y, ...) splinefun(x,y, ..., method="monoH.FC")
+            }
+            if(method == "interpspline")
+                qpp <- mySfun(ppi, qi)(pp.) ## is very fast
+            else {                          ## "interpQspline
+                ## logit() transform the P's --> interpolation is more linear
+                muT <- c(obj[, "w"] %*% mu)
+                qpp <- mySfun(qlogis(ppi, muT), qi)(qlogis(pp., muT))
+            }
 
-	      if(log.p)
-		  warning("Newton steps for 'log.p = TRUE' not yet implemented")
-	      else {
-		  ## now end with a few Newton steps
-		  for(k in 1:maxiter) {
-		      dp <- dpnorMix(qpp, obj, lower.tail=lower.tail)
-		      del.p <- dp$p - pp.
-                      ## FIXME: del.p  may suffer from considerable cancellation
-                      relE.f <- abs(del.p)
-                      n0 <- relE.f > 0 & pp. > 0
-                      relE.f[n0] <- (relE.f/pp.)[n0]
-                      ii. <- dp$d > 0 ## & relE.f > tol
-                      del.q <- numeric(length(pp.))
-		      del.q[ii.] <- (del.p/dp$d)[ii.] ## f(q) / f'(q)
-		      ## only modify qpp[] where Newton step is ok:
-		      ## e.g. resulting qpp must remain increasing
-                      while(length(iF <- which(S*diff(qpp - del.q) <= 0))) {
-                          iF <- c(iF,iF+1L)
-                          del.q[iF] <- del.q[iF] / 2
-                          if(traceRootsearch) cat(",")
-                      }
-		      if(!any(ii.)) {
-			  relErr <- mean(relE.f)
-			  break # not converged though
-		      }
-                      qpp[ii.] <- qpp[ii.] - del.q[ii.]
-		      relErr <- sum(abs(del.q[ii.])) / sum(abs(qpp[ii.]))
-		      if(traceRootsearch) {
-                          cat(k,": relE =", formatC(relErr), sep='')
-                          if(traceRootsearch >= 2) {
-                              cat(" |")
-                              print(del.q / abs(qpp))
-                          }
-                          else cat("\n")
-                      }
-		      if(relErr < tol) break
-		  }
-		  if(relErr >= tol)
-		      warning("Newton iterations have not converged")
-	      }
-	      rr[-iDone] <- qpp
-	  }
+            if(log.p)
+                warning("Newton steps for 'log.p = TRUE' not yet implemented")
+            else {
+                ## now end with a few Newton steps
+                for(k in 1:maxiter) {
+                    dp <- dpnorMix(qpp, obj, lower.tail=lower.tail)
+                    del.p <- dp$p - pp.
+                    ## FIXME?: del.p  may suffer from considerable cancellation
+                    relE.f <- abs(del.p)
+                    n0 <- relE.f > 0 & pp. > 0
+                    relE.f[n0] <- (relE.f/pp.)[n0]
+                    ii. <- dp$d > 0 ## & relE.f > tol
+                    if(!any(ii.)) {
+                        relErr <- mean(relE.f)
+                        break           # not converged though
+                    }
+                    ## del.q := Delta(q) =  F(q) / f(q)   or 0 if f(q)=0
+                    del.q <- numeric(length(pp.))
+                    del.q[ii.] <- S*(del.p/dp$d)[ii.]
+                    ## only modify qpp[] where Newton step is ok:
+                    ## e.g. resulting qpp must remain increasing
+                    while(length(iF <- which(S*diff(qNew <- qpp - del.q) <= 0))) {
+                        iF <- c(iF,iF+1L)
+                        del.q[iF] <- del.q[iF] / 2
+                        if(traceRootsearch) cat(",")
+                    }
+                    qpp[ii.] <- qNew[ii.]
+                    relErr <- sum(abs(del.q[ii.])) / sum(abs(qpp[ii.]))
+                    if(traceRootsearch) {
+                        cat(k,": relE =", formatC(relErr), sep='')
+                        if(traceRootsearch >= 2) {
+                            cat(" |\n")
+                            if(traceRootsearch == 2 || length(qpp) <= 10)
+                                print(summary(del.q / abs(qpp)))
+                            else print(del.q / abs(qpp))
+                        }
+                        else cat("\n")
+                    }
+                    if(relErr < tol) break
+                }
+                if(relErr >= tol)
+                    warning("Newton iterations have not converged")
+            }
+            rr[-iDone] <- qpp
+        }
 	  ## method == "root2"
 	  else while(ni < np) {
 	      ## not "done";  ni == length(iDone)
