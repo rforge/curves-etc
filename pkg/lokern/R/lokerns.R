@@ -1,13 +1,6 @@
 ### lokerns   kernel regression smoothing with local bandwidth selection
 
-if(FALSE) ## FIXME: use  sfsmisc::seqXtend()  -- !
-seqX <- function(x, n.out, xlim = range(x))
-{
-    ## sequence() of desired length 'n.out'  *containing*  x
-}
-
-lokerns <- function(x, y=NULL, deriv = 0,
-                    n.out = 300, x.out = NULL, x.inOut = TRUE,
+lokerns <- function(x, y=NULL, deriv = 0, n.out = 300, x.out = NULL,
 		    korder = deriv + 2, hetero = FALSE, is.rand = TRUE,
 		    inputb = is.numeric(bandwidth) && bandwidth > 0,
 		    m1 = 400, xl = NULL, xu = NULL, s = NULL, sig = NULL,
@@ -16,48 +9,23 @@ lokerns <- function(x, y=NULL, deriv = 0,
     ## control and sort input (x,y) - new: allowing only y
     xy <- xy.coords(x,y)
     x <- xy$x
+    y <- xy$y
     n <- length(x)
     if (n < 3) stop("must have n >= 3 observations")
-    x.isInd <- !is.null(xy$xlab) && xy$xlab == "Index"
-    isOrd <- x.isInd || !is.unsorted(x)
-    if(isOrd)
-        y <- xy$y
-    else {
-        ord <- sort.list(x)
-        x <- x[ord]
-	y <- y[ord]
+    if(is.unsorted(x)) {
+	sorvec <- sort.list(x)
+	x <- x[sorvec]
+	y <- y[sorvec]
     }
 
     ## compute/sort outputgrid 'x.out' (n.out : length of outputgrid)
 
     if (is.null(x.out)) {
         n.out <- as.integer(n.out)
-        if(!x.inOut){
-            x.out <- seq(x[1], x[n], length = n.out)
-        }
-        else {# construct x.out containing x[] and more
-            nDup <- !duplicated(x)
-            nu <- length(ux <- x[nDup])
-            ind.x <- cumsum(nDup) # ! ==> x === ux[ind.x]
-            if(n.out <= nu) { # take just unique x[]
-                x.out <- ux
-                n.out <- nu
-            } else { # extend ux[] to more points -> x.out[]
-                ## too cheap: should adapt to diff(ux) and depend on (nu,n.out)!
-                nn <- n.out - nu + 2
-                x.out <- c(ux, seq(x[1], x[n], length = nn)[-c(1,nn)])
-                ii <- sort.list(x.out)
-                x.out <- x.out[ii]
-                ind.x <- which(ii <= nu)[ind.x]# ==> x === x.out[ind.x]
-            }
-        }
+        x.out <- seq(min(x), max(x), length = n.out)
     }
-    else {
+    else
         n.out <- length(x.out <- sort(x.out))
-        ind.x <- match(x, x.out)## x[] matching x.out[]:
-        ## FIXME: approximate matching would be better: findInterval() etc
-        x.inOut <- all(!is.na(ind.x))
-    }
 
     if(n.out == 0) stop("Must have 'n.out' >= 1")
 
@@ -77,9 +45,9 @@ lokerns <- function(x, y=NULL, deriv = 0,
     }
 
     ## s	mid-point grid :
-    s <- if (is.null(s) || length(s) != n+1) double(n+1) else as.double(s)
+    s <- double(if(is.null(s) || length(s) != n+1)  n+1 else s)
 
-    ## sig      input variance
+    ## sig          input variance
     if (is.null(sig)) sig <- 0. #-> Fortran takes 0 = "compute default"
 
     inputb <- as.logical(inputb)
@@ -102,7 +70,7 @@ lokerns <- function(x, y=NULL, deriv = 0,
                     x = as.double(x),		# t
                     y = as.double(y),		# x
                     x.out = as.double(x.out),	# tt
-                    n,				# n
+                    as.integer(n),		# n
                     as.integer(n.out),		# m
                     deriv = as.integer(deriv),  # nue
                     korder = as.integer(korder),# kord
@@ -124,24 +92,8 @@ lokerns <- function(x, y=NULL, deriv = 0,
     if(res$korder != korder)
 	warning(paste("'korder' set to ", res$korder,", internally"))
 
-    structure(c(xy[c("x","y")], res, # (x,y) possibly unsorted..
-                list(isOrd = isOrd, ord = if(!isOrd) ord,
-                     x.inOut = x.inOut, ind.x = ind.x,
-                     call = match.call())),
-              class = c("lokerns", "KernS"))
+    list(x = x, y = y, bandwidth = res$bandwidth, x.out = x.out,
+	 est = res$est, sig = res$sig,
+	 deriv = res$deriv, korder = res$korder,
+	 xl = res$xl, xu = res$xu, s = res$s)
 }
-
-#### FIXME:  does only work when 'x.out' was 'x' originally
-#### -----   Need better: by default  x.out should contain x as  x.out[ind.x]
-fitted.KernS <- function(object, ...) {
-    if(object$x.inOut)
-        with(object,
-         {
-             fit <- est[ind.x]
-             if(isOrd) fit else fit[order(ord)]
-         })
-    else stop("'KernS' fit was done with 'x.out' not including data;",
-                "\n hence cannot provide fitted values or residuals")
-}
-residuals.KernS <- function(object, ...) object$y - fitted(object)
-
