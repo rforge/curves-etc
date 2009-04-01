@@ -303,12 +303,12 @@ c------ initialisation for init=0
           jl=1
           do 48 j=1,n
             if(s(j-1).lt.wwl) then
-              jl=j+1
+               jl=j+1
             else
-              if(s(j).gt.wwr) goto 488
-              call dreg(sw,a1,a2,iord,x(j),s(j-1),s(j),tt(i),wid,1)
+               if(s(j).gt.wwr) goto 488
+               call dreg(sw,a1,a2,iord,x(j),s(j-1),s(j),tt(i),wid,1)
             end if
-48          continue
+48        continue
 488       jr=j-1
           wr=wwr
           init=1
@@ -323,18 +323,20 @@ c------ compare old sum with new smoothing intervall tt(i)-b,tt(i)+b
           jnl=jl
           if(s(jr).gt.wwr) then
             do 201 j=jr,jl,-1
-              call dreg(sw,a1,a2,iord,x(j),s(j-1),s(j),tt(i-1),wido,-1)
-              jnr=j-1
-              if(s(jnr).le.wwr) goto 2011
-201           continue
-2011      end if
+               call dreg(sw,a1,a2,iord,x(j),s(j-1),s(j),tt(i-1),wido,-1)
+               jnr=j-1
+               if(s(jnr).le.wwr) goto 2011
+ 201        continue
+          end if
+ 2011     continue
           if(s(jl-1).lt.wwl) then
             do 301 j=jl,jr
-              call dreg(sw,a1,a2,iord,x(j),s(j-1),s(j),tt(i-1),wido,-1)
-              jnl=j+1
-              if(s(j).ge.wwl) goto 3011
-301           continue
-3011      end if
+               call dreg(sw,a1,a2,iord,x(j),s(j-1),s(j),tt(i-1),wido,-1)
+               jnl=j+1
+               if(s(j).ge.wwl) goto 3011
+ 301        continue
+          end if
+ 3011     continue
 c-
 c------ updating of sw
           call lreg(sw,a3,iord,(tt(i)-tt(i-1))/wid,dold,wido/wid,cm)
@@ -343,16 +345,18 @@ c------ updating of sw
               if(s(j).gt.wwr) goto 4011
               call dreg(sw,a1,a2,iord,x(j),s(j-1),s(j),tt(i),wid,1)
               jnr=j
-401           continue
-4011      end if
+401         continue
+          end if
+4011      continue
           jr=jnr
           if(jl.eq.jnl) then
             do 402  j=jl-1,1,-1
               if(s(j-1).lt.wwl) goto 4022
               call dreg(sw,a1,a2,iord,x(j),s(j-1),s(j),tt(i),wid,1)
               jnl=j
-402           continue
-4022      end if
+402         continue
+           end if
+ 4022      continue
           jl=jnl
         else
 c-
@@ -366,8 +370,9 @@ c------ new initialisation of sw
               if(s(j).gt.wwr) goto 2022
               call dreg(sw,a1,a2,iord,x(j),s(j-1),s(j),tt(i),wid,1)
             end if
-202         continue
-2022      jr=j-1
+ 202      continue
+ 2022     continue
+          jr=j-1
           wr=wwr
         end if
 6666    continue
@@ -527,14 +532,16 @@ c------ compare old sum with new smoothing intervall tt(i)-b,tt(i)+b
               jnr=j-1
               if(s(jnr).le.wwr) goto 2011
 201           continue
-2011      end if
+          end if
+2011      continue
           if(s(jl-1).lt.wwl) then
             do 301 j=jl,jr
               call dreg(sw,a1,a2,iord,x(j),s(j-1),s(j),tt(i-1),wido,-1)
               jnl=j+1
               if(s(j).ge.wwl) goto 3011
 301           continue
-3011      end if
+          end if
+3011      continue
 c-
 c------ updating of sw
           call lreg(sw,a3,iord,(tt(i)-tt(i-1))/wid,dold,wido/wid,cm)
@@ -544,7 +551,8 @@ c------ updating of sw
               call dreg(sw,a1,a2,iord,x(j),s(j-1),s(j),tt(i),wid,1)
               jnr=j
 401           continue
-4011      end if
+          end if
+4011      continue
           jr=jnr
           if(jl.eq.jnl) then
             do 402  j=jl-1,1,-1
@@ -552,7 +560,8 @@ c------ updating of sw
               call dreg(sw,a1,a2,iord,x(j),s(j-1),s(j),tt(i),wid,1)
               jnl=j
 402           continue
-4022      end if
+          end if
+4022      continue
           jl=jnl
         else
 c-
