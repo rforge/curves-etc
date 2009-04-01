@@ -45,9 +45,9 @@ glkerns <- function(x, y=NULL, deriv = 0, n.out = 300, x.out = NULL,
     }
 
     ## s	mid-point grid :
-    s <- if (is.null(s) || length(s) != n+1) double(n+1) else as.double(s)
+    s <- double(if(is.null(s) || length(s) != n+1)  n+1 else s)
 
-    ## sig      input variance
+    ## sig          input variance
     if (is.null(sig)) sig <- 0. #-> Fortran takes 0 = "compute default"
 
     inputb <- as.logical(inputb)
@@ -77,7 +77,7 @@ glkerns <- function(x, y=NULL, deriv = 0, n.out = 300, x.out = NULL,
                     x = as.double(x),		# t
                     y = as.double(y),		# x
                     x.out = as.double(x.out),	# tt
-                    n,				# n
+                    as.integer(n),		# n
                     as.integer(n.out),		# m
                     deriv = as.integer(deriv),  # nue
                     korder = as.integer(korder),# kord
@@ -96,7 +96,7 @@ glkerns <- function(x, y=NULL, deriv = 0, n.out = 300, x.out = NULL,
                     PACKAGE = "lokern"
                     )
     if(res$korder != korder)
-        warning(paste("'korder' set to ", res$korder,", internally"))
+	warning(paste("'korder' set to ", res$korder,", internally"))
 
     list(x = x, y = y, bandwidth = res$bandwidth, x.out = x.out,
 	 est = res$est, sig = res$sig,
