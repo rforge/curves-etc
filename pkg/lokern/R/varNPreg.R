@@ -22,3 +22,9 @@ varNPreg <- function(x,y)
              snr = double(1),
              sigma2 = double(1), PACKAGE = "lokern")[4:6]
 }
+
+varest <- function(x,y) {
+    warning("Use  'varNPreg' instead of 'varest';\n",
+	    "The latter has been an accidental identical copy of the former")
+    varNPreg(x,y)
+}
