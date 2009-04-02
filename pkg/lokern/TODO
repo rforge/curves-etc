@@ -1,41 +1,43 @@
+  o Want class()ed results which have  print.*,
+    summary.* (maybe lines.*) and plot.* methods.
+    --> residuals() !!
 
-  o The 2 man pages look very similar;  ``clean up''
+    For residuals, want to use  sfsmisc::seqXtend() {-> sfsmisc:roundfixS() }
+    --> dependency on  sfsmisc
+    [[Alternative:  Write small paper on  seqXtend() & roundfixS()
+                    and move these to  utils ]]
+
+    -- see R/lokerns.R.~future~
+       	   --------------------
+
+   NOTE: I had the following in ./ChangeLog  (note the date !!)
+
+   2003-11-04  Martin Maechler  <maechler@stat.math.ethz.ch>
+
+	* DESCRIPTION (Version): 1.1-0 : new: using class();...
+
+	* src/lokerns.f (lokerns): switched arg. 3 <-> 4; s/smo/inputb/
+
+	* R/lokerns.R (fitted.KernS): use class(); x.out should include x
+	        --> changes to do smart x.out;  residuals() and fitted()
+
+   TODO: The same for R/glkerns.R
+   ------------------------------
+
+
+  o The Fortran-algorithm  in parts heavily relies on   t_i < t_{i+1}
+    When we have *duplicated* x's  [or "nearly-duplicated" ones which may
+    be even more subtle ! --- there maybe numerical problems that we should
+    deal with.
+    The smooth.spline() - like solution requires an algorithm that works
+    with *weights*  ... and that maybe much too much work, needing more
+    theoretical work, first !
 
   o Both functions now return lists almost identical;
     this is nice and useful.
 
-    Actually they should give class()ed results which have  print.*,
-    summary.* (maybe lines.*) and plot.* methods.
-
     plot(): see the extensive  lokerns() and glkerns() examples.
     {think about "deriv" !}
 
+  o The 2 man pages look very similar;  ``clean up''
 
-  o  n = 3 is allowed (R & Fortran) and seems +- ok  (?)
-    e.g.
-         str(lokerns(c(1:2,4),c(2,1,7), n.out=8),vec.len=10)
-
-  o  Fortran compilation gives warnings, even with "only"  -Wall :
-
-     g77   -fPIC  -g -O2 -Wall -fno-f90  -c auxkerns.f -o auxkerns.o
-     auxkerns.f: In subroutine `kernfa':
-     auxkerns.f:246: warning: `jl' might be used uninitialized in this function
-     auxkerns.f:246: warning: `jr' might be used uninitialized in this function
-     auxkerns.f:249: warning: `wr' might be used uninitialized in this function
-     auxkerns.f: In subroutine `kernfp':
-     auxkerns.f:433: warning: `jl' might be used uninitialized in this function
-     auxkerns.f:433: warning: `jr' might be used uninitialized in this function
-     auxkerns.f:435: warning: `q' might be used uninitialized in this function
-     auxkerns.f:437: warning: `wr' might be used uninitialized in this function
-     auxkerns.f: In subroutine `lreg':
-     auxkerns.f:685: warning: `qq' might be used uninitialized in this function
-
-     g77   -fPIC  -g -O2 -Wall -fno-f90  -c glkerns.f -o glkerns.o
-     glkerns.f: In subroutine `glkerns':
-     glkerns.f:25: warning: `bmin' might be used uninitialized in this function
-     glkerns.f:25: warning: `bmax' might be used uninitialized in this function
-     glkerns.f:25: warning: `ex' might be used uninitialized in this function
-
-     g77   -fPIC  -g -O2 -Wall -fno-f90  -c lokerns.f -o lokerns.o
-
-   Since "lokerns.f" seems ok, I should really compare how  glkerns() differs!
