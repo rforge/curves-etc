@@ -114,8 +114,8 @@ glkerns(x, y, deriv = 0, n.out = 300, x.out=NULL, korder= deriv + 2,
   optimal bandwidths. Therefore, one has to estimate the variance for
   homoscedastic error variables and a functional of a smooth variance
   function for heteroscedastic error variables, respectively. Also, one
-  has to estimate an integral functional of the squared k-th derivative
-  of the regression function (k=korder) for the global bandwidth.
+  has to estimate an integral functional of the squared \eqn{k}-th derivative
+  of the regression function (\eqn{k=\code{korder}}) for the global bandwidth.
 
   Here, a further kernel estimator for this derivative is used with a
   bandwidth which is adapted iteratively to the regression function.  A
@@ -126,7 +126,8 @@ glkerns(x, y, deriv = 0, n.out = 300, x.out=NULL, korder= deriv + 2,
   and boundary kernels are used with a fast and stable updating
   algorithm for kernel regression estimation.  More details can be found
   in the references and on
-  \url{http://www.unizh.ch/biostat/Software/kernsplus.html}.
+  \url{http://www.biostat.uzh.ch/research/software/kernel.html}
+  %was http://www.unizh.ch/biostat/Software/kernsplus.html}.
 }
 \references{
   - global plug-in bandwidth estimator:\cr
@@ -156,9 +157,11 @@ glkerns(x, y, deriv = 0, n.out = 300, x.out=NULL, korder= deriv + 2,
   - on the special kernel estimator for random design point:\cr
   E. Herrmann (1996)
   \emph{On the convolution type kernel regression estimator};
-  Preprint 1833, FB Mathematik, Technische Universitaet Darmstadt
-  (available from
-  \url{http://wwwbib.mathematik.tu-darmstadt.de/Math-Net/Preprints/Listen/shadow/pp1833.html})
+  Preprint 1833, FB Mathematik, Technische Universitaet Darmstadt;
+  currently available from
+  \url{http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.32.6383}
+  %% no longer available from
+  %% \url{http://wwwbib.mathematik.tu-darmstadt.de/Math-Net/Preprints/Listen/shadow/pp1833.html})
 }
 \seealso{\code{\link{lokerns}} for \bold{lo}cal bandwidth computation.}
 \examples{
