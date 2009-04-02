@@ -122,17 +122,7 @@ lokerns(x , y, deriv = 0, n.out=300, x.out=NULL, korder= deriv + 2,
   bandwidth and the squared \eqn{k}-th derivative itself for the local
   bandwidths.
 
-  Here, a further kernel estimator for this derivative is used with a
-  bandwidth which is adapted iteratively to the regression function.  A
-  convolution form of the kernel estimator for the regression function
-  and its derivatives is used. Thereby one can adapt the s-array for
-  random design. Using this estimator leads to an asymptotically minimax
-  efficient estimator for fixed and random design.  Polynomial kernels
-  and boundary kernels are used with a fast and stable updating
-  algorithm for kernel regression estimation.
-
-  More details can be found in the references and on
-  \url{http://www.unizh.ch/biostat/Software/kernsplus.html}.
+  Some more details are in \code{\link{glkerns}}.
 }
 \references{
   All the references in \code{\link{glkerns}}.
