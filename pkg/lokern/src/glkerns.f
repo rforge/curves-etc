@@ -27,8 +27,8 @@ c Var
      2     r2,snr,vi,ssi,const,fac, q,tll,tuu, xi,xmy2
 c-
 c-------- 1. initialisations
-      data bias/.2,.04762,.4286,.1515,1.33,.6293/
-      data vark/.6,1.250,2.143,11.93,35.0,381.6/
+      data bias/.2, .04762, .4286, .1515, 1.33, .6293/
+      data vark/.6,  1.250, 2.143, 11.93, 35.0, 381.6/
       data fak2/4.,36.,576./
       nyg=0
       inputs = .false.
@@ -44,15 +44,18 @@ c     0 <= nue <= 4;  nue <= 2 if(! smo)
 
 c     kord - nue must be even :
       kk=(kord-nue)/2
-      if(2*kk+nue.ne.kord)         kord=nue+2
-      if(kord.gt.4.and. .not.smo)  kord=nue+2
-      if(kord.gt.6.or.kord.le.nue) kord=nue+2
+      if(2*kk + nue .ne. kord)       kord=nue+2
+      if(kord.gt.4 .and. .not.smo)   kord=nue+2
+      if(kord.gt.6 .or. kord.le.nue) kord=nue+2
       if(smo.and.b.le.0) smo=.false.
       rvar=sig
+c- -Wall (erronously warning if not)
+      bmin=1
+      bmax=1
+      ex=1
 
       il=1
       iu=n
-c-
 c-------- 2. computation of s-sequence
       s0=1.5*t(1)-0.5*t(2)
       sn=1.5*t(n)-0.5*t(n-1)
@@ -68,7 +71,7 @@ c-------- 2. computation of s-sequence
          if(smo) goto 160
       end if
 c-
-c-------- 3. computation of minimal, maximal allowed bandwidth
+c-------- 3. computation of minimal, maximal allowed global bandwidth
       bmax=(sn-s0)*.5
       bmin=(sn-s0)/dble(n)*dble(kord-1)*.6
 c-
@@ -86,8 +89,8 @@ c-------- 5. compute indices
       wn(1,1)=0.0
       wn(n,1)=0.0
       do 50 i=1,n
-        if(t(i).le.tl.or.t(i).ge.tu) wn(i,1)=0.0
-        if(t(i).gt.tl.and.t(i).lt.tu) wn(i,1)=1.0
+        if(t(i).le.tl .or.  t(i).ge.tu) wn(i,1)=0.0
+        if(t(i).gt.tl .and. t(i).lt.tu) wn(i,1)=1.0
         if(t(i).lt.tl) il=i+1
         if(t(i).le.tu) iu=i
  50   continue
@@ -246,7 +249,7 @@ c-------- 17. variance check
       end if
       q=sig/rvar
       if(q.le.2.) return
-      if(q.gt.5..and.r2.gt..95) rvar=rvar*.5
+      if(q.gt.5. .and. r2.gt..95) rvar=rvar*.5
       sig=rvar
       call constV(wn(1,4),n,sig)
       goto 100
