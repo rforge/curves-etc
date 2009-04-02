@@ -29,8 +29,8 @@ c Var
      3     xi,xh,xxh,xmy2
 c-
 c-------- 1. initialisations
-      data bias/.2,.04762,.4286,.1515,1.33,.6293/
-      data vark/.6,1.250,2.143,11.93,35.0,381.6/
+      data bias/.2, .04762, .4286, .1515, 1.33, .6293/
+      data vark/.6,  1.250, 2.143, 11.93, 35.0, 381.6/
       data fak2/4.,36.,576./
       nyg=0
       inputs = .false.
@@ -50,7 +50,7 @@ c     kord - nue must be even :
       if(kord.gt.4 .and. .not.smo)   kord=nue+2
       if(kord.gt.6 .or. kord.le.nue) kord=nue+2
       rvar=sig
-c-
+
 c-------- 2. computation of s-sequence
       s0=1.5*t(1)-0.5*t(2)
       sn=1.5*t(n)-0.5*t(n-1)
@@ -86,8 +86,8 @@ c-------- 5. compute indices
       wn(1,1)=0.0
       wn(n,1)=0.0
       do 50 i=1,n
-        if(t(i).le.tl.or.t(i).ge.tu) wn(i,1)=0.0
-        if(t(i).gt.tl.and.t(i).lt.tu) wn(i,1)=1.0
+        if(t(i).le.tl .or.  t(i).ge.tu) wn(i,1)=0.0
+        if(t(i).gt.tl .and. t(i).lt.tu) wn(i,1)=1.0
         if(t(i).lt.tl) il=i+1
         if(t(i).le.tu) iu=i
  50   continue
@@ -171,6 +171,7 @@ c-------- 11. refinement of s-sequence for random design
         exsvi=dble(kord)     / dble(6*kord+3)
         bs=0.1*(vi/(sn-s0)**2)**exsvi * n**exs
         call kernel(wn(1,5),t,n,bs,0,2,nyg,wn(0,3),wn(0,2),n+1,s(0))
+
         vi=0.0
 111     needsrt=.false.
         do 112 i=1,n
@@ -215,7 +216,7 @@ c-------- 15. finish of iterations
 120   continue
 
 c-------- 16  compute smoothed function with global plug-in bandwidth
-160   call kernel(t,x,n,b,nue,kord,nyg,s,tt,m,y)
+      call kernel(t,x,n,b,nue,kord,nyg,s,tt,m,y)
 c-
 c-------- 17. variance check
       if(hetero) sig=rvar
@@ -241,9 +242,11 @@ c-------- 17. variance check
          call resest(t(iil),wn(1,3),ii,wn(1,4),snr,rvar)
       end if
       q=sig/rvar
-      if(q.le.2.) call constV(wn(1,4),n,sig)
-      if(q.le.2.) goto 180
-      if(q.gt.5..and.r2.gt..95) rvar=rvar*.5
+      if(q.le.2.) then
+         call constV(wn(1,4),n,sig)
+         goto 180
+      end if
+      if(q.gt.5. .and. r2.gt..95) rvar=rvar*.5
       sig=rvar
       call constV(wn(1,4),n,sig)
       goto 100
