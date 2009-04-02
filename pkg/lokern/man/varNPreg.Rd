@@ -1,5 +1,6 @@
 \name{varNPreg}
 \alias{varNPreg}
+\alias{varest}
 \title{Nonparametric Variance Estimator}
 \description{
   Estimates the error variance \eqn{\sigma^2} nonparametrically in the model
@@ -20,6 +21,9 @@ varNPreg(x, y)
   This is an \R interface to the \code{resest} Fortran subroutine, used
   in \code{\link{lokerns}} and \code{\link{glkerns}}, see their help
   pages for references and context.
+
+  Earlier version of the \pkg{lokern} package accidentally, contained
+  \code{varest()} which has been an identical copy of \code{varNPreg()}.
 }
 \value{
   A list with components
