@@ -10,6 +10,7 @@ c       General subroutine for kernel smoothing:
 c       Computation of iterative plug-in algorithm for global bandwidth
 c       selection for kernels with
 c       (nue,kord) = (0,2), (0,4), (1,3) or (2,4).
+c
 c-----------------------------------------------------------------------
 c  used subroutines: constV, resest, kernel with further subroutines
 c-----------------------------------------------------------------------
@@ -17,6 +18,7 @@ c Args
       integer n, m, nue,kord
       double precision t(n),x(n), tt(m), tl,tu, s(0:n), sig
       logical hetero, isrand, smo
+c 'smo' == 'inputb' : if TRUE, *use* bandwidth 'b' given as input
       integer m1
       double precision wn(0:n,5),w1(m1,3), b, y(m)
 c Var
