@@ -1,0 +1,109 @@
+2009-07-02  Martin Maechler  <maechler@stat.math.ethz.ch>
+
+	* DESCRIPTION (Version): 1.0-8
+
+	* demo/glk-derivs.R (p.3glks): "testing" function showing several derivatives
+
+	* src/glkerns.f (glkerns): comments; return #{iter}
+	* R/glkerns.R (glkerns): #{plugin iterations} returned.
+
+	* tests/glk1.R: call p.3glks()
+
+
+2009-04-02  Martin Maechler  <maechler@stat.math.ethz.ch>
+
+	* DESCRIPTION (Version): 1.0-7, released to CRAN
+
+	* R/varNPreg.R (varest): as an alias + warning for varNPreg()
+	* man/varNPreg.Rd: ditto; varest() was *ACCIDENTAL*
+	copy of the varNPreg() function.
+
+	* man/glkerns.Rd: update or delete no-longer working URLs.
+
+	* src/glokerns.f, lokerns.f: got rid of remaining -Wall warnings
+
+2009-04-01  Martin Maechler  <maechler@stat.math.ethz.ch>
+
+	* tests/infloop-bug.R: add test against infinite loop
+
+2008-01-29  Martin Maechler  <maechler@stat.math.ethz.ch>
+
+	* R/lokerns.R, glkerns.R: use 'foo' instead of `foo'
+		(messages & comments)
+
+	* src/lokerns.f (lokerns): fix infinite loop bug, reported
+	  by Corinne Dahinden, Francesco Ferrari, and Ravi Varadhan.
+
+	* src/glkerns.f (glkerns): with 'needsrt'
+
+2007-10-09  Martin Maechler  <maechler@stat.math.ethz.ch>
+
+	* man/xSim.Rd: eliminate "\non_function"
+
+2003-11-04  Martin Maechler  <maechler@stat.math.ethz.ch>
+
+	* src/lokerns.f (lokerns): switched arg. 3 <-> 4; s/smo/inputb/
+	* src/glkerns.f (glkerns): ditto
+
+2003-11-04  Martin Maechler  <maechler@stat.math.ethz.ch>
+
+	* DESCRIPTION (Version, Date): 1.0-4
+
+	* R/varest.R (varest): add PACKAGE to .Fortran() call
+	* R/varNPreg.R (varNPreg): <ditto>
+
+	* R/lokerns.R (lokerns): error message; white space; no return(a,b,..)
+	* R/glkerns.R (glkerns):  <ditto>
+
+	* man/lokerns.Rd: codoc fixes (default argument names)
+	* man/glkerns.Rd: <ditto>
+	* man/lokerns.Rd: all references *are* in glkerns.Rd
+
+2002-07-03  Martin Maechler  <maechler@stat.math.ethz.ch>
+
+	* DESCRIPTION (Version): 1.0-3  --> CRAN
+
+	* man/glkerns.Rd: s/T/TRUE/, s/F/FALSE/
+
+2001-12-14  Martin Maechler  <maechler@stat.math.ethz.ch>
+
+	* DESCRIPTION (Version): 1.0-2  release for R 1.4.0
+
+2001-08-18  Martin Maechler  <maechler@stat.math.ethz.ch>
+
+	* man/lokerns.Rd: API change --- Arguments  hetero / is.rand
+
+	* R/glkerns.R: and
+	* R/lokerns.R: Ensure that `stop' will be called in R, not in Fortran
+	        More argument checking; don't allow silly combinations anymore
+
+	* src/lokerns.f (lokerns): cosmetics, some from glkerns.f
+
+2001-07-09  Martin Maechler  <maechler@stat.math.ethz.ch>
+
+	* R/varNPreg.R (varNPreg): New; interface to Fortran's `resest()'
+
+	* src/glkerns.f (glkerns),
+	  src/lokerns.f (lokerns): declare everything (as for `implicit none')
+
+	* src/auxkerns.f (constVec): better name than coff()
+		Make all work with `implicit none'.
+
+2001-06-13  Martin Maechler  <maechler@stat.math.ethz.ch>
+
+	* DESCRIPTION (Package): Version 1.0-1  - submitted to CRAN
+
+	* man/(gl|lo)kerns.Rd : Extended/Improved the examples.
+	* data/xSim.R: The simulated data from the original documenation
+	* man/xSim.Rd: made accessible as  data(xSim)
+
+	* tests/* : Newly added.
+
+2001-06-08  Martin Maechler  <maechler@stat.math.ethz.ch>
+
+	* DESCRIPTION (Package): Version 1.0-0 {waiting for release}
+
+	* TODO-MM: new internal file (part of)
+	* .Rbuildignore:
+
+
