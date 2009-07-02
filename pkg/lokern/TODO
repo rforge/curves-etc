@@ -46,3 +46,5 @@
     		^^^^^^^^^     .. however that would require that
       "nu - k" := deriv - korder  could be non-even etc
     --> Would need more "research"; see comment in src/glkerns.f
+
+  o Move the nice plots in tests/glk1.R  to a demo() !!
