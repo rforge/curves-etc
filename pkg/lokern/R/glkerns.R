@@ -53,8 +53,11 @@ glkerns <- function(x, y=NULL, deriv = 0, n.out = 300, x.out = NULL,
     inputb <- as.logical(inputb)
     if (is.null(bandwidth) || bandwidth < 0)
         bandwidth <- 0.
-    else if (bandwidth == 0 && inputb)
-        stop("bandwidth = 0 must have inputb = FALSE")
+    else {
+        bandwidth <- as.double(bandwidth[1])
+        if (bandwidth == 0 && inputb)
+            stop("bandwidth = 0 must have inputb = FALSE")
+    }
 
     ## deriv          derivative of regression function to be estimated
     ## korder         kernel order
@@ -84,22 +87,23 @@ glkerns <- function(x, y=NULL, deriv = 0, n.out = 300, x.out = NULL,
                     hetero = as.logical(hetero),# hetero
                     is.rand= as.logical(is.rand),# isrand
                     inputb  = inputb,		# smo
-                    m1,
+                    iter = m1, # m1; contains the number of plug-in iterations on output
                     xl = as.double(xl),
                     xu = as.double(xu),
                     s = as.double(s),
                     sig = as.double(sig),
                     work1 = double((n+1)*5),
                     work2 = double(m1*3),
-                    bandwidth = as.double(bandwidth),
+                    bandwidth = bandwidth,
                     est = double(n.out),
-                    PACKAGE = "lokern"
-                    )
+                    PACKAGE = "lokern")
     if(res$korder != korder)
-	warning(paste("'korder' set to ", res$korder,", internally"))
+	warning(gettextf("'korder' reset from %d to %d, internally",
+			 korder, res$korder))
+    if(res$iter < 0) res$iter <- NA_integer_
 
     list(x = x, y = y, bandwidth = res$bandwidth, x.out = x.out,
 	 est = res$est, sig = res$sig,
-	 deriv = res$deriv, korder = res$korder,
+	 deriv = res$deriv, korder = res$korder, iter = res$iter,
 	 xl = res$xl, xu = res$xu, s = res$s)
 }
