@@ -8,13 +8,19 @@
 myF <- function(d, A="(", O=")", B = length(d) > 1)
     paste(if(B) A, paste(d, collapse=", "), if(B) O, sep="")
 
+library(lokern)
+
 p.3glks <- function(x.dat, y.dat, korder, derivs = 0:2,
                     is.rand=FALSE, useBandwidth, bw.factor = 1.8,
                     col = 2, lwd = 1.5)
 {
-    ## Purpose: Plot  glkerns(*,  deriv = {0, 1, 2}
+    ## Purpose: Plot  glkerns(*,  deriv = {0, 1, 2})
     ## ----------------------------------------------------------------------
-    ## Arguments:
+    ## Arguments: (x.dat, y.dat): the numeric data vectors
+    ##            korder : the kernel order -- automatically is diminuished by one
+    ##                     if needed to keep  'korder - deriv' an even number
+    ##            derivs : integer vectors of derivatives to compute
+    ##            useBandwidth: possibly a user specified bandwidth
     ## ----------------------------------------------------------------------
     ## Author: Martin Maechler, Date:  2 Jul 2009, 09:24
 
@@ -80,3 +86,16 @@ p.3glks <- function(x.dat, y.dat, korder, derivs = 0:2,
 
     invisible(glist)
 }
+
+data(xSim)
+n <- length(xSim)
+tt <- ((1:n) - 1/2)/n # equidistant x
+
+p.3glks(tt, xSim, kord = 4)
+
+## Chose bandwidth yourself; see all available derivatives:
+## Store results
+r <- p.3glks(tt, xSim, kord = 6,
+             derivs = 0:4, useBand = 0.15)
+## and inspect them
+str(r)
