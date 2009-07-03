@@ -32,7 +32,7 @@ glkerns(x, y, deriv = 0, n.out = 300, x.out=NULL, korder= deriv + 2,
     defaults to \code{korder = deriv+2} or \eqn{k = \nu + 2} where \eqn{k - \nu}
     must be even.  The maximal possible values are for automatic
     smoothing, \eqn{k \le 4}{k <= 4}, whereas for smoothing with input
-    bandwidth array, \eqn{k \le 6}{k <= 6}.
+    bandwidth, \eqn{k \le 6}{k <= 6}.
   }
   \item{hetero}{logical: if TRUE, heteroscedastic error variables are
     assumed for variance estimation, if FALSE the variance estimation is
@@ -83,7 +83,8 @@ glkerns(x, y, deriv = 0, n.out = 300, x.out=NULL, korder= deriv + 2,
   \item{y}{vector of observations ordered with respect to x.}
   \item{bandwidth}{bandwidth which was used for kernel regression estimation.}
   \item{x.out}{vector of ordered output design points.}
-  \item{est}{vector of estimated regression function or its derivative.}
+  \item{est}{vector of estimated regression function or its derivative
+    (at \code{x.out}).}
   \item{sig}{variance estimation which was used for calculating the
     plug-in bandwidth}
   \item{deriv}{derivative of the regression function which was estimated.}
