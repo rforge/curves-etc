@@ -34,15 +34,29 @@ qv <- qnorMix(1-ip, MW.nm12, trace=1)
 qv. <- qnorMix(ip, MW.nm12, lower.tail=FALSE, trace=1)#2, maxiter=50)
 stopifnot(all.equal(qv, qv., tol = 1e-5))
 
-###
+## qnorMix(*, log.p=TRUE)  currently warns about  missing Newton step implementation
+qnorMixLog <- function(p, obj, lower.tail = TRUE, ...)
+    suppressWarnings(qnorMix(p, obj, lower.tail=lower.tail, log.p=TRUE, ...))
+##
+n2 <- 8
 set.seed(11)
-u0 <- c(0,sort(runif(8)),1)
-q0 <- qnorMix(u0,   MW.nm2,                   trace=1, tol=1e-12)
-qL <- qnorMix(1-u0, MW.nm2, lower.tail=FALSE, trace=1, tol=1e-12)
+for(i in 1:50) {
+cat(i, "", if(i %% 20 == 0)"\n")
+u0 <- c(0,sort(runif(n2)),1)
+q0 <- qnorMix(u0,   MW.nm2,                   trace=0, tol=4e-16)
+qL <- qnorMix(1-u0, MW.nm2, lower.tail=FALSE, trace=0, tol=4e-16)
 stopifnot(all.equal(pnorMix(q0, MW.nm2), u0, tol=1e-15),
-          all.equal(q0, qL, tol=1e-13))
-
-### --- log.p = TRUE
+          all.equal(q0, qL, tol=1e-14))
+i. <- 2:(n2+1); u0. <- u0[i.]
+## --- log.p= TRUE  [no Newton steps]
+q0. <- qnorMixLog(log  ( u0.), MW.nm2,                   tol=4e-16)
+qL. <- qnorMixLog(log1p(-u0.), MW.nm2, lower.tail=FALSE, tol=4e-16)
+stopifnot(all.equal(pnorMix(q0, MW.nm2), u0, tol=1e-15),
+	  all.equal(q0, qL,   tol=1e-14),
+	  all.equal(q0., qL., tol=1e-10),
+	  all.equal(q0[i.], q0., tol = 6e-6)# no Newton => less accuracy
+	  )
+}; cat("\n")
 
 
 cat('Time elapsed: ', proc.time(),'\n') # for ``statistical reasons''

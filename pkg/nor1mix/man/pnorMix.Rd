@@ -17,7 +17,11 @@ qnorMix(p, obj, lower.tail = TRUE, log.p = FALSE,
 }
 \arguments{
   \item{obj}{an object of class \code{norMix}.}
-  \item{p}{numeric vector of probabilities.}
+  \item{p}{numeric vector of probabilities.  Note that for all
+    \code{method}s but \code{"eachRoot"}, \code{qnorMix(p, *)} works
+    with the full vector \code{p}, typically using (inverse)
+    interpolation approaches; consequently the result is very
+    slightly dependent on \code{p} as a whole.}
   \item{q}{numeric vector of quantiles}.
   \item{lower.tail}{logical; if TRUE (default), probabilities are
     \eqn{P[X \le x]}{P[X <= x]}, otherwise, \eqn{P[X > x]}{P[X > x]}.}
@@ -34,8 +38,8 @@ qnorMix(p, obj, lower.tail = TRUE, log.p = FALSE,
 }
 \details{
   Whereas the distribution function \code{pnorMix} is the trivial sum of
-  weighted normal probabilities (\code{\link{pnorm}}), its inverse is
-  computed numerically: For each \code{p} we search for
+  weighted normal probabilities (\code{\link{pnorm}}), its inverse,
+  \code{qnorMix} is computed numerically: For each \code{p} we search for
   \code{q} such that \code{pnorMix(obj, q) == p}, i.e., \eqn{f(q) = 0}
   for \code{f(q) := pnorMix(obj, q) - p}.  This is a root finding
   problem which can be solved by \code{\link{uniroot}(f, lower,upper,*)}.
@@ -44,6 +48,7 @@ qnorMix(p, obj, lower.tail = TRUE, log.p = FALSE,
   this for the outermost non-trivial (\eqn{0 < p < 1}) values of p.
 
   %% "root2" may be abandoned, so I'm too lazy to describe it now --- FIXME
+  %%
   For \code{method = "interQpspline"} or \code{"interpspline"}, we now compute
   \code{p. <- \link{pnorMix}(q., obj)} for values \code{q.} which are a grid
   of length \code{l.interp} in each interval \eqn{[q_j,q_{j+1}]} and

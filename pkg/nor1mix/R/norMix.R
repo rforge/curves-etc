@@ -298,7 +298,7 @@ qnorMix <-
       }
 
       np <- length(pp)
-      rr <- pp #- rr will contain = q..mix(pp, *)
+      rr <- pp                      #- rr will contain = q..mix(pp, *)
       method <- if(np <= 2) "eachRoot" else match.arg(method)
 
       if(method == "eachRoot") { ## root finding from left to right ...
@@ -312,120 +312,119 @@ qnorMix <-
 	      rr[i] <- root
 	  }
       }
-      else { ## => np > 2
-	rr[1] <- safeUroot(f.make(pp[1]), interval = outRange(pp[1]),
-                           tol=tol, maxiter=maxiter)$root
-        rr[np] <- safeUroot(f.make(pp[np]), interval = outRange(pp[np]),
-                            tol=tol, maxiter=maxiter)$root
-        ni <- length(iDone <- as.integer(c(1,np)))
-        if(any(method == c("interpQspline", "interpspline"))) {
-            ## reverse interpolate, using relatively fast pnorMix()!
+      else { ## other 'method's  => np > 2
+          rr[1] <- safeUroot(f.make(pp[1]), interval = outRange(pp[1]),
+                             tol=tol, maxiter=maxiter)$root
+          rr[np] <- safeUroot(f.make(pp[np]), interval = outRange(pp[np]),
+                              tol=tol, maxiter=maxiter)$root
+          ni <- length(iDone <- as.integer(c(1,np)))
+          if(any(method == c("interpQspline", "interpspline"))) {
+              ## reverse interpolate, using relatively fast pnorMix()!
+              pp. <- pp[-iDone]
+              ## those mu's that are inside our range:
+              rXtr <- rr[if(lower.tail) c(1L,np) else c(np,1L)]
+              mu. <- unique(sort(mu[rXtr[1] < mu & mu < rXtr[2]]))
+              k <- length(qs <- c(rXtr[1], mu., rXtr[2]))
+              qs. <- qs[-k]
+              dq <- qs[-1] - qs.    # == delta(qs)
+              ## l.interp values between each mu
+              stopifnot(l.interp >= 1)
+              qi <- c(t(dq %*% t(seq_len(l.interp)/l.interp) + qs.))
+              stopifnot(!is.unsorted(qi)) ## << FIXME remove if never triggering
+              ppi <- pnorMix(qi, obj, lower.tail=lower.tail, log.p=log.p)
 
-            pp. <- pp[-iDone]
-            ## those mu's that are inside our range:
-            rXtr <- rr[if(lower.tail) c(1L,np) else c(np,1L)]
-            mu. <- unique(sort(mu[rXtr[1] < mu & mu < rXtr[2]]))
-            k <- length(qs <- c(rXtr[1], mu., rXtr[2]))
-            qs. <- qs[-k]
-            dq <- qs[-1] - qs.      # == delta(qs)
-            ## l.interp values between each mu
-            stopifnot(l.interp >= 1)
-            qi <- c(t(dq %*% t(seq_len(l.interp)/l.interp) + qs.))
-            stopifnot(!is.unsorted(qi)) ## << FIXME remove if never triggering
-            ppi <- pnorMix(qi, obj, lower.tail=lower.tail, log.p=log.p)
+              ## in an extreme case, pnorMix() is horizontal; hence
+              ## qnorMix() has practically a discontinuity there.
+              ## In that case, splinefun() completely "fails";
+              ## we do need  *monotone* (spline) interpolation:
+              mySfun <- {
+                  if(getRversion() < "2.8.0") monoHsplinefun
+                  else function(x, y, ...) splinefun(x,y, ..., method="monoH.FC")
+              }
+              if(method == "interpspline")
+                  qpp <- mySfun(ppi, qi)(pp.) ## is very fast
+              else { ## "interpQspline"
+                  ## logit() transform the P's --> interpolation is more linear
+                  muT <- c(obj[, "w"] %*% mu)
+                  qp. <- qlogis(pp., muT, log.p=log.p)
+                  qpp <- mySfun(qlogis(ppi, muT, log.p=log.p), qi)(qp.)
+              }
 
-            ## in an extreme case, pnorMix() is horizontal; hence
-            ## qnorMix() has practically a discontinuity there.
-            ## In that case, splinefun() completely "fails";
-            ## we do need  *monotone* (spline) interpolation:
-            mySfun <- {
-                if(getRversion() < "2.8.0") monoHsplinefun
-                else function(x, y, ...) splinefun(x,y, ..., method="monoH.FC")
-            }
-            if(method == "interpspline")
-                qpp <- mySfun(ppi, qi)(pp.) ## is very fast
-            else {                          ## "interpQspline
-                ## logit() transform the P's --> interpolation is more linear
-                muT <- c(obj[, "w"] %*% mu)
-                qpp <- mySfun(qlogis(ppi, muT), qi)(qlogis(pp., muT))
-            }
-
-            if(log.p)
-                warning("Newton steps for 'log.p = TRUE' not yet implemented")
-            else {
-                ## now end with a few Newton steps
-                for(k in 1:maxiter) {
-                    dp <- dpnorMix(qpp, obj, lower.tail=lower.tail)
-                    del.p <- dp$p - pp.
-                    ## FIXME?: del.p  may suffer from considerable cancellation
-                    relE.f <- abs(del.p)
-                    n0 <- relE.f > 0 & pp. > 0
-                    relE.f[n0] <- (relE.f/pp.)[n0]
-                    ii. <- dp$d > 0 ## & relE.f > tol
-                    if(!any(ii.)) {
-                        relErr <- mean(relE.f)
-                        break           # not converged though
-                    }
-                    ## del.q := Delta(q) =  F(q) / f(q)   or 0 if f(q)=0
-                    del.q <- numeric(length(pp.))
-                    del.q[ii.] <- S*(del.p/dp$d)[ii.]
-                    ## only modify qpp[] where Newton step is ok:
-                    ## e.g. resulting qpp must remain increasing
-                    while(length(iF <- which(S*diff(qNew <- qpp - del.q) <= 0))) {
-                        iF <- c(iF,iF+1L)
-                        del.q[iF] <- del.q[iF] / 2
-                        if(traceRootsearch) cat(",")
-                    }
-                    qpp[ii.] <- qNew[ii.]
-                    relErr <- sum(abs(del.q[ii.])) / sum(abs(qpp[ii.]))
-                    if(traceRootsearch) {
-                        cat(k,": relE =", formatC(relErr), sep='')
-                        if(traceRootsearch >= 2) {
-                            cat(" |\n")
-                            if(traceRootsearch == 2 || length(qpp) <= 10)
-                                print(summary(del.q / abs(qpp)))
-                            else print(del.q / abs(qpp))
-                        }
-                        else cat("\n")
-                    }
-                    if(relErr < tol) break
-                }
-                if(relErr >= tol)
-                    warning("Newton iterations have not converged")
-            }
-            rr[-iDone] <- qpp
-        }
-	  ## method == "root2"
-	  else while(ni < np) {
-	      ## not "done";  ni == length(iDone)
-	      oi <- iDone
-	      i.1 <- oi[-ni]
-	      i.2 <- oi[-1]
-	      l.new <- i.2 > i.1 + 1L	# those "need new"
-	      ii <- which(l.new)
-	      iN <- (i.1 + i.2 + 1L) %/% 2
-	      stopifnot( (i.1 < iN)[ii], (iN < i.2)[ii])
-	      if(traceRootsearch) cat("ni new intervals, ni=",ni,"\n")
-	      for(j in ii) {
-		  ## look in between i.1[j] .. i.2[j]
-		  ## NB: we can prove that  i.1[j] < iN[j] < i.2[j]
-		  rr[iN[j]] <- safeUroot(f.make(pp[iN [j]]),
-					 lower= rr[i.1[j]],
-					 upper= rr[i.2[j]],
-					 tol=tol, maxiter=maxiter)$root
-	      }
-	      ## update iDone[]:
-	      seq_old <- seq_len(ni)
-	      ni <- ni + length(ii)
-	      iDone <- integer(ni)
-	      iDone[seq_old	  + c(0L, cumsum(l.new))] <- oi
-	      iDone[seq_along(ii) + ii			] <- iN[ii]
-	  }
-      } # else { method ..}
+              if(log.p)
+                  warning("Newton steps for 'log.p = TRUE' not yet implemented")
+              else {
+                  ## now end with a few Newton steps
+                  for(k in 1:maxiter) {
+                      dp <- dpnorMix(qpp, obj, lower.tail=lower.tail)
+                      del.p <- dp$p - pp.
+                      ## FIXME?: del.p  may suffer from considerable cancellation
+                      relE.f <- abs(del.p)
+                      n0 <- relE.f > 0 & pp. > 0
+                      relE.f[n0] <- (relE.f/pp.)[n0]
+                      ii. <- dp$d > 0 ## & relE.f > tol
+                      if(!any(ii.)) {
+                          relErr <- mean(relE.f)
+                          break         # not converged though
+                      }
+                      ## del.q := Delta(q) =  F(q) / f(q)   or 0 if f(q)=0
+                      del.q <- numeric(length(pp.))
+                      del.q[ii.] <- S*(del.p/dp$d)[ii.]
+                      ## only modify qpp[] where Newton step is ok:
+                      ## e.g. resulting qpp must remain increasing
+                      while(length(iF <- which(S*diff(qNew <- qpp - del.q) <= 0))) {
+                          iF <- c(iF,iF+1L)
+                          del.q[iF] <- del.q[iF] / 2
+                          if(traceRootsearch) cat(",")
+                      }
+                      qpp[ii.] <- qNew[ii.]
+                      relErr <- sum(abs(del.q[ii.])) / sum(abs(qpp[ii.]))
+                      if(traceRootsearch) {
+                          cat(k,": relE =", formatC(relErr), sep='')
+                          if(traceRootsearch >= 2) {
+                              cat(" |\n")
+                              if(traceRootsearch == 2 || length(qpp) <= 10)
+                                  print(summary(del.q / abs(qpp)))
+                              else print(del.q / abs(qpp))
+                          }
+                          else cat("\n")
+                      }
+                      if(relErr < tol) break
+                  }
+                  if(relErr >= tol)
+                      warning("Newton iterations have not converged")
+              }
+              rr[-iDone] <- qpp
+          }
+          else ## method == "root2"
+              while(ni < np) {
+                  ## not "done";  ni == length(iDone)
+                  oi <- iDone
+                  i.1 <- oi[-ni]
+                  i.2 <- oi[-1]
+                  l.new <- i.2 > i.1 + 1L # those "need new"
+                  ii <- which(l.new)
+                  iN <- (i.1 + i.2 + 1L) %/% 2
+                  stopifnot( (i.1 < iN)[ii], (iN < i.2)[ii])
+                  if(traceRootsearch) cat("ni new intervals, ni=",ni,"\n")
+                  for(j in ii) {
+                      ## look in between i.1[j] .. i.2[j]
+                      ## NB: we can prove that  i.1[j] < iN[j] < i.2[j]
+                      rr[iN[j]] <- safeUroot(f.make(pp[iN [j]]),
+                                             lower= rr[i.1[j]],
+                                             upper= rr[i.2[j]],
+                                             tol=tol, maxiter=maxiter)$root
+                  }
+                  ## update iDone[]:
+                  seq_old <- seq_len(ni)
+                  ni <- ni + length(ii)
+                  iDone <- integer(ni)
+                  iDone[seq_old	  + c(0L, cumsum(l.new))] <- oi
+                  iDone[seq_along(ii) + ii			] <- iN[ii]
+              }
+      } ## else { method ..}
 
       r[ip] <- if(hasDup) rr[i.pp] else rr
-
-  } # end if(np)
+  } ## end if(np)
   r
 }## end{qnorMix}
 
