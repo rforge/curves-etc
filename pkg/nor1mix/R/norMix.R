@@ -515,12 +515,14 @@ nM2par <- function(obj)
 }
 
 
-par2norMix <- function(p, name = sprintf("{from %s}",deparse(substitute(p))))
+par2norMix <- function(p, name = sprintf("{from %s}",
+			  deparse(substitute(p))[1]))
 {
     ## Purpose: build norMix object from our parametrization par.vector
     ## ----------------------------------------------------------------------
     ## Author: Martin Maechler, Date: 17 Dec 2007
 
+    force(name) # substitute(..)
     lp <- length(p)
     stopifnot(is.numeric(p), lp %% 3 == 2)
     m <- (lp + 1L) %/% 3
