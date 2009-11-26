@@ -571,11 +571,12 @@ llnorMix <- function(p, x, m = (length(p)+1)/3)
 
     ## else -- m >= 2
     pi. <- plogis(p[1:m1]) ## \pi_j = inv_logit(\lambda_j)
-    if((sp <- sum(pi.)) > 1) return(-Inf) # worst possible value
-    ## pi. <- c(pi., 1 - sp) # \pi_1 := 1 - sum_{j=2}^{m} \pi_j
+    if((sp <- sum(pi.)) > 1) ## sum{1..K-1} pi[j] > 1
+        return(-Inf) # worst possible value
+    ## pi. <- c(pi., 1 - sp) # as  \pi_1 := 1 - sum_{j=2}^{m} \pi_j
     y <- (1 - sp) * dnorm(x, mean = mu[1], sd = sigma[1])
     for(j in 2:m)
-	y <- y + pi.[j- 1L] * dnorm(x, mean = mu[j], sd = sigma[j])
+	y <- y + pi.[j- 1] * dnorm(x, mean = mu[j], sd = sigma[j])
     ## return
     sum(log(y))
 }
