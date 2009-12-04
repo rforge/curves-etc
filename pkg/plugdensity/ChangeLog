@@ -1,4 +1,13 @@
 2009-12-04  Martin Maechler  <maechler@stat.math.ethz.ch>
 
-	* DESCRIPTION (License): use standardized format
+	* DESCRIPTION (Version, License): 0.8-2;  use standardized License
+
+	* tests/ex.Rout.save: (cosmetic update)
+
+2004-11-03  Martin Maechler  <maechler@stat.math.ethz.ch>
+
+	* DESCRIPTION (Version): 0.8-1; -> CRAN
+
+	* R/plug-density.R (plugin.density): add 'na.rm' argument
+
 
