@@ -8,4 +8,3 @@ Maintainer: Martin Maechler <maechler@stat.math.ethz.ch>
 Description: Local Polynomial Regression with Ridging.
 Depends: stats, R (>= 2.0.0)
 License: GPL (>= 2)
-
