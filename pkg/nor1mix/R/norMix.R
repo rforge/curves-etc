@@ -255,35 +255,6 @@ qnorMix <-
       outRange <- function(p.i)
 	  range(qnorm(p.i, mu, sd, lower.tail=lower.tail, log.p=log.p))
 
-      safeUroot <- function (f, interval,
-			     lower = min(interval), upper = max(interval),
-			     tol=tol, maxiter=maxiter, ...)
-      {
-	  if(traceRootsearch >= 2)
-	      cat(sprintf("search in [%g,%g]\n", lower, upper))
-
-	  ## make sure we have S*f(lower) < 0 and S*f(upper) > 0:
-	  delta.r <- 0.01*max(1e-7, abs(lower))
-	  while(S*(f.lo <- f(lower)) > 0) {
-	      lower <- lower - delta.r
-	      if(traceRootsearch)
-		  cat(sprintf(" .. modified lower: %g\n",lower))
-	      delta.r <- 2 * delta.r
-	  }
-	  delta.r <- 0.01*max(1e-7, abs(upper))
-	  while(S*(f.up <- f(upper)) < 0) {
-	      upper <- upper + delta.r
-	      if(traceRootsearch)
-		  cat(sprintf(" .. modified upper: %g\n",upper))
-	      delta.r <- 2 * delta.r
-	  }
-
-	  ## Here, we require R >= 2.6.0 with the improved uniroot():
-	  uniroot(f, lower=lower, upper=upper,
-		  f.lower = f.lo, f.upper = f.up,
-		  tol=tol, maxiter=maxiter, ...)
-      }
-
       ## sort p[] increasingly for easier root finding start:
       p <- sort(p[mid], index.return = TRUE)
       ip <- imid[p$ix]
@@ -308,15 +279,18 @@ qnorMix <-
 	      ## since pp[] is increasing, we can start from last 'root':
 	      if(i > 1 && rq[1] < root)
 		  rq[1] <- root
-	      root <- safeUroot(ff, interval = rq, tol=tol, maxiter=maxiter)$root
+	      root <- safeUroot(ff, S = S, interval = rq, tol=tol, maxiter=maxiter,
+                                trace = traceRootsearch)$root
 	      rr[i] <- root
 	  }
       }
       else { ## other 'method's  => np > 2
-          rr[1] <- safeUroot(f.make(pp[1]), interval = outRange(pp[1]),
-                             tol=tol, maxiter=maxiter)$root
-          rr[np] <- safeUroot(f.make(pp[np]), interval = outRange(pp[np]),
-                              tol=tol, maxiter=maxiter)$root
+          rr[1] <- safeUroot(f.make(pp[1]), S = S, interval = outRange(pp[1]),
+                             tol=tol, maxiter=maxiter,
+                             trace = traceRootsearch)$root
+          rr[np] <- safeUroot(f.make(pp[np]), S = S, interval = outRange(pp[np]),
+                              tol=tol, maxiter=maxiter,
+                              trace = traceRootsearch)$root
           ni <- length(iDone <- as.integer(c(1,np)))
           if(any(method == c("interpQspline", "interpspline"))) {
               ## reverse interpolate, using relatively fast pnorMix()!
@@ -409,17 +383,18 @@ qnorMix <-
                   for(j in ii) {
                       ## look in between i.1[j] .. i.2[j]
                       ## NB: we can prove that  i.1[j] < iN[j] < i.2[j]
-                      rr[iN[j]] <- safeUroot(f.make(pp[iN [j]]),
+                      rr[iN[j]] <- safeUroot(f.make(pp[iN [j]]), S = S,
                                              lower= rr[i.1[j]],
                                              upper= rr[i.2[j]],
-                                             tol=tol, maxiter=maxiter)$root
+                                             tol=tol, maxiter=maxiter,
+                                             trace = traceRootsearch)$root
                   }
                   ## update iDone[]:
                   seq_old <- seq_len(ni)
                   ni <- ni + length(ii)
                   iDone <- integer(ni)
                   iDone[seq_old	  + c(0L, cumsum(l.new))] <- oi
-                  iDone[seq_along(ii) + ii			] <- iN[ii]
+                  iDone[seq_along(ii) + ii		] <- iN[ii]
               }
       } ## else { method ..}
 
