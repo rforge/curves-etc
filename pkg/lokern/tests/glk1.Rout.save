@@ -1,21 +1,22 @@
 
-R : Copyright 2001, The R Development Core Team
-Version 1.3.0 Under development (unstable) (2001-06-13)
+R version 2.11.0 Under development (unstable) (2010-03-01 r51193)
+Copyright (C) 2010 The R Foundation for Statistical Computing
+ISBN 3-900051-07-0
 
 R is free software and comes with ABSOLUTELY NO WARRANTY.
 You are welcome to redistribute it under certain conditions.
-Type `license()' or `licence()' for distribution details.
+Type 'license()' or 'licence()' for distribution details.
 
 R is a collaborative project with many contributors.
-Type `contributors()' for more information.
+Type 'contributors()' for more information and
+'citation()' on how to cite R or R packages in publications.
 
-Type `demo()' for some demos, `help()' for on-line help, or
-`help.start()' for a HTML browser interface to help.
-Type `q()' to quit R.
+Type 'demo()' for some demos, 'help()' for on-line help, or
+'help.start()' for an HTML browser interface to help.
+Type 'q()' to quit R.
 
 > require(lokern)
-Loading required package: lokern 
-[1] TRUE
+Loading required package: lokern
 > data(xSim)
 > xSim # `test' for the dataset
  [1]  1.9666  1.9000  1.6449  1.4275  2.4000  1.8487  1.3383  1.9514  1.5722
@@ -32,18 +33,19 @@ Loading required package: lokern
 > tt <- ((1:n) - 1/2)/n # equidistant x
 > 
 > str(gk <- glkerns(tt, xSim))
-List of 11
- $ x        : num [1:75] 0.00667 0.02000 0.03333 0.04667 0.06000 ...
- $ y        : num [1:75] 1.97 1.90 1.64 1.43 2.40 ...
+List of 12
+ $ x        : num [1:75] 0.00667 0.02 0.03333 0.04667 0.06 ...
+ $ y        : num [1:75] 1.97 1.9 1.64 1.43 2.4 ...
  $ bandwidth: num 0.0485
  $ x.out    : num [1:300] 0.00667 0.00997 0.01327 0.01657 0.01987 ...
  $ est      : num [1:300] 1.87 1.86 1.86 1.85 1.85 ...
  $ sig      : num 0.145
- $ deriv    : num 0
- $ korder   : num 2
+ $ deriv    : int 0
+ $ korder   : int 2
+ $ iter     : int 15
  $ xl       : num 0.067
  $ xu       : num 0.933
- $ s        : num [1:76] 0.00412 0.01333 0.02667 0.04000 0.05333 ...
+ $ s        : num [1:76] 0.00412 0.01333 0.02667 0.04 0.05333 ...
 > summary(gk$est)
    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
 -3.0680 -1.6680  0.7164  0.4061  1.7870  4.2130 
@@ -54,4 +56,245 @@ List of 11
 > glkerns(tt,xSim, deriv = 2)$bandwidth
 [1] 0.1190404
 > 
+> demo("glk-derivs")
+
+
+	demo(glk-derivs)
+	---- ~~~~~~~~~~
+
+> ## Q: Can we have *same* kernel, *same* bandwidth  with different  'deriv'
+> ##    similarly to smooth.spline() ?
+> ##
+> ## Answer: not really,  mainly because don't have enough choices
+> ##     (nu, k_{ord}), i.e., because currently,  nu - k  must be even ...
+> 
+> ## "dput(.) of simple integer vector to character :
+> myF <- function(d, A="(", O=")", B = length(d) > 1)
++     paste(if(B) A, paste(d, collapse=", "), if(B) O, sep="")
+
+> library(lokern)
+
+> p.3glks <- function(x.dat, y.dat, korder, derivs = 0:2,
++                     is.rand=FALSE, useBandwidth, bw.factor = 1.8,
++                     col = 2, lwd = 1.5)
++ {
++     ## Purpose: Plot  glkerns(*,  deriv = {0, 1, 2})
++     ## ----------------------------------------------------------------------
++     ## Arguments: (x.dat, y.dat): the numeric data vectors
++     ##            korder : the kernel order -- automatically is diminuished by one
++     ##                     if needed to keep  'korder - deriv' an even number
++     ##            derivs : integer vectors of derivatives to compute
++     ##            useBandwidth: possibly a user specified bandwidth
++     ## ----------------------------------------------------------------------
++     ## Author: Martin Maechler, Date:  2 Jul 2009, 09:24
++ 
++     if(!missing(useBandwidth) && is.numeric(useBandwidth) && useBandwidth > 0)
++         bw <- useBandwidth
++     else {
++         ## Determine the fixed bandwidth :
++         bw0 <- glkerns(x.dat, y.dat, korder=korder, is.rand=is.rand)$bandwidth
++         bw <- bw0 * bw.factor     # more smoothing for the derivatives
++     }
++ 
++     stopifnot(derivs == (d <- as.integer(derivs)), length(derivs) >= 1)
++     derivs <- d
++     stopifnot(0 <= derivs, derivs <= 4)
++     glist <- as.list(derivs)
++     ## Estimates for   g, g' , g'' ... {well, depending on derivs} :
++     for(i.d in seq_along(derivs)) {
++         nu <- derivs[i.d]
++         k0 <- korder
++         if((korder - nu) %% 2 != 0) { ## 'korder - nu' must be even {theory; Fortran code}
++             k0 <- korder - 1
++             message(gettextf("deriv = %d: modifying korder from %d to %d",
++                              nu, korder, k0))
++         }
++         glist[[i.d]] <-
++             glkerns(x.dat, y.dat, korder=k0, is.rand=is.rand, bandw = bw, deriv = nu)
++     }
++ 
++     names(glist) <- paste("nu=", derivs, sep="")
++ 
++     ## ---------  Plots ---------------
++ 
++     op <- par(mfrow= c(length(derivs), 1), mgp = c(1.25, 0.6, 0),
++               mar = c(3,3,2.5,1) + .1, oma = c(0,0, 2, 0))
++     on.exit(par(op))
++ 
++     for(i.d in seq_along(derivs)) {
++         nu <- derivs[i.d]
++         tit <-
++             switch(nu + 1,
++                    expression(widehat(g)(.)), # 0
++                    expression(widehat(g * minute)(.)), # 1: g'
++                    expression(widehat(g * second)(.)), # 2: g''
++                    expression(widehat(g * minute*second)(.)),# 3: g'''
++                    expression(widehat(g ^ {(4)})),
++                    expression(widehat(g ^ {(5)})),
++                    expression(widehat(g ^ {(6)})))
++ 
++         with(glist[[i.d]], {
++             plot(est ~ x.out, type = "l", main = tit, col=col, lwd=lwd)
++             if(nu == 0) ## data
++                 points(y ~ x, cex = 0.5)
++             else ## y = 0 line (to see zeros):
++                 abline(h = 0, col = "gray", lty=3)
++ 
++             mtext(substitute(list(bw == B,k[ord] == K),
++                              list(B = formatC(bandwidth), K = korder)),
++                   adj = 1, line = .25) })
++     }
++     mtext(sprintf("glkerns(*, deriv = %s, bandwidth = <fixed>, korder = %d)",
++                   myF(derivs, "{","}"), korder),
++           line = 0.5, outer = TRUE, cex = par("cex.main"), font = par("font.main"))
++ 
++     invisible(glist)
++ }
+
+> data(xSim)
+
+> n <- length(xSim)
+
+> tt <- ((1:n) - 1/2)/n # equidistant x
+
+> p.3glks(tt, xSim, kord = 4)
+deriv = 1: modifying korder from 4 to 3
+
+> ## Chose bandwidth yourself; see all available derivatives:
+> ## Store results
+> r <- p.3glks(tt, xSim, kord = 6,
++              derivs = 0:4, useBand = 0.15)
+deriv = 1: modifying korder from 6 to 5
+deriv = 3: modifying korder from 6 to 5
+
+> ## and inspect them
+> str(r)
+List of 5
+ $ nu=0:List of 12
+  ..$ x        : num [1:75] 0.00667 0.02 0.03333 0.04667 0.06 ...
+  ..$ y        : num [1:75] 1.97 1.9 1.64 1.43 2.4 ...
+  ..$ bandwidth: num 0.15
+  ..$ x.out    : num [1:300] 0.00667 0.00997 0.01327 0.01657 0.01987 ...
+  ..$ est      : num [1:300] 1.92 1.9 1.88 1.86 1.85 ...
+  ..$ sig      : num 0
+  ..$ deriv    : int 0
+  ..$ korder   : int 6
+  ..$ iter     : int NA
+  ..$ xl       : num 1
+  ..$ xu       : num 0
+  ..$ s        : num [1:76] 0 0.0133 0.0267 0.04 0.0533 ...
+ $ nu=1:List of 12
+  ..$ x        : num [1:75] 0.00667 0.02 0.03333 0.04667 0.06 ...
+  ..$ y        : num [1:75] 1.97 1.9 1.64 1.43 2.4 ...
+  ..$ bandwidth: num 0.15
+  ..$ x.out    : num [1:300] 0.00667 0.00997 0.01327 0.01657 0.01987 ...
+  ..$ est      : num [1:300] -2.75 -2.62 -2.51 -2.41 -2.33 ...
+  ..$ sig      : num 0
+  ..$ deriv    : int 1
+  ..$ korder   : int 5
+  ..$ iter     : int NA
+  ..$ xl       : num 1
+  ..$ xu       : num 0
+  ..$ s        : num [1:76] 0 0.0133 0.0267 0.04 0.0533 ...
+ $ nu=2:List of 12
+  ..$ x        : num [1:75] 0.00667 0.02 0.03333 0.04667 0.06 ...
+  ..$ y        : num [1:75] 1.97 1.9 1.64 1.43 2.4 ...
+  ..$ bandwidth: num 0.15
+  ..$ x.out    : num [1:300] 0.00667 0.00997 0.01327 0.01657 0.01987 ...
+  ..$ est      : num [1:300] 355 317 280 246 214 ...
+  ..$ sig      : num 0
+  ..$ deriv    : int 2
+  ..$ korder   : int 6
+  ..$ iter     : int NA
+  ..$ xl       : num 1
+  ..$ xu       : num 0
+  ..$ s        : num [1:76] 0 0.0133 0.0267 0.04 0.0533 ...
+ $ nu=3:List of 12
+  ..$ x        : num [1:75] 0.00667 0.02 0.03333 0.04667 0.06 ...
+  ..$ y        : num [1:75] 1.97 1.9 1.64 1.43 2.4 ...
+  ..$ bandwidth: num 0.15
+  ..$ x.out    : num [1:300] 0.00667 0.00997 0.01327 0.01657 0.01987 ...
+  ..$ est      : num [1:300] -1684 -1635 -1586 -1536 -1487 ...
+  ..$ sig      : num 0
+  ..$ deriv    : int 3
+  ..$ korder   : int 5
+  ..$ iter     : int NA
+  ..$ xl       : num 1
+  ..$ xu       : num 0
+  ..$ s        : num [1:76] 0 0.0133 0.0267 0.04 0.0533 ...
+ $ nu=4:List of 12
+  ..$ x        : num [1:75] 0.00667 0.02 0.03333 0.04667 0.06 ...
+  ..$ y        : num [1:75] 1.97 1.9 1.64 1.43 2.4 ...
+  ..$ bandwidth: num 0.15
+  ..$ x.out    : num [1:300] 0.00667 0.00997 0.01327 0.01657 0.01987 ...
+  ..$ est      : num [1:300] 198209 193568 188923 184275 179625 ...
+  ..$ sig      : num 0
+  ..$ deriv    : int 4
+  ..$ korder   : int 6
+  ..$ iter     : int NA
+  ..$ xl       : num 1
+  ..$ xu       : num 0
+  ..$ s        : num [1:76] 0 0.0133 0.0267 0.04 0.0533 ...
+> 
+> p.3glks(tt, xSim, kord = 3)
+deriv = 0: modifying korder from 3 to 2
+deriv = 2: modifying korder from 3 to 2
+Warning messages:
+1: In glkerns(x.dat, y.dat, korder = korder, is.rand = is.rand) :
+  'korder' reset from 3 to 2, internally
+2: In glkerns(x.dat, y.dat, korder = k0, is.rand = is.rand, bandw = bw,  :
+  'korder' reset from 2 to 4, internally
+> 
+> p.3glks(tt, xSim, kord = 4, useB = 0.15)
+deriv = 1: modifying korder from 4 to 3
+> 
+> str(p.3glks(tt, xSim, kord = 5, useB = 0.12) ) # k.ord = (4,5,4) => less sensiacl?
+deriv = 0: modifying korder from 5 to 4
+deriv = 2: modifying korder from 5 to 4
+List of 3
+ $ nu=0:List of 12
+  ..$ x        : num [1:75] 0.00667 0.02 0.03333 0.04667 0.06 ...
+  ..$ y        : num [1:75] 1.97 1.9 1.64 1.43 2.4 ...
+  ..$ bandwidth: num 0.12
+  ..$ x.out    : num [1:300] 0.00667 0.00997 0.01327 0.01657 0.01987 ...
+  ..$ est      : num [1:300] 1.89 1.88 1.88 1.87 1.87 ...
+  ..$ sig      : num 0
+  ..$ deriv    : int 0
+  ..$ korder   : int 4
+  ..$ iter     : int NA
+  ..$ xl       : num 1
+  ..$ xu       : num 0
+  ..$ s        : num [1:76] 0 0.0133 0.0267 0.04 0.0533 ...
+ $ nu=1:List of 12
+  ..$ x        : num [1:75] 0.00667 0.02 0.03333 0.04667 0.06 ...
+  ..$ y        : num [1:75] 1.97 1.9 1.64 1.43 2.4 ...
+  ..$ bandwidth: num 0.12
+  ..$ x.out    : num [1:300] 0.00667 0.00997 0.01327 0.01657 0.01987 ...
+  ..$ est      : num [1:300] -5.25 -4.67 -4.15 -3.68 -3.27 ...
+  ..$ sig      : num 0
+  ..$ deriv    : int 1
+  ..$ korder   : int 5
+  ..$ iter     : int NA
+  ..$ xl       : num 1
+  ..$ xu       : num 0
+  ..$ s        : num [1:76] 0 0.0133 0.0267 0.04 0.0533 ...
+ $ nu=2:List of 12
+  ..$ x        : num [1:75] 0.00667 0.02 0.03333 0.04667 0.06 ...
+  ..$ y        : num [1:75] 1.97 1.9 1.64 1.43 2.4 ...
+  ..$ bandwidth: num 0.12
+  ..$ x.out    : num [1:300] 0.00667 0.00997 0.01327 0.01657 0.01987 ...
+  ..$ est      : num [1:300] -39.9 -39.7 -39.6 -39.4 -39.2 ...
+  ..$ sig      : num 0
+  ..$ deriv    : int 2
+  ..$ korder   : int 4
+  ..$ iter     : int NA
+  ..$ xl       : num 1
+  ..$ xu       : num 0
+  ..$ s        : num [1:76] 0 0.0133 0.0267 0.04 0.0533 ...
+> 
+> p.3glks(tt, xSim, kord = 6, useB = 0.2, derivs = 0:3) # k.ord = (6,5,6, 5)
+deriv = 1: modifying korder from 6 to 5
+deriv = 3: modifying korder from 6 to 5
+> 
+> ## "FIXME" visually compare with numerical derivatives (e.g. from splines).
 > 
