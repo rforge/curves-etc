@@ -34,7 +34,7 @@ c-------- 1. initialisations
       data fak2/4.,36.,576./
       nyg=0
       inputs = .false.
-
+      nyl=1
 c Stop for invalid inputs (impossible when called from R's lokerns())
 
 c     0 <= nue <= 4;  nue <= 2 if(! smo)
@@ -256,7 +256,6 @@ c-------- 18. local initializations
  180  bvar=b
       nuev=0
       kordv=2
-      nyl=1
 c-
 c-------- 19. compute inner bandwidths
       g1=0.86*(1.+dble(kord-nue-2)*.05)*b
