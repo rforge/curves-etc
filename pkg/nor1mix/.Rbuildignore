@@ -1,12 +1,3 @@
-Older
-Old_Defunct
-.*,v
-.*-ss
-.*mail
+Marron_.*\.pdf-- $Id: .Rbuildignore,v 1.2 2010-07-27 18:14:32 maechler Exp $
+.*-post\.R.*
 .*-log
-.*-used-grep
-man/.*\.d$
-SfS-changes
-TODO-MM
-Unused.R
-inst/doc/CHANGES-dummy
