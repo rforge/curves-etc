@@ -1,3 +1,17 @@
+2010-03-02  Martin Maechler  <maechler@stat.math.ethz.ch>
+
+	* R/norMix.R (qnorMix, f.make): fix for traceRootsearch >= 3
+
+2010-03-01  Martin Maechler  <maechler@stat.math.ethz.ch>
+
+	* R/norMix.R (norMix): when #{components} =: m  >= 10, abbreviate
+	in name construction
+	(qnorMix): if m >= 100 (Christoph has m = 5000 !), the default
+	method now is "root2".
+	(qnorMix (n.mu.interp): at most about n.mu.interp (~= 100) mu's are
+	used for inverse interpolation, using
+	(sub_seq): new auxiliary function {should belong to 'sfsmisc'}.
+
 2009-12-10  Martin Maechler  <maechler@stat.math.ethz.ch>
 
 	* R/safeUroot.R (safeUroot): new: "export" from qnorMix()
