@@ -13,7 +13,7 @@ pnorMix(q, obj, lower.tail = TRUE, log.p = FALSE)
 qnorMix(p, obj, lower.tail = TRUE, log.p = FALSE,
         tol = .Machine$double.eps^0.25, maxiter = 1000, traceRootsearch = 0,
         method = c("interpQspline", "interpspline", "eachRoot", "root2"),
-        l.interp = 20)
+        l.interp = pmax(1, pmin(20, 1000 / m)), n.mu.interp = 100)
 }
 \arguments{
   \item{obj}{an object of class \code{norMix}.}
@@ -31,10 +31,16 @@ qnorMix(p, obj, lower.tail = TRUE, log.p = FALSE,
   \item{traceRootsearch}{logical or integer in \eqn{\{0,1,2,3\}},
     determining the amount of information printed during root search.}
   \item{method}{a string specifying which algorithm is used for the
-        \dQuote{root search}. .......}% <<<< FIXME
+    \dQuote{root search}.  Originally, the only method was a
+    variation of \code{"eachRoot"}, which is the default now when only
+    very few quantiles are sought.  For large \code{\link{m.norMix}()},
+    the default is set to \code{"root2"}, currently.}
   \item{l.interp}{positive integer for \code{method = "interQpspline"}
     or \code{"interpspline"}, determining the number of values in each
     \dQuote{mu-interval}.}
+  \item{n.mu.interp}{positive integer for \code{method = "interQpspline"}
+    or \code{"interpspline"}, determining the (maximal) number of
+    mu-values to be used as knots for inverse interpolation.}
 }
 \details{
   Whereas the distribution function \code{pnorMix} is the trivial sum of
@@ -51,8 +57,10 @@ qnorMix(p, obj, lower.tail = TRUE, log.p = FALSE,
   %%
   For \code{method = "interQpspline"} or \code{"interpspline"}, we now compute
   \code{p. <- \link{pnorMix}(q., obj)} for values \code{q.} which are a grid
-  of length \code{l.interp} in each interval \eqn{[q_j,q_{j+1}]} and
-  then use \emph{montone} inverse interpolation
+  of length \code{l.interp} in each interval \eqn{[q_j,q_{j+1}]}, where
+  \eqn{q_j} are the \dQuote{X-extremes} plus (a sub sequence of length
+  \code{n.mu.interp} of) theordered \code{mu[j]}'s.
+  Then, we use \emph{montone} inverse interpolation
   (\code{\link{splinefun}(q., p., method="monoH.FC")}) plus
   a few (maximally \code{maxiter}, typically one!) Newton steps.
   The default, \code{"interQpspline"}, additionally logit-transforms the

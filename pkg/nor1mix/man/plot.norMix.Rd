@@ -10,9 +10,10 @@
 \usage{
 \method{plot}{norMix}(x, type = "l", n = 511, xout = NULL, xlim = NULL,
       xlab = "x", ylab = "f(x)", main = attr(x, "name"), lwd = 1.4,
-      p.norm = TRUE, p.h0 = TRUE,
+      p.norm = TRUE, p.h0 = TRUE, p.comp = FALSE,
       parNorm = list(col = 2, lty = 2, lwd = 0.4),
-      parH0 = list(col = 3, lty = 3, lwd = 0.4), \dots)
+      parH0 = list(col = 3, lty = 3, lwd = 0.4),
+      parComp = list(col= "blue3", lty = 3, lwd = 0.4), \dots)
 
 \method{lines}{norMix}(x, type = "l", n = 511, xout = NULL,
       lwd = 1.4, p.norm = FALSE, parNorm = list(col = 2, lty = 2, lwd = 0.4),
@@ -34,10 +35,14 @@
   \item{p.norm}{logical indicating if the normal density with the same
     mean and variance should be drawn as well.}
   \item{p.h0}{logical indicating if the line \eqn{y = 0} should be drawn.}
+  \item{p.comp}{logical indicating if the Gaussian components should
+    also be drawn individually.}
   \item{parNorm}{graphical parameters for drawing the normal density if
     \code{p.norm} is true.}
   \item{parH0}{graphical parameters for drawing the line \eqn{y = 0} if
     \code{p.h0} is true.}
+  \item{parComp}{graphical parameters for drawing the single components if
+    \code{p.comp} is true.}
   \item{\dots}{further arguments passed to and from methods.}
 }
 \author{Martin Maechler}
@@ -46,6 +51,8 @@
 }
 \examples{
 plot(norMix(m=c(0,3),s=c(4,1)))
+
+plot(MW.nm4, p.norm=FALSE, p.comp = TRUE)
 ## Further examples in  ?norMix and  ?rnorMix
 }
 \keyword{distribution}

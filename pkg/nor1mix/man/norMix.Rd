@@ -56,7 +56,8 @@ var.norMix(x, \dots)
 \note{
   For \emph{estimation} of the parameters of a normal mixture
   distribution, I recommend using other \R packages,
-  notably package \pkg{mclust}.
+  such as \pkg{flexmix}.
+%% boycotting 'mclust' with its horrible new licence
 }
 \seealso{\code{\link{dnorMix}} for the density,
   \code{\link{pnorMix}} for the cumulative distribution

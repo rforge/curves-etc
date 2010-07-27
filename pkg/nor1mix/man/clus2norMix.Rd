@@ -26,7 +26,8 @@ clus2norMix(gr, x, name = deparse(sys.call()))
 }
 \author{Martin Maechler, Dec. 2007}
 \seealso{\code{\link{norMix}}; further \code{\link[cluster]{pam}()} (or
-  \code{\link{clara}()}) from package \pkg{cluster} for sensible clusterings.}
+  \code{\link[cluster]{clara}()}) from package \pkg{cluster} for
+  sensible clusterings.}
 \examples{
 x9 <- rnorMix(500, MW.nm9)
 library(cluster)

@@ -4,13 +4,19 @@
 \alias{par2norMix}
 \alias{nM2par}
 \description{
-  These functions work with an \emph{unconstrained} parametrization of
+  These functions work with an almost unconstrained parametrization of
   univariate normal mixtures.
+
+  \code{llnorMix(p, *)} computes the log likelihood, \ where as \cr
+  \code{obj <- par2norMix(p)} and \cr
+  \code{p <- nM2par(obj)}\cr
+  map to and from \code{\link{norMix}} objects \code{obj} and parameter
+  vector \code{p} in our parametrization.
 }
 \usage{
 llnorMix(p, x, m = (length(p) + 1)/3)
 
-par2norMix(p, name = sprintf("{from \%s}", deparse(substitute(p))))
+par2norMix(p, name = sprintf("{from \%s}", deparse(substitute(p))[1]))
 nM2par(obj)
 }
 \arguments{
@@ -26,12 +32,12 @@ nM2par(obj)
 \details{
   We use a parametrization of a (finite) univariate normal mixture which
   is particularly apt for likelihood maximization, namely, one whose
-  parameter space is a full \eqn{\mathbf{I\hskip-0.22em R}^m}{R^m},
+  parameter space is \emph{almost} a full \eqn{\mathbf{I\hskip-0.22em R}^m}{R^m},
   \eqn{m = 3k-1}.
 
   For a \eqn{k}-component mixture,
-  we map (1:1) a parameter vector \eqn{\theta} (\R-vector \code{p}) of
-  length \eqn{3k-1}. For mixture density
+  we map to and from a parameter vector \eqn{\theta} (\code{== p} as \R-vector)
+  of length \eqn{3k-1}. For mixture density
   \deqn{\sum_{j=1}^k \pi_j \phi((t - \mu_j)/\sigma_j),}{
     sum[j=1..k]  pi[j] phi((t - mu[j])/s[j]),}
   we logit-transform the \eqn{\pi_j}{pi[j]} (for \eqn{j \ge 2}{j >= 2})
@@ -60,20 +66,29 @@ nM2par(obj)
 }
 %%\references{ MM should write a report ...}
 \author{Martin Maechler}
-\seealso{\code{\link{norMix}}, \code{\link{logLik}}
+\seealso{\code{\link{norMix}}, \code{\link{logLik}}.
+  Note that the log likelihood of a \code{"norMix"} object
+  is directly given by \code{sum(\link{dnorMix}(x, obj, log=TRUE))}.
 }
 \examples{
 (obj <- MW.nm10) # "the Claw" -- m = 6 components
 length(pp <- nM2par(obj)) # 17 == (3*6) - 1
 par2norMix(pp)
+## really the same as the initial \code{obj} (see below)
 
 ## Log likelihood (of very artificial data):
-llnorMix(pp, x = seq(-2, 2, by=.1))
+llnorMix(pp, x = seq(-2, 2, length=1000))
+## of more realistic data:
+x <- rnorMix(1000, obj)
+llnorMix(pp, x)
 
 ## Consistency check :
 stopifnot(all.equal(pp, nM2par(par2norMix(pp)), tol= 1e-15),
           all.equal(obj, par2norMix(nM2par(obj)),
-                    check.attributes=FALSE, tol=1e-15))
+                    check.attributes=FALSE, tol=1e-15),
+          ## Direct computation of log-likelihood:
+          all.equal(sum(dnorMix(x, obj, log=TRUE)),
+                    llnorMix(pp, x), tol= 1e-15)  )
 }
 \keyword{models}
 

@@ -1,57 +1,44 @@
 \name{r.norMix}
 \alias{r.norMix}
-%- Also NEED an `\alias' for EACH other topic documented here.
-\title{ ~~function to do ... ~~ }
+\title{Ratio of Normal Mixture to Corresponding Normal}
 \description{
-  ~~ A concise (1-5 lines) description of what the function does. ~~
+  Compute \eqn{r(x) = f(x)/ f0(x)} where \eqn{f()} is a normal mixture
+  density and \eqn{f0} the normal density with the same mean and
+  variance as \eqn{f}.
 }
 \usage{
-r.norMix(obj, x = NULL, xlim = NULL, n = 511, xy.return = TRUE, ...)
+r.norMix(obj, x = NULL, xlim = NULL, n = 511, xy.return = TRUE)
 }
-%- maybe also `usage' for other objects documented here.
 \arguments{
-  \item{obj}{ ~~Describe \code{obj} here~~ }
-  \item{x}{ ~~Describe \code{x} here~~ }
-  \item{xlim}{ ~~Describe \code{xlim} here~~ }
-  \item{n}{ ~~Describe \code{n} here~~ }
-  \item{xy.return}{ ~~Describe \code{xy.return} here~~ }
-  \item{\dots}{ ~~Describe \code{\dots} here~~ }
-}
-\details{
-  ~~ If necessary, more details than the __description__  above ~~
+  \item{obj}{an object of class \code{norMix}.}
+  \item{x}{numeric vector with abscissa values where to evaluate the
+    density. Default is constructed from \code{n} (and \code{xlim} if
+    specified).}
+  \item{xlim}{range of abscissa values, used if \code{x == NULL}.  By default,
+    xlim taken as mean plus/minus 3 standard deviations of the normal mixture.}
+  \item{n}{number of abscissa values to generate if \code{x} is not specified.}
+  \item{xy.return}{logical indicating if the result should be a list or
+    just a numeric vector, see below.}
 }
 \value{
-  ~Describe the value returned
-  If it is a LIST, use
-  \item{comp1 }{Description of `comp1'}
-  \item{comp2 }{Description of `comp2'}
-  ...
+  It depends on \code{xy.return}.  If it's false,  a numeric vector of
+  the same length as \code{x}, if true (as per default), a list that can
+  be plotted, with components
+  \item{x}{abscissa values corresponding to argument \code{x}.}
+  \item{y}{corresponding values \eqn{r(x)}.}
+  \item{f0}{values of the moment matching normal density \eqn{f0(x)}.}
 }
-\references{ ~put references to the literature/web site here ~ }
-\author{ ~~who you are~~ }
-\note{ ~~further notes~~ }
-
- ~Make other sections like WARNING with \section{WARNING }{....} ~
-
-\seealso{ ~~objects to SEE ALSO as \code{\link{~~fun~~}}, ~~~ }
-
+\note{The ratio function is used in certain semi-parametric density
+  estimation methods (and theory).
+}
 \examples{
-##---- Should be DIRECTLY executable !! ----
-##-- ==>  Define data, use random,
-##--	     or do  help(data=index)  for the standard data sets.
-
-## The function is currently defined as
-function(obj, x = NULL, xlim = NULL, n = 511,
-		     xy.return = TRUE, ...)
-{
-  ## Purpose: Compute r := f / f0; f = normal mixture; f0 = "best" normal approx
-  ## -------------------------------------------------------------------------
-  ## Author: Martin Maechler, Date: 20 Mar 97, 10:14
-  if(!is.norMix(obj)) stop("'obj' must be a 'Normal Mixture' object!")
-  m <- m.norMix(obj) #-- number of components
-  d.o <- dnorMix(obj, x=x, xlim=xlim, n=n)
-  dn  <- dnorm(d.o$x, mean = mean.norMix(obj), sd = sqrt(var.norMix(obj)))
-  if(xy.return) list(x = d.o$x, y= d.o$y / dn, f0 = dn) else d.o$y / dn
-  }
+  d3 <- norMix(m = 5*(0:2), w = c(0.6, 0.3, 0.1))
+  plot(d3)
+  rd3 <- r.norMix(d3)
+  str(rd3)
+  stopifnot(rd3 $ y  == r.norMix(d3, xy.ret = FALSE))
+  par(new = TRUE)
+  plot(rd3, type = "l", col = 3, axes = FALSE, xlab = "", ylab="")
+  axis(4, col.axis=3)
 }
 \keyword{distribution}

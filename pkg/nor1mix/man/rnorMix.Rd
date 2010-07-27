@@ -1,6 +1,6 @@
 \name{rnorMix}
 \alias{rnorMix}
-\title{Generate ``Normal Mixture'' Distributed Random Numbers}
+\title{Generate 'Normal Mixture' Distributed Random Numbers}
 \description{
   Generate \code{n} random numbers, distributed according to a normal
   mixture.
