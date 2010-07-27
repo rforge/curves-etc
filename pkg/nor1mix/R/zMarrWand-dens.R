@@ -12,10 +12,20 @@
 MW.nm1 <- norMix(name = "#1 Gaussian",
 		 mu = 0, sig2 = 1, w = 1)
 
+## This is from the above Matlab code:
+MW.nm2.old <- norMix(name = "#2 Skewed (old)",
+		     mu	  = c(-.3, .3, 1),
+		     sig2 = c(1.44, .64, 4/9),
+		     w	  = c(.2, .2, .6))
+## Note that Marron-Wand (1992), p.720	give #2 as
 MW.nm2 <- norMix(name = "#2 Skewed",
-		 mu   = c(-.3, .3, 1),
-		 sig2 = c(1.44, .64, 4/9),
-		 w    = c(.2, .2, .6))
+		  mu   = c(0, .5, 13/12),
+		  sig2 = c(1, (2/3)^2, (5/9)^2),
+		  w    = c(.2, .2, .6))
+## which at first looks quite different
+## but it's easy to see mu_{nm2.old}  = -.3 + 1.2 * mu_{paper},
+## and correspondigly,  s2_{nm2.old } = 1.2^2 * s2_{paper}
+## such that they are "identical" apart from scale and location
 
 sig <- (2/3)^(0:7)
 MW.nm3 <- norMix(name = "#3 Str Skew",
