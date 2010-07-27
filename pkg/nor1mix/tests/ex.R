@@ -58,5 +58,12 @@ stopifnot(all.equal(pnorMix(q0, MW.nm2), u0, tol=1e-15),
 	  )
 }; cat("\n")
 
+## A  'trace = 3'  example --- had a bug w/o noticing (in 1.1-1, maybe earlier):
+q3.1 <- qnorMix(c(0.1, 0.5, 0.99), MW.nm12, lower.tail=FALSE, trace=3, method="each")
+q3.2 <- qnorMix(c(0.1, 0.5, 0.99), MW.nm12, lower.tail=FALSE, trace=3, method="root2")
+q3.3 <- qnorMix(c(0.1, 0.5, 0.99), MW.nm12, lower.tail=FALSE, trace=3, method="interpQ")
+stopifnot(all.equal(q3.1, q3.2, tol = 1e-5),
+	  all.equal(q3.2, q3.3, tol = 1e-5),
+	  all.equal(q3.3, q3.1, tol = 1e-5))
 
 cat('Time elapsed: ', proc.time(),'\n') # for ``statistical reasons''

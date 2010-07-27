@@ -1,3 +1,5 @@
+library(nor1mix)
+
 ## From: "Jenifer Boshes" <boshes@mathpost.la.asu.edu>
 ## Date: Sun, 2 Dec 2007 20:16:28 -0700
 

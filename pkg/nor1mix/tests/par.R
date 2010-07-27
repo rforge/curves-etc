@@ -11,9 +11,7 @@ for(n in nms) {
     stopifnot(all.equal(pp, nM2par(par2norMix(pp)), tol= 1e-15),
               all.equal(obj, par2norMix(nM2par(obj)),
                         check.attributes=FALSE, tol=1e-15))
-
     xx <- rnorMix(1000, obj)
-
     stopifnot(all.equal(llnorMix(nM2par(obj), xx),
                         sum(dnorMix(xx, obj, log = TRUE)),
                     tol = 1e-15))

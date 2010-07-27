@@ -14,8 +14,10 @@ for(n in nms) {
     print(rnorMix(4, obj))
 }
 
+## Testing of sort.norMix():
 stopifnot(sapply(nms, function(n) {
     o <- get(n)
-    S <- !is.unsorted(o[,"mu"])
-    !S || (S && identical(o, sort(o)))
+    if(is.unsorted(o[,"mu"]))
+        o <- sort(o)
+    identical(o, sort(o))
 }))
