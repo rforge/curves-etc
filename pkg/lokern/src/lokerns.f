@@ -1,5 +1,5 @@
       subroutine lokerns(t,x,tt,n,m,nue,kord, hetero,isrand,
-     .     smo,m1,tl,tu,s,sig,wn,w1, wm,ban, y)
+     .     inputb,m1,tl,tu,s,sig,wn,w1, wm,ban, y)
 c----------------------------------------------------------------------*
 c-----------------------------------------------------------------------
 c       Short-version: January 1997
@@ -16,7 +16,9 @@ c-----------------------------------------------------------------------
 c Args
       integer n, m, nue,kord
       double precision t(n),x(n), tt(m), tl,tu, s(0:n), sig
-      logical hetero, isrand, smo
+      logical hetero, isrand, inputb
+c	 inputb (was "smo", now same as in R):
+c	 if TRUE, do not compute bandwidths but use ban(.)
       integer m1
       double precision wn(0:n,5), w1(m1,3), wm(m),ban(m), y(m)
 c Var
@@ -39,7 +41,7 @@ c Stop for invalid inputs (impossible when called from R's lokerns())
 
 c     0 <= nue <= 4;  nue <= 2 if(! smo)
       if(nue.gt.4.or.nue.lt.0) stop
-      if(nue.gt.2.and. .not.smo) stop
+      if(nue.gt.2.and. .not.inputb) stop
       if(n.le.2) stop
       if(m.lt.1) stop
       if(m1.lt.3) stop
@@ -47,7 +49,7 @@ c     0 <= nue <= 4;  nue <= 2 if(! smo)
 c     kord - nue must be even :
       kk=(kord-nue)/2
       if(2*kk + nue .ne. kord)       kord=nue+2
-      if(kord.gt.4 .and. .not.smo)   kord=nue+2
+      if(kord.gt.4 .and. .not.inputb)   kord=nue+2
       if(kord.gt.6 .or. kord.le.nue) kord=nue+2
       rvar=sig
 
@@ -61,9 +63,9 @@ c-------- 2. computation of s-sequence
  20      continue
          s(0)=s0
          s(n)=sn
-         if(smo .and. .not.isrand) goto 230
+         if(inputb .and. .not.isrand) goto 230
       else
-         if(smo) goto 230
+         if(inputb) goto 230
       end if
 c-
 c-------- 3. computation of minimal, maximal allowed global bandwidth
@@ -184,7 +186,7 @@ c-------- 11. refinement of s-sequence for random design
            end if
 112     continue
         if(needsrt) goto 111
-        if(smo) goto 230
+        if(inputb) goto 230
       end if
       b=bmin*2.
 c-
@@ -193,7 +195,10 @@ c-------- 12. compute inflation constant and exponent and loop of iterations
      .       /(dble(2*kord-2*nue)*bias(kk,nue)**2*dble(n))
       fac=1.1*(1.+(nue/10.)+0.05*(kord-nue-2.))
      .       *n**(2./dble((2*kord+1)*(2*kord+3)))
-      itende=1+2*kord+kord*(2*kord+1)
+
+c     itende=1+2*kord+kord*(2*kord+1)
+      itende = (1 + 2*kord) * (1 + kord)
+c     ^^^^^^  *fixed* number of iterations ( <== theory !)
 
       do 120 it=1,itende
 c-
@@ -334,7 +339,8 @@ c-------- 23. compute smoothed function with local plug-in bandwidth
         y(j)=ban(j)
  231  continue
       call kernel(t,x,n,b,nue,kord,nyl,s,tt,m,y)
-
+c-  return #{iter} (iff aplicable)
+      m1=itende
       return
       end
 c     --- of lokerns()

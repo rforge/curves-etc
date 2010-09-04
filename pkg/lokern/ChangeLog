@@ -1,3 +1,16 @@
+2010-09-04  Martin Maechler  <maechler@stat.math.ethz.ch>
+
+	* DESCRIPTION (Version, Date): 1.1-0
+
+	* R/glkerns.R (glkerns): return "kernS" class;
+	* tests/glk1.R: adapt to new result class.
+
+2010-08-28  Martin Maechler  <maechler@stat.math.ethz.ch>
+
+	* R/lokerns.R (lokerns): return "kernS"; print() etc methods.
+
+	* DESCRIPTION (Depends): sfsmisc, so we can provide nice predict() etc
+
 2010-03-02  Martin Maechler  <maechler@stat.math.ethz.ch>
 
 	* DESCRIPTION (Version): 1.0-9
@@ -81,20 +94,20 @@
 	* man/lokerns.Rd: API change --- Arguments  hetero / is.rand
 
 	* R/glkerns.R: and
-	* R/lokerns.R: Ensure that `stop' will be called in R, not in Fortran
+	* R/lokerns.R: Ensure that 'stop' will be called in R, not in Fortran
 	        More argument checking; don't allow silly combinations anymore
 
 	* src/lokerns.f (lokerns): cosmetics, some from glkerns.f
 
 2001-07-09  Martin Maechler  <maechler@stat.math.ethz.ch>
 
-	* R/varNPreg.R (varNPreg): New; interface to Fortran's `resest()'
+	* R/varNPreg.R (varNPreg): New; interface to Fortran's 'resest()'
 
 	* src/glkerns.f (glkerns),
-	  src/lokerns.f (lokerns): declare everything (as for `implicit none')
+	  src/lokerns.f (lokerns): declare everything (as for 'implicit none')
 
 	* src/auxkerns.f (constVec): better name than coff()
-		Make all work with `implicit none'.
+		Make all work with 'implicit none'.
 
 2001-06-13  Martin Maechler  <maechler@stat.math.ethz.ch>
 

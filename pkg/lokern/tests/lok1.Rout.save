@@ -1,6 +1,6 @@
 
-R version 2.9.0 alpha (2009-03-31 r48262)
-Copyright (C) 2009 The R Foundation for Statistical Computing
+R version 2.11.1 Patched (2010-08-30 r52860)
+Copyright (C) 2010 The R Foundation for Statistical Computing
 ISBN 3-900051-07-0
 
 R is free software and comes with ABSOLUTELY NO WARRANTY.
@@ -17,6 +17,7 @@ Type 'q()' to quit R.
 
 > require(lokern)
 Loading required package: lokern
+Loading required package: sfsmisc
 > data(xSim)
 > (n <- length(xSim))
 [1] 75
@@ -26,35 +27,48 @@ Loading required package: lokern
 > tt <- ((1:n) - 1/2)/n # equidistant x
 > 
 > str(lk <- lokerns(tt, xSim))
-List of 11
- $ x        : num [1:75] 0.00667 0.02 0.03333 0.04667 0.06 ...
- $ y        : num [1:75] 1.97 1.9 1.64 1.43 2.4 ...
- $ bandwidth: num [1:300] 0.0506 0.0502 0.0499 0.0495 0.0491 ...
- $ x.out    : num [1:300] 0.00667 0.00997 0.01327 0.01657 0.01987 ...
- $ est      : num [1:300] 1.87 1.86 1.86 1.85 1.85 ...
- $ sig      : num 0.145
- $ deriv    : int 0
- $ korder   : int 2
- $ xl       : num 0.067
- $ xu       : num 0.933
- $ s        : num [1:76] 0.00412 0.01333 0.02667 0.04 0.05333 ...
+List of 23
+ $ x         : num [1:75] 0.00667 0.02 0.03333 0.04667 0.06 ...
+ $ y         : num [1:75] 1.97 1.9 1.64 1.43 2.4 ...
+ $ x.out     : num [1:300] 0.00667 0.01103 0.0154 0.01976 0.02 ...
+ $ n         : int 75
+ $ n.out     : int 300
+ $ deriv     : int 0
+ $ korder    : int 2
+ $ hetero    : logi FALSE
+ $ is.rand   : logi TRUE
+ $ inputb    : logi FALSE
+ $ iter      : int 15
+ $ xl        : num 0.067
+ $ xu        : num 0.933
+ $ s         : num [1:76] 0.00412 0.01333 0.02667 0.04 0.05333 ...
+ $ sig       : num 0.145
+ $ bandwidth : num [1:300] 0.0506 0.0501 0.0496 0.0491 0.049 ...
+ $ est       : num [1:300] 1.87 1.86 1.85 1.85 1.85 ...
+ $ ind.x     : int [1:75] 1 5 9 13 17 21 25 29 33 37 ...
+ $ seqXmethod: chr "aim"
+ $ isOrd     : logi TRUE
+ $ ord       : NULL
+ $ x.inOut   : logi TRUE
+ $ call      : language lokerns(x = tt, y = xSim)
+ - attr(*, "class")= chr [1:2] "lokerns" "KernS"
 > summary(lk$est)
    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
--3.0720 -1.6710  0.7233  0.4130  1.7870  4.2950 
+-3.0720 -1.6670  0.7102  0.4164  1.7830  4.2940 
 > summary((lk1 <- lokerns(tt,xSim, deriv = 1))$est)
    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
--41.240  -8.247  -5.614  -4.940  -1.744  35.270 
+-41.230  -8.198  -5.577  -4.945  -1.786  35.280 
 > summary((lk2 <- lokerns(tt,xSim, deriv = 2))$est)
     Min.  1st Qu.   Median     Mean  3rd Qu.     Max. 
--689.000  -75.810   31.670   -4.915  171.400  352.200 
+-688.700  -74.740   26.410   -4.829  169.500  352.600 
 > 
 > summary(lk  $bandwidth)
    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
-0.03755 0.04529 0.04926 0.05264 0.05996 0.07839 
+0.03755 0.04526 0.04911 0.05265 0.06016 0.07838 
 > summary(lk1 $bandwidth)
    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
-0.05854 0.06545 0.06666 0.06975 0.06932 0.09286 
+0.05854 0.06545 0.06669 0.06977 0.06927 0.09286 
 > summary(lk2 $bandwidth)
    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
-0.07662 0.07995 0.09396 0.09031 0.09502 0.10940 
+0.07662 0.07995 0.09398 0.09034 0.09501 0.10940 
 > 

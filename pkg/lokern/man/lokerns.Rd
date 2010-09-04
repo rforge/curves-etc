@@ -7,8 +7,8 @@
   plug-in bandwidth function.
 }
 \usage{
-lokerns(x , y, deriv = 0, n.out=300, x.out=NULL, korder= deriv + 2,
-        hetero=FALSE, is.rand=TRUE,
+lokerns(x , y, deriv = 0, n.out=300, x.out=NULL, x.inOut = TRUE,
+        korder = deriv + 2, hetero=FALSE, is.rand=TRUE,
         inputb= is.numeric(bandwidth) && bandwidth > 0,
         m1 = 400, xl=NULL, xu=NULL,
         s=NULL, sig=NULL, bandwidth=NULL)
@@ -28,6 +28,17 @@ lokerns(x , y, deriv = 0, n.out=300, x.out=NULL, korder= deriv + 2,
   \item{x.out}{vector of output design points where the function has to
     be estimated.  The default is an equidistant grid of n.out points
     from min(x) to max(x).}
+  \item{x.inOut}{logical or character strign indicating if \code{x.out}
+    should contain the input \code{x} values.
+    Note that this argument did not exist, equivalently to being
+    \code{FALSE}, up to \pkg{lokern} version \code{1.0-9}.
+
+    In order for \code{\link{residuals}()} or \code{\link{fitted}()}
+    methods to be applicable, it must be \code{TRUE} or a character
+    string specifying one of the \code{methods}s of
+    \code{\link{seqXtend}} (package \pkg{sfsmisc}). The default,
+    \code{TRUE} corresponds to method \code{"aim"}.
+  }
   \item{korder}{
     nonnegative integer giving the kernel order; it defaults to
     \code{korder = deriv+2} or \eqn{k = \nu + 2} where \eqn{k - \nu}
@@ -50,8 +61,8 @@ lokerns(x , y, deriv = 0, n.out=300, x.out=NULL, korder= deriv + 2,
   }
   \item{inputb}{
     logical: if true, a local input bandwidth array is used; if
-    \code{FALSE} (default), a data-adaptive local plug-in bandwidths
-    array is calculated and used.
+    \code{FALSE} (by default when \code{bandwidth} is not specified), a
+    data-adaptive local plug-in bandwidths array is calculated and used.
   }
   \item{m1}{
     integer, the number of grid points for integral approximation when
@@ -86,7 +97,8 @@ lokerns(x , y, deriv = 0, n.out=300, x.out=NULL, korder= deriv + 2,
   \item{bandwidth}{local bandwidth array which was used for kernel
     regression estimation.}
   \item{x.out}{vector of ordered output design points.}
-  \item{est}{vector of estimated regression function or its derivative.}
+  \item{est}{vector of estimated regression function or its derivative
+    (at \code{x.out}).}
   \item{sig}{variance estimation which was used for calculating the
     plug-in bandwidths if hetero=TRUE (default) and either inputb=FALSE
     (default) or is.rand=TRUE (default).}
@@ -147,5 +159,9 @@ lines(lofit$x.out, lofit$est, col=4)
 mtext(paste("bandwidth in [",
             paste(format(sb[c(1,6)], dig = 3),collapse=","),
             "];  Median b.w.=",formatC(sb["Median"])))
+
+## When residuals() and fitted() work, we can use  sfsmisc::TA.plot():
+require("sfsmisc")
+TA.plot(lofit)
 }
 \keyword{smooth}

@@ -1,6 +1,7 @@
 ### lokerns   kernel regression smoothing with local bandwidth selection
 
-lokerns <- function(x, y=NULL, deriv = 0, n.out = 300, x.out = NULL,
+lokerns <- function(x, y=NULL, deriv = 0,
+                    n.out = 300, x.out = NULL, x.inOut = TRUE,
 		    korder = deriv + 2, hetero = FALSE, is.rand = TRUE,
 		    inputb = is.numeric(bandwidth) && bandwidth > 0,
 		    m1 = 400, xl = NULL, xu = NULL, s = NULL, sig = NULL,
@@ -9,24 +10,44 @@ lokerns <- function(x, y=NULL, deriv = 0, n.out = 300, x.out = NULL,
     ## control and sort input (x,y) - new: allowing only y
     xy <- xy.coords(x,y)
     x <- xy$x
-    y <- xy$y
     n <- length(x)
     if (n < 3) stop("must have n >= 3 observations")
-    if(is.unsorted(x)) {
-	sorvec <- sort.list(x)
-	x <- x[sorvec]
-	y <- y[sorvec]
+    x.isInd <- !is.null(xy$xlab) && xy$xlab == "Index"
+    isOrd <- x.isInd || !is.unsorted(x)
+    if(isOrd)
+        y <- xy$y
+    else {
+        ord <- sort.list(x)
+        x <- x[ord]
+	y <- y[ord]
     }
 
     ## compute/sort outputgrid 'x.out' (n.out : length of outputgrid)
 
     if (is.null(x.out)) {
         n.out <- as.integer(n.out)
-        x.out <- seq(min(x), max(x), length = n.out)
+	if(identical(x.inOut, FALSE)) {
+	    x.out <- seq(x[1], x[n], length = n.out)
+	}
+	else {# construct x.out containing x[] and more
+	  if(identical(x.inOut, TRUE))
+	      seqXmethod <- "aim" # cheaper than "interpolate"
+	  else { ## x.inOut is a character
+	      if(!is.character(x.inOut))
+		  stop("'x.inOut' must be logical or character")
+	      seqXmethod <- match.arg(x.inOut, eval(formals(seqXtend)$method))
+	      x.inOut <- TRUE
+	  }
+	  n.out <- length(x.out <- seqXtend(x, n.out, method = seqXmethod))
+	  ind.x <- match(x, x.out)
+      }
     }
-    else
+    else {
         n.out <- length(x.out <- sort(x.out))
-
+        ind.x <- match(x, x.out)## x[] matching x.out[]:
+        ## FIXME: approximate matching would be better: findInterval() etc
+        x.inOut <- all(!is.na(ind.x))
+    }
     if(n.out == 0) stop("Must have 'n.out' >= 1")
 
     ## hetero	homo- or heteroszedasticity of error variables
@@ -70,14 +91,14 @@ lokerns <- function(x, y=NULL, deriv = 0, n.out = 300, x.out = NULL,
                     x = as.double(x),		# t
                     y = as.double(y),		# x
                     x.out = as.double(x.out),	# tt
-                    as.integer(n),		# n
-                    as.integer(n.out),		# m
+                    n = as.integer(n),		# n
+                    n.out= as.integer(n.out),	# m
                     deriv = as.integer(deriv),  # nue
                     korder = as.integer(korder),# kord
                     hetero = as.logical(hetero),# hetero
                     is.rand= as.logical(is.rand),# isrand
                     inputb  = inputb,		# smo
-                    m1,
+                    iter = m1, # m1; contains the number of plug-in iterations on output
                     xl = as.double(xl),
                     xu = as.double(xu),
                     s = as.double(s),
@@ -90,10 +111,62 @@ lokerns <- function(x, y=NULL, deriv = 0, n.out = 300, x.out = NULL,
                     PACKAGE = "lokern"
                     )[-c(1:2, 16:18)]# all but (x,y) & work*
     if(res$korder != korder)
-	warning(paste("'korder' set to ", res$korder,", internally"))
+	warning(gettextf("'korder' reset from %d to %d, internally",
+			 korder, res$korder))
+    if(res$iter < 0) res$iter <- NA_integer_
+    xinL <- if(x.inOut) list(ind.x = ind.x, seqXmethod = seqXmethod)
+    structure(c(xy[c("x","y")], # (x,y) possibly unsorted..
+		res, xinL,
+		list(isOrd = isOrd, ord = if(!isOrd) ord,
+		     x.inOut = x.inOut, call = match.call())),
+	      class = c("lokerns", "KernS"))
+}
 
-    list(x = x, y = y, bandwidth = res$bandwidth, x.out = x.out,
-	 est = res$est, sig = res$sig,
-	 deriv = res$deriv, korder = res$korder,
-	 xl = res$xl, xu = res$xu, s = res$s)
+#### FIXME:  does only work when 'x.out' was 'x' originally
+#### -----   Need better: by default  x.out should contain x as  x.out[ind.x]
+fitted.KernS <- function(object, ...) {
+    if(object$x.inOut)
+        with(object, {
+            fit <- est[ind.x]
+            if(isOrd) fit else fit[order(ord)]
+        })
+    else stop("'KernS' fit was done with 'x.out' not including data;",
+                "\n hence cannot provide fitted values or residuals")
+}
+residuals.KernS <- function(object, ...) object$y - fitted(object)
+
+print.KernS <- function(x, digits = getOption("digits"), ...)
+{
+    if(!is.null(cl <- x$call)) {
+	cat("Call:\n")
+	dput(cl, control=NULL)
+    }
+
+    ## This is too cheap, but for now ...  FIXME
+    str(unclass(x)[names(x) != "call"],
+        digits=digits)
+
+    invisible(x)
+}
+
+predict.KernS <- function (object, x, deriv = 0, ...)
+{
+    if (missing(x) && object$x.inOut && deriv == object$deriv) {
+        return(list(x = object[["x"]], y = {
+            fit <- object[["est"]][object[["ind.x"]]]
+            if(object$isOrd) fit else fit[order(object[["ord"]])]
+        }))
+    }
+    ## else
+
+    ## FIXME
+    stop("predict(<kernS>, ...) at new x values is not yet implemented")
+    ## TODO: call the .Fortran() or even  lokern() again,
+    ##      using 'x.out = x' and the 'bandwidths' we already know
+}
+
+plot.KernS <- function (x, ...) {
+    ## as we depend on 'sfsmisc' anyway
+    sfsmisc::plotDS(x$x, yd = x$y, ys = list(x = x$x.out, y = x$est),
+		    ...)
 }

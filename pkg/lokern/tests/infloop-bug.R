@@ -10,8 +10,9 @@ y <- c(19, 27, 23, 27, 4, 15, 21, 33, 5, 15, 0)
 
 plot(x,y)
 
-g3  <- glkerns(x, y) # used to "freeze up" , i.e. Infinite loop --- now fine
-lok <- lokerns(x, y) # ditto
+g3  <- glkerns(x, y, x.inOut=FALSE) # used to "freeze up" , i.e. Infinite loop --- now fine
+lok <- lokerns(x, y, x.inOut=FALSE) # ditto.
+## 'x.inOut=FALSE' - remain back-compatible
 
 with(g3,  lines(est ~ x.out, col = 2))
 with(lok, lines(est ~ x.out, col = 3, lwd=2))

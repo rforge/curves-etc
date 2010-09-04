@@ -7,8 +7,8 @@
   (\bold{gl}obal) plug-in bandwidth.
 }
 \usage{
-glkerns(x, y, deriv = 0, n.out = 300, x.out=NULL, korder= deriv + 2,
-        hetero=FALSE, is.rand=TRUE,
+glkerns(x, y, deriv = 0, n.out = 300, x.out=NULL, x.inOut = TRUE,
+        korder= deriv + 2, hetero=FALSE, is.rand=TRUE,
         inputb= is.numeric(bandwidth) && bandwidth > 0,
         m1 = 400, xl=NULL, xu=NULL,
         s=NULL, sig=NULL, bandwidth=NULL)
@@ -28,8 +28,20 @@ glkerns(x, y, deriv = 0, n.out = 300, x.out=NULL, korder= deriv + 2,
   \item{x.out}{vector of output design points where the function has to
     be estimated.  The default is an equidistant grid of n.out points
     from min(x) to max(x).}
-  \item{korder}{nonnegative integer giving the kernel order \eqn{k};
-    defaults to \code{korder = deriv+2} or \eqn{k = \nu + 2} where \eqn{k - \nu}
+  \item{x.inOut}{logical or character strign indicating if \code{x.out}
+    should contain the input \code{x} values.
+    Note that this argument did not exist, equivalently to being
+    \code{FALSE}, up to \pkg{lokern} version \code{1.0-9}.
+
+    In order for \code{\link{residuals}()} or \code{\link{fitted}()}
+    methods to be applicable, it must be \code{TRUE} or a character
+    string specifying one of the \code{methods}s of
+    \code{\link{seqXtend}} (package \pkg{sfsmisc}). The default,
+    \code{TRUE} corresponds to method \code{"aim"}.
+  }
+  \item{korder}{
+    nonnegative integer giving the kernel order; it defaults to
+    \code{korder = deriv+2} or \eqn{k = \nu + 2} where \eqn{k - \nu}
     must be even.  The maximal possible values are for automatic
     smoothing, \eqn{k \le 4}{k <= 4}, whereas for smoothing with input
     bandwidth, \eqn{k \le 6}{k <= 6}.
@@ -132,9 +144,15 @@ glkerns(x, y, deriv = 0, n.out = 300, x.out=NULL, korder= deriv + 2,
 }
 \references{
   - global plug-in bandwidth estimator:\cr
-  T. Gasser, A. Kneip & W. Koehler (1991)
+  Theo Gasser, Alois Kneip & Walter Koehler (1991)
   A flexible and fast method for automatic smoothing.
   \emph{Journal of the American Statistical Association} \bold{86}, 643--652.
+%  \url{http://www.jstor.org/stable/2290393}
+
+  Muller, H.-G. (1984)
+  Smooth optimum kernel estimators of densities, regression curves and modes.
+  \emph{The Annals of Statistics} \bold{12}, 766--774.
+%  \url{http://www.jstor.org/stable/2241411}
 
   - variance estimation:\cr
   T. Gasser, L. Sroka & C. Jennen-Steinmetz (1986)
@@ -207,8 +225,12 @@ par(op)
 data(cars)
 plot(dist ~ speed, data = cars,
      main = "Global Plug-In Bandwidth")
-myfit <- glkerns(cars$ speed, cars$ dist)
-lines(myfit$x.out, myfit$est, col=2)
-mtext(paste("bandwidth = ", format(myfit$bandwidth, dig = 4)))
+m.glk <- glkerns(cars$ speed, cars$ dist)
+lines(m.glk$x.out, m.glk$est, col=2)
+mtext(paste("bandwidth = ", format(m.glk$bandwidth, dig = 4)))
+
+## When residuals() and fitted() work, we can use  sfsmisc::TA.plot():
+require("sfsmisc")
+TA.plot(m.glk)
 }
 \keyword{smooth}

@@ -1,6 +1,7 @@
 ### glkerns   kernel regression smoothing with bandwidth selection
 
-glkerns <- function(x, y=NULL, deriv = 0, n.out = 300, x.out = NULL,
+glkerns <- function(x, y=NULL, deriv = 0,
+                    n.out = 300, x.out = NULL, x.inOut = TRUE,
 		    korder = deriv + 2, hetero = FALSE, is.rand = TRUE,
 		    inputb = is.numeric(bandwidth) && bandwidth > 0,
 		    m1 = 400, xl = NULL, xu = NULL, s = NULL, sig = NULL,
@@ -9,24 +10,44 @@ glkerns <- function(x, y=NULL, deriv = 0, n.out = 300, x.out = NULL,
     ## control and sort input (x,y) - new: allowing only y
     xy <- xy.coords(x,y)
     x <- xy$x
-    y <- xy$y
     n <- length(x)
     if (n < 3) stop("must have n >= 3 observations")
-    if(is.unsorted(x)) {
-	sorvec <- sort.list(x)
-	x <- x[sorvec]
-	y <- y[sorvec]
+    x.isInd <- !is.null(xy$xlab) && xy$xlab == "Index"
+    isOrd <- x.isInd || !is.unsorted(x)
+    if(isOrd)
+        y <- xy$y
+    else {
+        ord <- sort.list(x)
+        x <- x[ord]
+	y <- y[ord]
     }
 
     ## compute/sort outputgrid 'x.out' (n.out : length of outputgrid)
 
     if (is.null(x.out)) {
         n.out <- as.integer(n.out)
-        x.out <- seq(min(x), max(x), length = n.out)
+	if(identical(x.inOut, FALSE)) {
+	    x.out <- seq(x[1], x[n], length = n.out)
+	}
+	else {# construct x.out containing x[] and more
+	  if(identical(x.inOut, TRUE))
+	      seqXmethod <- "aim" # cheaper than "interpolate"
+	  else { ## x.inOut is a character
+	      if(!is.character(x.inOut))
+		  stop("'x.inOut' must be logical or character")
+	      seqXmethod <- match.arg(x.inOut, eval(formals(seqXtend)$method))
+	      x.inOut <- TRUE
     }
-    else
+	  n.out <- length(x.out <- seqXtend(x, n.out, method = seqXmethod))
+	  ind.x <- match(x, x.out)
+      }
+    }
+    else {
         n.out <- length(x.out <- sort(x.out))
-
+        ind.x <- match(x, x.out)## x[] matching x.out[]:
+        ## FIXME: approximate matching would be better: findInterval() etc
+        x.inOut <- all(!is.na(ind.x))
+    }
     if(n.out == 0) stop("Must have 'n.out' >= 1")
 
     ## hetero	homo- or heteroszedasticity of error variables
@@ -80,8 +101,8 @@ glkerns <- function(x, y=NULL, deriv = 0, n.out = 300, x.out = NULL,
                     x = as.double(x),		# t
                     y = as.double(y),		# x
                     x.out = as.double(x.out),	# tt
-                    as.integer(n),		# n
-                    as.integer(n.out),		# m
+                    n = as.integer(n),		# n
+                    n.out= as.integer(n.out),	# m
                     deriv = as.integer(deriv),  # nue
                     korder = as.integer(korder),# kord
                     hetero = as.logical(hetero),# hetero
@@ -93,17 +114,19 @@ glkerns <- function(x, y=NULL, deriv = 0, n.out = 300, x.out = NULL,
                     s = as.double(s),
                     sig = as.double(sig),
                     work1 = double((n+1)*5),
-                    work2 = double(m1*3),
+                    work2 = double(3 * m1),
                     bandwidth = bandwidth,
                     est = double(n.out),
-                    PACKAGE = "lokern")
+                    PACKAGE = "lokern"
+                    )[-c(1:2, 16:17)]# all but (x,y) & work*
     if(res$korder != korder)
 	warning(gettextf("'korder' reset from %d to %d, internally",
 			 korder, res$korder))
     if(res$iter < 0) res$iter <- NA_integer_
-
-    list(x = x, y = y, bandwidth = res$bandwidth, x.out = x.out,
-	 est = res$est, sig = res$sig,
-	 deriv = res$deriv, korder = res$korder, iter = res$iter,
-	 xl = res$xl, xu = res$xu, s = res$s)
+    xinL <- if(x.inOut) list(ind.x = ind.x, seqXmethod = seqXmethod)
+    structure(c(xy[c("x","y")], # (x,y) possibly unsorted..
+		res, xinL,
+		list(isOrd = isOrd, ord = if(!isOrd) ord,
+		     x.inOut = x.inOut, call = match.call())),
+	      class = c("glkerns", "KernS"))
 }

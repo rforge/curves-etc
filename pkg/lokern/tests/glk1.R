@@ -1,11 +1,10 @@
 require(lokern)
 data(xSim)
-xSim # `test' for the dataset
-
 n <- length(xSim)
+stopifnot(n == 75)
 tt <- ((1:n) - 1/2)/n # equidistant x
 
-str(gk <- glkerns(tt, xSim))
+(gk <- glkerns(tt, xSim))
 summary(gk$est)
 gk$bandwidth
 glkerns(tt,xSim, deriv = 1)$bandwidth

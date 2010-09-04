@@ -1,29 +1,13 @@
-  o Want class()ed results which have  print.*,
-    summary.* (maybe lines.*) and plot.* methods.
-    --> residuals() !!
+  o Now both lokerns() and glkerns()  do return class()ed results which
+    have  print(), residuals(), ... methods.
 
-    For residuals, want to use  sfsmisc::seqXtend() {-> sfsmisc:roundfixS() }
-    --> dependency on  sfsmisc
-    [[Alternative:  Write small paper on  seqXtend() & roundfixS()
+    Both now also use
+    	sfsmisc::seqXtend() {-> sfsmisc:roundfixS() }
+	    --> dependency on  sfsmisc
+	        [[Alternative:  Write small paper on  seqXtend() & roundfixS()
                     and move these to  utils ]]
 
-    -- see R/lokerns.R.~future~
-       	   --------------------
-
-   NOTE: I had the following in ./ChangeLog  (note the date !!)
-
-   2003-11-04  Martin Maechler  <maechler@stat.math.ethz.ch>
-
-	* DESCRIPTION (Version): 1.1-0 : new: using class();...
-
-	* src/lokerns.f (lokerns): switched arg. 3 <-> 4; s/smo/inputb/
-
-	* R/lokerns.R (fitted.KernS): use class(); x.out should include x
-	        --> changes to do smart x.out;  residuals() and fitted()
-
-   TODO: The same for R/glkerns.R
-   ------------------------------
-
+   TODO: Check that residuals() and fitted() also work when x[] is *NOT* sorted
 
   o The Fortran-algorithm  in parts heavily relies on   t_i < t_{i+1}
     When we have *duplicated* x's  [or "nearly-duplicated" ones which may
