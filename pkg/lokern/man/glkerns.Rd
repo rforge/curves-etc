@@ -209,7 +209,7 @@ legend(0.7,4.4, c("global bw","local bw"), col = cols, lwd=1)
 op <- par(mfrow = c(3,1), mar = .1 + c(4,4,2,1), oma = c(0,0,3,0),
           mgp = c(1.5, 0.6,0))
 plot(gk, main = expression(paste("Data & ", hat(f))))
-lines(gk$x.out, gk$est, col = "blue", lwd = 1.5)
+## calling extra plot() method
 gk1 <- glkerns(tt, xSim, deriv = 1, is.rand = FALSE)
 plot(gk1$x.out, gk1$est, col = "green", lwd = 1.5, type = "l",
      main = expression(widehat(paste(f,"'"))))

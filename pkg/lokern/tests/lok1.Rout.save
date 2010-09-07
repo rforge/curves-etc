@@ -1,5 +1,5 @@
 
-R version 2.11.1 Patched (2010-08-30 r52860)
+R version 2.11.1 Patched (2010-09-04 r52871)
 Copyright (C) 2010 The R Foundation for Statistical Computing
 ISBN 3-900051-07-0
 
@@ -27,7 +27,7 @@ Loading required package: sfsmisc
 > tt <- ((1:n) - 1/2)/n # equidistant x
 > 
 > str(lk <- lokerns(tt, xSim))
-List of 23
+List of 24
  $ x         : num [1:75] 0.00667 0.02 0.03333 0.04667 0.06 ...
  $ y         : num [1:75] 1.97 1.9 1.64 1.43 2.4 ...
  $ x.out     : num [1:300] 0.00667 0.01103 0.0154 0.01976 0.02 ...
@@ -47,6 +47,7 @@ List of 23
  $ est       : num [1:300] 1.87 1.86 1.85 1.85 1.85 ...
  $ ind.x     : int [1:75] 1 5 9 13 17 21 25 29 33 37 ...
  $ seqXmethod: chr "aim"
+ $ m1        : int 400
  $ isOrd     : logi TRUE
  $ ord       : NULL
  $ x.inOut   : logi TRUE

@@ -1,3 +1,12 @@
+2010-09-06  Martin Maechler  <maechler@stat.math.ethz.ch>
+
+	* DESCRIPTION (Version): 1.1-1
+
+	* R/glkerns.R (.glkerns): factored out of glkerns();
+	* R/lokerns.R (.lokerns): factored out, to be used in
+	* R/lokerns.R (predict.KernS): now work for all 'x' and different
+	deriv.
+
 2010-09-04  Martin Maechler  <maechler@stat.math.ethz.ch>
 
 	* DESCRIPTION (Version, Date): 1.1-0

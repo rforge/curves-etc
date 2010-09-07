@@ -1,5 +1,40 @@
 ### glkerns   kernel regression smoothing with bandwidth selection
 
+## auxiliary, factored out of glkerns()
+.glkerns <- function(x,y,x.out,n,n.out,deriv,korder,
+		     hetero,is.rand,inputb,
+		     m1,xl,xu,s,sig,bandwidth)
+{
+    ## calling fortran routine
+    r <- .Fortran("glkerns",                     # Fortran arg.names :
+                  x = as.double(x),              # t
+                  y = as.double(y),              # x
+                  x.out = as.double(x.out),      # tt
+                  n = as.integer(n),             # n
+                  n.out= as.integer(n.out),      # m
+                  deriv = as.integer(deriv),     # nue
+                  korder = as.integer(korder),   # kord
+                  hetero = as.logical(hetero),   # hetero
+                  is.rand= as.logical(is.rand),  # isrand
+		  inputb = as.logical(inputb),	 # smo
+		  iter = as.integer(m1),# number of plug-in iterations on output
+                  xl = as.double(xl),
+                  xu = as.double(xu),
+                  s = as.double(s),
+                  sig = as.double(sig),
+                  work1 = double((n+1)*5),
+                  work2 = double(3 * m1),
+                  bandwidth = as.double(bandwidth),
+                  est = double(n.out),
+                  PACKAGE = "lokern"
+                  )[-c(1:2, 16:17)]     # all but (x,y) & work*
+    if(r$korder != korder)
+	warning(gettextf("'korder' reset from %d to %d, internally",
+			 korder, r$korder))
+    if(r$iter < 0) r$iter <- NA_integer_
+    r
+}
+
 glkerns <- function(x, y=NULL, deriv = 0,
                     n.out = 300, x.out = NULL, x.inOut = TRUE,
 		    korder = deriv + 2, hetero = FALSE, is.rand = TRUE,
@@ -25,28 +60,28 @@ glkerns <- function(x, y=NULL, deriv = 0,
     ## compute/sort outputgrid 'x.out' (n.out : length of outputgrid)
 
     if (is.null(x.out)) {
-        n.out <- as.integer(n.out)
+	n.out <- as.integer(n.out)
 	if(identical(x.inOut, FALSE)) {
 	    x.out <- seq(x[1], x[n], length = n.out)
 	}
-	else {# construct x.out containing x[] and more
-	  if(identical(x.inOut, TRUE))
-	      seqXmethod <- "aim" # cheaper than "interpolate"
-	  else { ## x.inOut is a character
-	      if(!is.character(x.inOut))
-		  stop("'x.inOut' must be logical or character")
-	      seqXmethod <- match.arg(x.inOut, eval(formals(seqXtend)$method))
-	      x.inOut <- TRUE
-    }
-	  n.out <- length(x.out <- seqXtend(x, n.out, method = seqXmethod))
-	  ind.x <- match(x, x.out)
-      }
+	else { ## construct x.out containing x[] and more
+	    if(identical(x.inOut, TRUE))
+		seqXmethod <- "aim"	# cheaper than "interpolate"
+	    else {			## x.inOut is a character
+		if(!is.character(x.inOut))
+		    stop("'x.inOut' must be logical or character")
+		seqXmethod <- match.arg(x.inOut, eval(formals(seqXtend)$method))
+		x.inOut <- TRUE
+	    }
+	    n.out <- length(x.out <- seqXtend(x, n.out, method = seqXmethod))
+	    ind.x <- match(x, x.out)
+	}
     }
     else {
-        n.out <- length(x.out <- sort(x.out))
-        ind.x <- match(x, x.out)## x[] matching x.out[]:
-        ## FIXME: approximate matching would be better: findInterval() etc
-        x.inOut <- all(!is.na(ind.x))
+	n.out <- length(x.out <- sort(x.out))
+	ind.x <- match(x, x.out)## x[] matching x.out[]:
+	## FIXME: approximate matching would be better: findInterval() etc
+	x.inOut <- all(!is.na(ind.x))
     }
     if(n.out == 0) stop("Must have 'n.out' >= 1")
 
@@ -96,37 +131,14 @@ glkerns <- function(x, y=NULL, deriv = 0,
         korder <- deriv+2
     }
 
-    ## calling fortran routine
-    res <- .Fortran("glkerns",			# Fortran arg.names :
-                    x = as.double(x),		# t
-                    y = as.double(y),		# x
-                    x.out = as.double(x.out),	# tt
-                    n = as.integer(n),		# n
-                    n.out= as.integer(n.out),	# m
-                    deriv = as.integer(deriv),  # nue
-                    korder = as.integer(korder),# kord
-                    hetero = as.logical(hetero),# hetero
-                    is.rand= as.logical(is.rand),# isrand
-                    inputb  = inputb,		# smo
-                    iter = m1, # m1; contains the number of plug-in iterations on output
-                    xl = as.double(xl),
-                    xu = as.double(xu),
-                    s = as.double(s),
-                    sig = as.double(sig),
-                    work1 = double((n+1)*5),
-                    work2 = double(3 * m1),
-                    bandwidth = bandwidth,
-                    est = double(n.out),
-                    PACKAGE = "lokern"
-                    )[-c(1:2, 16:17)]# all but (x,y) & work*
-    if(res$korder != korder)
-	warning(gettextf("'korder' reset from %d to %d, internally",
-			 korder, res$korder))
-    if(res$iter < 0) res$iter <- NA_integer_
     xinL <- if(x.inOut) list(ind.x = ind.x, seqXmethod = seqXmethod)
     structure(c(xy[c("x","y")], # (x,y) possibly unsorted..
-		res, xinL,
-		list(isOrd = isOrd, ord = if(!isOrd) ord,
+		.glkerns(x=x,y=y,x.out=x.out,n=n,n.out=n.out,deriv=deriv,
+			 korder=korder,hetero=hetero,is.rand=is.rand,
+			 inputb=inputb,m1=m1,xl=xl,xu=xu,
+			 s=s,sig=sig,bandwidth=bandwidth),
+		xinL,
+		list(m1 = m1, isOrd = isOrd, ord = if(!isOrd) ord,
 		     x.inOut = x.inOut, call = match.call())),
 	      class = c("glkerns", "KernS"))
 }

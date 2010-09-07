@@ -1,5 +1,5 @@
 
-R version 2.11.1 Patched (2010-08-30 r52860)
+R version 2.11.1 Patched (2010-09-04 r52871)
 Copyright (C) 2010 The R Foundation for Statistical Computing
 ISBN 3-900051-07-0
 
@@ -26,7 +26,7 @@ Loading required package: sfsmisc
 > (gk <- glkerns(tt, xSim))
 Call:
 glkerns(x = tt, y = xSim)
-List of 22
+List of 23
  $ x         : num [1:75] 0.006666667 0.02 0.033333333 0.046666667 0.06 ...
  $ y         : num [1:75] 1.9666 1.9 1.6449 1.4275 2.4 1.8487 1.3383 1.9514 1.5722 1.1978 ...
  $ x.out     : num [1:300] 0.006666667 0.011032448 0.01539823 0.019764012 0.02 ...
@@ -46,6 +46,7 @@ List of 22
  $ est       : num [1:300] 1.867502 1.860786 1.85407 1.847354 1.846991 ...
  $ ind.x     : int [1:75] 1 5 9 13 17 21 25 29 33 37 ...
  $ seqXmethod: chr "aim"
+ $ m1        : int 400
  $ isOrd     : logi TRUE
  $ ord       : NULL
  $ x.inOut   : logi TRUE
@@ -173,7 +174,7 @@ deriv = 3: modifying korder from 6 to 5
 > ## and inspect them
 > str(r)
 List of 5
- $ nu=0:List of 23
+ $ nu=0:List of 24
   ..$ x         : num [1:75] 0.00667 0.02 0.03333 0.04667 0.06 ...
   ..$ y         : num [1:75] 1.97 1.9 1.64 1.43 2.4 ...
   ..$ x.out     : num [1:300] 0.00667 0.01103 0.0154 0.01976 0.02 ...
@@ -193,12 +194,13 @@ List of 5
   ..$ est       : num [1:300] 1.92 1.89 1.87 1.85 1.85 ...
   ..$ ind.x     : int [1:75] 1 5 9 13 17 21 25 29 33 37 ...
   ..$ seqXmethod: chr "aim"
+  ..$ m1        : int 400
   ..$ isOrd     : logi TRUE
   ..$ ord       : NULL
   ..$ x.inOut   : logi TRUE
   ..$ call      : language glkerns(x = x.dat, y = y.dat, deriv = nu, korder = k0, is.rand = is.rand,      bandwidth = bw)
   ..- attr(*, "class")= chr [1:2] "glkerns" "KernS"
- $ nu=1:List of 23
+ $ nu=1:List of 24
   ..$ x         : num [1:75] 0.00667 0.02 0.03333 0.04667 0.06 ...
   ..$ y         : num [1:75] 1.97 1.9 1.64 1.43 2.4 ...
   ..$ x.out     : num [1:300] 0.00667 0.01103 0.0154 0.01976 0.02 ...
@@ -218,12 +220,13 @@ List of 5
   ..$ est       : num [1:300] -2.75 -2.58 -2.44 -2.34 -2.33 ...
   ..$ ind.x     : int [1:75] 1 5 9 13 17 21 25 29 33 37 ...
   ..$ seqXmethod: chr "aim"
+  ..$ m1        : int 400
   ..$ isOrd     : logi TRUE
   ..$ ord       : NULL
   ..$ x.inOut   : logi TRUE
   ..$ call      : language glkerns(x = x.dat, y = y.dat, deriv = nu, korder = k0, is.rand = is.rand,      bandwidth = bw)
   ..- attr(*, "class")= chr [1:2] "glkerns" "KernS"
- $ nu=2:List of 23
+ $ nu=2:List of 24
   ..$ x         : num [1:75] 0.00667 0.02 0.03333 0.04667 0.06 ...
   ..$ y         : num [1:75] 1.97 1.9 1.64 1.43 2.4 ...
   ..$ x.out     : num [1:300] 0.00667 0.01103 0.0154 0.01976 0.02 ...
@@ -243,12 +246,13 @@ List of 5
   ..$ est       : num [1:300] 355 305 258 214 212 ...
   ..$ ind.x     : int [1:75] 1 5 9 13 17 21 25 29 33 37 ...
   ..$ seqXmethod: chr "aim"
+  ..$ m1        : int 400
   ..$ isOrd     : logi TRUE
   ..$ ord       : NULL
   ..$ x.inOut   : logi TRUE
   ..$ call      : language glkerns(x = x.dat, y = y.dat, deriv = nu, korder = k0, is.rand = is.rand,      bandwidth = bw)
   ..- attr(*, "class")= chr [1:2] "glkerns" "KernS"
- $ nu=3:List of 23
+ $ nu=3:List of 24
   ..$ x         : num [1:75] 0.00667 0.02 0.03333 0.04667 0.06 ...
   ..$ y         : num [1:75] 1.97 1.9 1.64 1.43 2.4 ...
   ..$ x.out     : num [1:300] 0.00667 0.01103 0.0154 0.01976 0.02 ...
@@ -268,12 +272,13 @@ List of 5
   ..$ est       : num [1:300] -1684 -1619 -1554 -1488 -1485 ...
   ..$ ind.x     : int [1:75] 1 5 9 13 17 21 25 29 33 37 ...
   ..$ seqXmethod: chr "aim"
+  ..$ m1        : int 400
   ..$ isOrd     : logi TRUE
   ..$ ord       : NULL
   ..$ x.inOut   : logi TRUE
   ..$ call      : language glkerns(x = x.dat, y = y.dat, deriv = nu, korder = k0, is.rand = is.rand,      bandwidth = bw)
   ..- attr(*, "class")= chr [1:2] "glkerns" "KernS"
- $ nu=4:List of 23
+ $ nu=4:List of 24
   ..$ x         : num [1:75] 0.00667 0.02 0.03333 0.04667 0.06 ...
   ..$ y         : num [1:75] 1.97 1.9 1.64 1.43 2.4 ...
   ..$ x.out     : num [1:300] 0.00667 0.01103 0.0154 0.01976 0.02 ...
@@ -293,6 +298,7 @@ List of 5
   ..$ est       : num [1:300] 198209 192068 185921 179769 179436 ...
   ..$ ind.x     : int [1:75] 1 5 9 13 17 21 25 29 33 37 ...
   ..$ seqXmethod: chr "aim"
+  ..$ m1        : int 400
   ..$ isOrd     : logi TRUE
   ..$ ord       : NULL
   ..$ x.inOut   : logi TRUE
@@ -303,9 +309,9 @@ List of 5
 deriv = 0: modifying korder from 3 to 2
 deriv = 2: modifying korder from 3 to 2
 Warning messages:
-1: In glkerns(x.dat, y.dat, korder = korder, is.rand = is.rand) :
+1: In .glkerns(x = x, y = y, x.out = x.out, n = n, n.out = n.out, deriv = deriv,  :
   'korder' reset from 3 to 2, internally
-2: In glkerns(x.dat, y.dat, korder = k0, is.rand = is.rand, bandw = bw,  :
+2: In .glkerns(x = x, y = y, x.out = x.out, n = n, n.out = n.out, deriv = deriv,  :
   'korder' reset from 2 to 4, internally
 > 
 > p.3glks(tt, xSim, kord = 4, useB = 0.15)
@@ -315,7 +321,7 @@ deriv = 1: modifying korder from 4 to 3
 deriv = 0: modifying korder from 5 to 4
 deriv = 2: modifying korder from 5 to 4
 List of 3
- $ nu=0:List of 23
+ $ nu=0:List of 24
   ..$ x         : num [1:75] 0.00667 0.02 0.03333 0.04667 0.06 ...
   ..$ y         : num [1:75] 1.97 1.9 1.64 1.43 2.4 ...
   ..$ x.out     : num [1:300] 0.00667 0.01103 0.0154 0.01976 0.02 ...
@@ -335,12 +341,13 @@ List of 3
   ..$ est       : num [1:300] 1.89 1.88 1.88 1.87 1.87 ...
   ..$ ind.x     : int [1:75] 1 5 9 13 17 21 25 29 33 37 ...
   ..$ seqXmethod: chr "aim"
+  ..$ m1        : int 400
   ..$ isOrd     : logi TRUE
   ..$ ord       : NULL
   ..$ x.inOut   : logi TRUE
   ..$ call      : language glkerns(x = x.dat, y = y.dat, deriv = nu, korder = k0, is.rand = is.rand,      bandwidth = bw)
   ..- attr(*, "class")= chr [1:2] "glkerns" "KernS"
- $ nu=1:List of 23
+ $ nu=1:List of 24
   ..$ x         : num [1:75] 0.00667 0.02 0.03333 0.04667 0.06 ...
   ..$ y         : num [1:75] 1.97 1.9 1.64 1.43 2.4 ...
   ..$ x.out     : num [1:300] 0.00667 0.01103 0.0154 0.01976 0.02 ...
@@ -360,12 +367,13 @@ List of 3
   ..$ est       : num [1:300] -5.25 -4.5 -3.84 -3.28 -3.25 ...
   ..$ ind.x     : int [1:75] 1 5 9 13 17 21 25 29 33 37 ...
   ..$ seqXmethod: chr "aim"
+  ..$ m1        : int 400
   ..$ isOrd     : logi TRUE
   ..$ ord       : NULL
   ..$ x.inOut   : logi TRUE
   ..$ call      : language glkerns(x = x.dat, y = y.dat, deriv = nu, korder = k0, is.rand = is.rand,      bandwidth = bw)
   ..- attr(*, "class")= chr [1:2] "glkerns" "KernS"
- $ nu=2:List of 23
+ $ nu=2:List of 24
   ..$ x         : num [1:75] 0.00667 0.02 0.03333 0.04667 0.06 ...
   ..$ y         : num [1:75] 1.97 1.9 1.64 1.43 2.4 ...
   ..$ x.out     : num [1:300] 0.00667 0.01103 0.0154 0.01976 0.02 ...
@@ -385,6 +393,7 @@ List of 3
   ..$ est       : num [1:300] -39.9 -39.7 -39.5 -39.2 -39.2 ...
   ..$ ind.x     : int [1:75] 1 5 9 13 17 21 25 29 33 37 ...
   ..$ seqXmethod: chr "aim"
+  ..$ m1        : int 400
   ..$ isOrd     : logi TRUE
   ..$ ord       : NULL
   ..$ x.inOut   : logi TRUE
