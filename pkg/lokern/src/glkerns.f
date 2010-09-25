@@ -1,5 +1,5 @@
-      subroutine glkerns(t,x,tt,n,m,nue,kord, hetero,isrand,
-     .     smo,m1,tl,tu,s,sig,wn,w1,b,y)
+      subroutine glkerns(t,x, tt,y, n,m,nue,kord, hetero,isrand,
+     .     smo,m1,tl,tu,s,sig,wn,w1,b)
 c----------------------------------------------------------------------*
 c-----------------------------------------------------------------------
 c       Short-version: Oct 1996

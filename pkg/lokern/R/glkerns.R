@@ -10,6 +10,7 @@
                   x = as.double(x),              # t
                   y = as.double(y),              # x
                   x.out = as.double(x.out),      # tt
+		  est	= double(n.out),	 # y
                   n = as.integer(n),             # n
                   n.out= as.integer(n.out),      # m
                   deriv = as.integer(deriv),     # nue
@@ -25,9 +26,8 @@
                   work1 = double((n+1)*5),
                   work2 = double(3 * m1),
                   bandwidth = as.double(bandwidth),
-                  est = double(n.out),
                   PACKAGE = "lokern"
-                  )[-c(1:2, 16:17)]     # all but (x,y) & work*
+                  )[-c(1:2, 17:18)]     # all but (x,y) & work*
     if(r$korder != korder)
 	warning(gettextf("'korder' reset from %d to %d, internally",
 			 korder, r$korder))
@@ -81,7 +81,11 @@ glkerns <- function(x, y=NULL, deriv = 0,
 	n.out <- length(x.out <- sort(x.out))
 	ind.x <- match(x, x.out)## x[] matching x.out[]:
 	## FIXME: approximate matching would be better: findInterval() etc
+	if(!missing(x.inOut))
+	    warning("'x.inOut' is disregarded as 'x.out' has been specified")
 	x.inOut <- all(!is.na(ind.x))
+	if(x.inOut)
+	    seqXmethod <- NA_character_ # don't need seqXtend()
     }
     if(n.out == 0) stop("Must have 'n.out' >= 1")
 

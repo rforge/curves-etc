@@ -1,3 +1,12 @@
+2010-09-25  Martin Maechler  <maechler@stat.math.ethz.ch>
+
+	* DESCRIPTION (Version): 1.1-2
+
+	* R/lokerns.R (.lokerns), src/lokerns.f: make 'est' the 4th arg.
+	(lokerns): fix 'x.out' bug; the same for glkerns().
+
+	* R/glkerns.R (.glkerns), src/glkerns.f: make 'est' the 4th arg.
+
 2010-09-06  Martin Maechler  <maechler@stat.math.ethz.ch>
 
 	* DESCRIPTION (Version): 1.1-1

@@ -28,7 +28,7 @@ glkerns(x, y, deriv = 0, n.out = 300, x.out=NULL, x.inOut = TRUE,
   \item{x.out}{vector of output design points where the function has to
     be estimated.  The default is an equidistant grid of n.out points
     from min(x) to max(x).}
-  \item{x.inOut}{logical or character strign indicating if \code{x.out}
+  \item{x.inOut}{logical or character string indicating if \code{x.out}
     should contain the input \code{x} values.
     Note that this argument did not exist, equivalently to being
     \code{FALSE}, up to \pkg{lokern} version \code{1.0-9}.

@@ -1,5 +1,5 @@
-      subroutine lokerns(t,x,tt,n,m,nue,kord, hetero,isrand,
-     .     inputb,m1,tl,tu,s,sig,wn,w1, wm,ban, y)
+      subroutine lokerns(t,x, tt,y, n,m,nue,kord, hetero,isrand,
+     .     inputb,m1,tl,tu,s,sig,wn,w1, wm,ban)
 c----------------------------------------------------------------------*
 c-----------------------------------------------------------------------
 c       Short-version: January 1997
