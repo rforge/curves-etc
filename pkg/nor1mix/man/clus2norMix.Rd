@@ -30,7 +30,7 @@ clus2norMix(gr, x, name = deparse(sys.call()))
   sensible clusterings.}
 \examples{
 x9 <- rnorMix(500, MW.nm9)
-library(cluster)
+require("cluster")
 pxc <- pam(x9, k=3)
 plot(pxc, which = 2)# silhouette
 

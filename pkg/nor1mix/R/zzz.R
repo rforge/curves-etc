@@ -12,6 +12,7 @@
 }
 
 
+## For reference; not needed anymore, as ../DESCRIPTION now has  R >= 2.8.0 :
 if(getRversion() < "2.8.0") {
 monoHsplinefun <- function(x, y=NULL, ties = mean)
 {

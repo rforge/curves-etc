@@ -332,8 +332,9 @@ qnorMix <-
               ## In that case, splinefun() completely "fails";
               ## we do need  *monotone* (spline) interpolation:
               mySfun <- {
-                  if(getRversion() < "2.8.0") monoHsplinefun
-                  else function(x, y, ...) splinefun(x,y, ..., method="monoH.FC")
+                  ## if(getRversion() < "2.8.0") monoHsplinefun
+                  ## else
+		      function(x, y, ...) splinefun(x,y, ..., method="monoH.FC")
               }
               if(method == "interpspline")
                   qpp <- mySfun(ppi, qi)(pp.) ## is very fast
