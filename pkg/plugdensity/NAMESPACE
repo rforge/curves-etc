@@ -1,0 +1,6 @@
+useDynLib(plugdensity,
+          plugin)
+
+export(plugin.density)
+
+S3method(print, densityEHpi)

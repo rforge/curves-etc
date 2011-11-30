@@ -31,12 +31,11 @@ plugin.density <- function(x, nout = 201, xout = NULL, na.rm = FALSE)
 	m <- length(xout)
 	if(is.unsorted(xout)) xout <- sort(xout)
     }
-    r <- .C("plugin",
+    r <- .C(plugin,
 	    x = as.double(x), n=n,
 	    z = xout, m=m,
 	    f = double(m),
-	    h = double(1),
-	    PACKAGE = "plugdensity")
+	    h = double(1))
     structure(list(x= r$z, y= r$f, bw = r$h, n=n,
 		   call = match.call(), data.name = name),
 	      class=c("densityEHpi", "density")) # Eva Herrman plug in

@@ -1,3 +1,9 @@
+2011-11-30  Martin Maechler  <maechler@stat.math.ethz.ch>
+
+	* DESCRIPTION (Version): 0.8-3; -> CRAN
+	* NAMESPACE: added
+	* R/aaa.R: no longer needed
+
 2009-12-04  Martin Maechler  <maechler@stat.math.ethz.ch>
 
 	* DESCRIPTION (Version, License): 0.8-2;  use standardized License
