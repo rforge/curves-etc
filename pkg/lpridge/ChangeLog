@@ -1,3 +1,9 @@
+2011-11-30  Martin Maechler  <maechler@stat.math.ethz.ch>
+
+	* DESCRIPTION (Version): 1.0-6
+
+	* NAMESPACE: added, incl. useDynLib(*, ...) --> no need for R/zzz.R anymore
+
 2007-06-12  Martin Maechler  <maechler@stat.math.ethz.ch>
 
 	* DESCRIPTION (Version): 1.0-4 to finally release, after > 2 years

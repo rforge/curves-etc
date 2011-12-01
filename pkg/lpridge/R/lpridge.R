@@ -92,7 +92,7 @@ lpridge <- function(x,y,bandwidth,
     if ((kord+order) > 12)
 	stop("Order of kernel weights + polynomial order exceeds 12.")
 
-    res <- .Fortran("lpridge",
+    res <- .Fortran(lpridge_s,
 		    x = as.double(x),
 		    y = as.double(y),
 		    as.integer(n),
@@ -112,8 +112,7 @@ lpridge <- function(x,y,bandwidth,
 		    var = as.integer(var),
 		    est.var = double(n.out),
 		    ridge = as.double(ridge),
-		    nsins = integer(1),
-		    PACKAGE = "lpridge")
+		    nsins = integer(1))[c("bandwidth", "est","est.var", "nsins")]
 
     if (res$nsins > 0)
 	warning(res$nsins,

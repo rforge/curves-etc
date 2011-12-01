@@ -63,7 +63,7 @@ lpepa <- function(x, y, bandwidth,
     ## internal parameters and arrays (see code in ../src/lpepa.f)
     leng <- 10
     nmoms <- as.integer(n/leng + 1)
-    res <- .Fortran("lpepa",
+    res <- .Fortran(lpepa_s,
                     x,
                     y,
                     as.integer(n),
@@ -80,7 +80,7 @@ lpepa <- function(x, y, bandwidth,
                     nmoms,
                     var = as.integer(var),
                     est.var = double(n.out),
-                    PACKAGE = "lpridge", DUP = FALSE)
+		    DUP = FALSE)[c("bandwidth", "est", "est.var")]
 
     list(x = x, y = y, bandwidth = res$bandwidth,
          deriv = deriv, x.out = x.out, order = order,

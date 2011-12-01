@@ -1,4 +1,4 @@
-      subroutine lpridge(t,x,n,b,nue,p,kord,wk,tt,m,mnew,imoms,moms,y,
+      subroutine lpridge_s(t,x,n,b,nue,p,kord,wk,tt,m,mnew,imoms,moms,y,
      .              leng,nmoms,nvar,var,ridge,nsins)
 
 ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
@@ -397,7 +397,7 @@ c     - w(,3) = u, u from y = u' * beta
             w(j,3)=kk*bin(j,nue)*tti(j-nue)*nuefak
 740         kk=-kk
 c    - w(,3) = (H + X'W X)**-1 * u
-         call lpsv(w1,work,w(0,3),na,nsin,nzer,sino,xsin,zer,na)
+         call lpsv(w1,work,w(0,3),na,nzer,sino,xsin,zer,na)
          if (irec.eq.2) goto 850
 c    - w(,4) = X'W**2 X
 c    - weighted LSE

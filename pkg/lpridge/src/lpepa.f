@@ -1,4 +1,4 @@
-      subroutine lpepa(t,x,n,b,nue,p,tt,m,mnew,imoms,moms,y,
+      subroutine lpepa_s(t,x,n,b,nue,p,tt,m,mnew,imoms,moms,y,
      .              leng,nmoms,nvar,var)
 
 ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
@@ -339,7 +339,7 @@ c
          do 740 j=nue,p
             w(j,3)=bin(j,nue)*ttti*nuefak
 740         ttti=ttti*tti
-         call lpsv(w1,work,w(0,3),na,nsin,nzer,sino,xsin,zer,na)
+         call lpsv(w1,work,w(0,3),na,nzer,sino,xsin,zer,na)
          if (irec.eq.2) goto 850
 c    - weighted LSE
          bb=1d0/(b(i)*b(i))
