@@ -1,4 +1,4 @@
-      subroutine lokerns(t,x, tt,y, n,m,nue,kord, hetero,isrand,
+      subroutine lokern_s(t,x, tt,y, n,m,nue,kord, hetero,isrand,
      .     inputb,m1,tl,tu,s,sig,wn,w1, wm,ban)
 c----------------------------------------------------------------------*
 c-----------------------------------------------------------------------
@@ -40,17 +40,18 @@ c-------- 1. initialisations
 c Stop for invalid inputs (impossible when called from R's lokerns())
 
 c     0 <= nue <= 4;  nue <= 2 if(! smo)
-      if(nue.gt.4.or.nue.lt.0) stop
-      if(nue.gt.2.and. .not.inputb) stop
-      if(n.le.2) stop
-      if(m.lt.1) stop
-      if(m1.lt.3) stop
+      if(nue.gt.4 .or. nue.lt.0) call rexit("nue must be in 0..4")
+      if(nue.gt.2 .and. .not. inputb)
+     +     call rexit("nue must be in 0..2 if not 'inputb'")
+      if(n .le. 2) call rexit("n <= 2")
+      if(m .lt. 1) call rexit("m < 1")
+      if(m1.lt. 3) call rexit("m1 < 3")
 
 c     kord - nue must be even :
       kk=(kord-nue)/2
-      if(2*kk + nue .ne. kord)       kord=nue+2
-      if(kord.gt.4 .and. .not.inputb)   kord=nue+2
-      if(kord.gt.6 .or. kord.le.nue) kord=nue+2
+      if(2*kk + nue .ne. kord)        kord=nue+2
+      if(kord.gt.4 .and. .not.inputb) kord=nue+2
+      if(kord.gt.6 .or. kord.le.nue)  kord=nue+2
       rvar=sig
 
 c-------- 2. computation of s-sequence
@@ -58,9 +59,9 @@ c-------- 2. computation of s-sequence
       sn=1.5*t(n)-0.5*t(n-1)
       if(s(n).le.s(0)) then
          inputs= .true.
-         do 20 i=1,n-1
+         do i=1,n-1
             s(i)=.5*(t(i)+t(i+1))
- 20      continue
+         end do
          s(0)=s0
          s(n)=sn
          if(inputb .and. .not.isrand) goto 230
@@ -87,12 +88,12 @@ c-------- 5. compute indices
       iu=n
       wn(1,1)=0.0
       wn(n,1)=0.0
-      do 50 i=1,n
+      do i=1,n
         if(t(i).le.tl .or.  t(i).ge.tu) wn(i,1)=0.0
         if(t(i).gt.tl .and. t(i).lt.tu) wn(i,1)=1.0
         if(t(i).lt.tl) il=i+1
         if(t(i).le.tu) iu=i
- 50   continue
+      end do
       nn=iu-il+1
       if(nn.eq.0.and.itt.eq.0) then
         tu=tl-1.0
@@ -105,33 +106,33 @@ c-------- 5. compute indices
       end if
 c-
 c-------- 6. compute t-grid for integral approximation
-      do 60 i=1,m1
+      do i=1,m1
          w1(i,2)=1.0
          w1(i,1)=tl+(tu-tl)*dble(i-1)/dble(m1-1)
- 60   continue
+      end do
 c-
 c-------- 7. calculation of weight function
       alpha=1.d0/dble(13)
-      do 70 i=il,iu
+      do i=il,iu
          xi=(t(i) - tl)/alpha/(tu-tl)
          if(xi.gt.1) goto 71
          wn(i,1)=(10.0-15*xi+6*xi*xi)*xi*xi*xi
- 70   continue
- 71   do 72 i=iu,il,-1
+      end do
+ 71   do i=iu,il,-1
         xi=(tu-t(i))/alpha/(tu-tl)
         if(xi.gt.1) goto 73
         wn(i,1)=(10.0-15*xi+6*xi*xi)*xi*xi*xi
- 72   continue
- 73   do 74 i=1,m1
+      end do
+ 73   do i=1,m1
          xi=(w1(i,1)-tl)/alpha/(tu-tl)
          if(xi.gt.1) goto 75
          w1(i,2)=(10.0-15*xi+6*xi*xi)*xi*xi*xi
- 74   continue
- 75   do 76 i=m1,1,-1
+      end do
+ 75   do i=m1,1,-1
          xi=(tu-w1(i,1))/alpha/(tu-tl)
          if(xi.gt.1) goto 77
          w1(i,2)=(10.0-15*xi+6*xi*xi)*xi*xi*xi
- 76   continue
+      end do
  77   continue
 c-
 c-------- 8. compute constants for iteration
@@ -146,10 +147,10 @@ c-------- 9. estimating variance and smoothed pseudoresiduals
       if(hetero) then
         call resest(t,x,n,wn(1,2),snr,sig)
         bres=max(bmin,.2*nn**(-.2)*(s(iu)-s(il-1)))
-        do 91 i=1,n
+        do i=1,n
            wn(i,3)=t(i)
            wn(i,2)=wn(i,2)*wn(i,2)
- 91     continue
+        end do
         call kernel(t,wn(1,2),n,bres,0,kk2,nyg,s, wn(1,3),n,wn(1,4))
       else
 c       not hetero
@@ -158,17 +159,17 @@ c       not hetero
 c-
 c-------- 10. [LOOP:] estimate/compute integral constant
 100   vi=0.
-      do 101 i=il,iu
+      do i=il,iu
          vi=vi+ wn(i,1)*n*(s(i)-s(i-1))**2 * wn(i,4)
- 101  continue
+      end do
 c-
 c-------- 11. refinement of s-sequence for random design
       if(inputs .and. isrand) then
-        do 110 i=0,n
+        do i=0,n
           wn(i,5)=dble(i)/dble(n+1)
           wn(i,2)=(dble(i)+.5)/dble(n+1)
           wn(i,3)=wn(i,2)
- 110    continue
+        end do
         exs= -dble(3*kord+1) / dble(6*kord+3)
         exsvi=dble(kord)     / dble(6*kord+3)
         bs=0.1*(vi/(sn-s0)**2)**exsvi * n**exs
@@ -176,15 +177,15 @@ c-------- 11. refinement of s-sequence for random design
 
         vi=0.0
 111     needsrt=.false.
-        do 112 i=1,n
-           vi=vi+wn(i,1)*n*(s(i)-s(i-1))**2*wn(i,4)
+        do i=1,n
+           vi=vi+ wn(i,1)*n*(s(i)-s(i-1))**2 * wn(i,4)
            if(s(i).lt.s(i-1)) then
               ssi=s(i-1)
               s(i-1)=s(i)
               s(i)=ssi
               needsrt=.true.
            end if
-112     continue
+        end do
         if(needsrt) goto 111
         if(inputb) goto 230
       end if
@@ -200,7 +201,7 @@ c     itende=1+2*kord+kord*(2*kord+1)
       itende = (1 + 2*kord) * (1 + kord)
 c     ^^^^^^  *fixed* number of iterations ( <== theory !)
 
-      do 120 it=1,itende
+      do it=1,itende
 c-
 c-------- 13. estimate derivative of order kord in iterations
         b2=b*fac
@@ -209,16 +210,17 @@ c-------- 13. estimate derivative of order kord in iterations
         call kernel(t,x,n,b2,kord,kord+2,nyg,s,w1(1,1),m1,w1(1,3))
 c-
 c-------- 14. estimate integralfunctional in iterations
-        xmy2=.75*(w1(1,2)*w1(1,3)*w1(1,3)+w1(m1,2)*w1(m1,3)*w1(m1,3))
-        do 140 i=2,m1-1
-140       xmy2=xmy2+w1(i,2)*w1(i,3)*w1(i,3)
+        xmy2= .75*(w1(1,2)*w1(1,3)*w1(1,3) + w1(m1,2)*w1(m1,3)*w1(m1,3))
+        do i=2,m1-1
+           xmy2=xmy2+w1(i,2)*w1(i,3)*w1(i,3)
+        end do
         xmy2=xmy2*(tu-tl)/dble(m1)
 c-
 c-------- 15. finish of iterations
         b=(const/xmy2)**ex
         b=max(bmin,b)
         b=min(bmax,b)
-120   continue
+      end do
 
 c-------- 16  compute smoothed function with global plug-in bandwidth
       call kernel(t,x,n,b,nue,kord,nyg,s,tt,m,y)
@@ -274,10 +276,10 @@ c-------- 19. compute inner bandwidths
       g2=min(g2,bmax)
 c-
 c-------- 20. estimate/compute integral constant vi locally
-      do 200 i=1,n
+      do i=1,n
          wn(i,4)=dble(n)*wn(i,4)*(s(i)-s(i-1))
- 200  continue
-      do 201 j=1,m
+      end do
+      do j=1,m
          ban(j)=bvar
          wm(j)=tt(j)
          if(tt(j).lt.s(0)+g1) then
@@ -291,23 +293,23 @@ c-------- 20. estimate/compute integral constant vi locally
             ban(j)=min(ban(j),bmax)
             wm(j)=tt(j)-.5*dist*g1
          end if
- 201  continue
+      end do
       call kernel(t,wn(1,4),n,bvar,nuev,kordv,nyl,s,wm,m,ban)
 c-
 c-------- 21. estimation of kord-th derivative locally
       wstep=(tt(m)-tt(1))/dble(m1-2)
-      do 210 j=2,m1
+      do j=2,m1
          w1(j,2)=tt(1)+dble(j-2)*wstep
          w1(j,1)=tt(1)+dble(j-1.5)*wstep
- 210  continue
+      end do
       w1(1,1)=tt(1)+.5*wstep
 
       call kernel(t,x,n,g1,kord,kord+2,nyg,s,w1(2,2),m1-1,w1(2,3))
 
-      do 211 j=2,m1
+      do j=2,m1
         w1(j,3)=w1(j,3)*w1(j,3)
- 211  continue
-      do 212 j=1,m
+      end do
+      do j=1,m
          y(j)=g2
          if(tt(j).lt.s(0)+g1) then
             y(j)=g2*(1.0+1.0*((tt(j)-g1-s(0))/g1)**2)
@@ -316,13 +318,13 @@ c-------- 21. estimation of kord-th derivative locally
             y(j)=g2*(1.0+1.0*((tt(j)-s(n)+g1)/g1)**2)
             y(j)=min(y(j),bmax)
          end if
- 212  continue
+      end do
 
       call kernp(w1(2,2),w1(2,3),m1-1,g2,nuev,kordv,nyl, w1(1,1),wm,m,y)
 c-
 c-------- 22. finish
 c-what for? irnd=1-irnd
-      do 220 j=1,m
+      do j=1,m
          xh=bmin**(2*kord+1)*abs(y(j))*vi/const
          xxh=const*abs(ban(j))/vi/bmax**(2*kord+1)
          if(ban(j).lt.xh) then
@@ -332,15 +334,15 @@ c-what for? irnd=1-irnd
          else
             ban(j)=(const*ban(j)/y(j)/vi)**ex
          end if
- 220  continue
+      end do
 c-
 c-------- 23. compute smoothed function with local plug-in bandwidth
- 230  do 231 j=1,m
+ 230  do j=1,m
         y(j)=ban(j)
- 231  continue
+      end do
       call kernel(t,x,n,b,nue,kord,nyl,s,tt,m,y)
 c-  return #{iter} (iff aplicable)
       m1=itende
       return
       end
-c     --- of lokerns()
+c     --- of lokern_s()

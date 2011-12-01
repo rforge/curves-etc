@@ -1,4 +1,4 @@
-      subroutine glkerns(t,x, tt,y, n,m,nue,kord, hetero,isrand,
+      subroutine glkern_s(t,x, tt,y, n,m,nue,kord, hetero,isrand,
      .     smo,m1,tl,tu,s,sig,wn,w1,b)
 c----------------------------------------------------------------------*
 c-----------------------------------------------------------------------
@@ -38,11 +38,12 @@ c-------- 1. initialisations
 c Stop for invalid inputs (impossible when called from R's lokerns())
 
 c     0 <= nue <= 4;  nue <= 2 if(! smo)
-      if(nue.gt.4.or.nue.lt.0) stop
-      if(nue.gt.2.and. .not.smo) stop
-      if(n.le.2) stop
-      if(m.lt.1) stop
-      if(m1.lt.3) stop
+      if(nue.gt.4.or.nue.lt.0) call rexit("nue must be in 0..4")
+      if(nue.gt.2.and. .not.smo)
+     +     call rexit("nue must be in 0..2 if not 'smo'")
+      if(n.le.2) call rexit("n <= 2")
+      if(m.lt.1) call rexit("m < 1")
+      if(m1.lt.3) call rexit("m1 < 3")
 
 c     kord - nue must be even  <<--- MM: *UN*desirable (want to fix kord, vary 'nue')!
 c                        ----  <<---     but a short glimpse at coff*() ./auxkerns.f
