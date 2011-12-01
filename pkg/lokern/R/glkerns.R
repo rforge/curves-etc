@@ -6,12 +6,12 @@
 		     m1,xl,xu,s,sig,bandwidth)
 {
     ## calling fortran routine
-    r <- .Fortran("glkerns",                     # Fortran arg.names :
+    r <- .Fortran(glkern_s,			 # Fortran arg.names :
                   x = as.double(x),              # t
                   y = as.double(y),              # x
                   x.out = as.double(x.out),      # tt
 		  est	= double(n.out),	 # y
-                  n = as.integer(n),             # n
+                  nobs = as.integer(n),          # n
                   n.out= as.integer(n.out),      # m
                   deriv = as.integer(deriv),     # nue
                   korder = as.integer(korder),   # kord
@@ -25,9 +25,8 @@
                   sig = as.double(sig),
                   work1 = double((n+1)*5),
                   work2 = double(3 * m1),
-                  bandwidth = as.double(bandwidth),
-                  PACKAGE = "lokern"
-                  )[-c(1:2, 17:18)]     # all but (x,y) & work*
+		  bandwidth = as.double(bandwidth)
+		  )[-c(1:2, 17:18)]	# all but (x,y) & work*
     if(r$korder != korder)
 	warning(gettextf("'korder' reset from %d to %d, internally",
 			 korder, r$korder))

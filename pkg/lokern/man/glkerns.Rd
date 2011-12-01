@@ -40,7 +40,7 @@ glkerns(x, y, deriv = 0, n.out = 300, x.out=NULL, x.inOut = TRUE,
     \code{TRUE} corresponds to method \code{"aim"}.
   }
   \item{korder}{
-    nonnegative integer giving the kernel order; it defaults to
+    nonnegative integer giving the kernel order \eqn{k}; it defaults to
     \code{korder = deriv+2} or \eqn{k = \nu + 2} where \eqn{k - \nu}
     must be even.  The maximal possible values are for automatic
     smoothing, \eqn{k \le 4}{k <= 4}, whereas for smoothing with input
@@ -90,7 +90,8 @@ glkerns(x, y, deriv = 0, n.out = 300, x.out=NULL, x.inOut = TRUE,
 }
 
 \value{
-  a list including used parameters and estimator.
+  an object of class(es) \code{c("glkerns", "KernS")}, which is
+  a list including used parameters and estimator, containing among others
   \item{x}{vector of ordered design points.}
   \item{y}{vector of observations ordered with respect to x.}
   \item{bandwidth}{bandwidth which was used for kernel regression estimation.}
@@ -187,10 +188,17 @@ glkerns(x, y, deriv = 0, n.out = 300, x.out=NULL, x.inOut = TRUE,
 data(xSim)## linear plus an exponential peak, see help(xSim)
 n <- length(xSim)
 tt <- ((1:n) - 1/2)/n # equidistant x ==> is.rand = FALSE
-str(gk <- glkerns(tt, xSim, is.rand = FALSE))
+gk <- glkerns(tt, xSim, is.rand = FALSE)
+gk # print method
+if(require("sfsmisc")) {
+  TA.plot(gk)
+} else { plot(residuals(gk) ~ fitted(gk)); abline(h = 0, lty=2) }
+qqnorm(residuals(gk), ylab = "residuals(gk)")
+
 cat("glkerns() bandwidth:",format(gk$bandwidth, dig=10),"\n")
 ## local bandwidth: fit is very similar :
-str(lk <- lokerns(tt, xSim, is.rand = FALSE))
+(lk <- lokerns(tt, xSim, is.rand = FALSE))
+nobs(lk)
 
 cols <- c(gl="PaleGreen", lo="Firebrick")
 plot(lk$x.out, lk$bandwidth, axes = FALSE, xlab="", ylab="",
@@ -228,9 +236,5 @@ plot(dist ~ speed, data = cars,
 m.glk <- glkerns(cars$ speed, cars$ dist)
 lines(m.glk$x.out, m.glk$est, col=2)
 mtext(paste("bandwidth = ", format(m.glk$bandwidth, dig = 4)))
-
-## When residuals() and fitted() work, we can use  sfsmisc::TA.plot():
-require("sfsmisc")
-TA.plot(m.glk)
 }
 \keyword{smooth}

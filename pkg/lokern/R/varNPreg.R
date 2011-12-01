@@ -16,11 +16,11 @@ varNPreg <- function(x,y)
     if(2 >= (n <- length(x))) stop("n := length(x)  must be at least 3")
     if(is.unsorted(x)) stop("`x' must be ordered increasingly")
     if(n != length(y)) stop("`x' and `y' must have same length")
-    .Fortran("resest",
+    .Fortran(resest,
              as.double(x), as.double(y), n,
              res = double(n),
              snr = double(1),
-             sigma2 = double(1), PACKAGE = "lokern")[4:6]
+	     sigma2 = double(1))[4:6]
 }
 
 varest <- function(x,y) {

@@ -1,6 +1,6 @@
 
-R version 2.12.0 alpha (2010-09-24 r52998)
-Copyright (C) 2010 The R Foundation for Statistical Computing
+R version 2.14.0 Patched (2011-11-25 r57751)
+Copyright (C) 2011 The R Foundation for Statistical Computing
 ISBN 3-900051-07-0
 Platform: x86_64-unknown-linux-gnu (64-bit)
 
@@ -18,7 +18,6 @@ Type 'q()' to quit R.
 
 > require(lokern)
 Loading required package: lokern
-Loading required package: sfsmisc
 > data(xSim)
 > n <- length(xSim)
 > stopifnot(n == 75)
@@ -32,7 +31,7 @@ List of 23
  $ y         : num [1:75] 1.9666 1.9 1.6449 1.4275 2.4 1.8487 1.3383 1.9514 1.5722 1.1978 ...
  $ x.out     : num [1:300] 0.006666667 0.011032448 0.01539823 0.019764012 0.02 ...
  $ est       : num [1:300] 1.867502 1.860786 1.85407 1.847354 1.846991 ...
- $ n         : int 75
+ $ nobs      : int 75
  $ n.out     : int 300
  $ deriv     : int 0
  $ korder    : int 2
@@ -180,7 +179,7 @@ List of 5
   ..$ y         : num [1:75] 1.97 1.9 1.64 1.43 2.4 ...
   ..$ x.out     : num [1:300] 0.00667 0.01103 0.0154 0.01976 0.02 ...
   ..$ est       : num [1:300] 1.92 1.89 1.87 1.85 1.85 ...
-  ..$ n         : int 75
+  ..$ nobs      : int 75
   ..$ n.out     : int 300
   ..$ deriv     : int 0
   ..$ korder    : int 6
@@ -206,7 +205,7 @@ List of 5
   ..$ y         : num [1:75] 1.97 1.9 1.64 1.43 2.4 ...
   ..$ x.out     : num [1:300] 0.00667 0.01103 0.0154 0.01976 0.02 ...
   ..$ est       : num [1:300] -2.75 -2.58 -2.44 -2.34 -2.33 ...
-  ..$ n         : int 75
+  ..$ nobs      : int 75
   ..$ n.out     : int 300
   ..$ deriv     : int 1
   ..$ korder    : int 5
@@ -232,7 +231,7 @@ List of 5
   ..$ y         : num [1:75] 1.97 1.9 1.64 1.43 2.4 ...
   ..$ x.out     : num [1:300] 0.00667 0.01103 0.0154 0.01976 0.02 ...
   ..$ est       : num [1:300] 355 305 258 214 212 ...
-  ..$ n         : int 75
+  ..$ nobs      : int 75
   ..$ n.out     : int 300
   ..$ deriv     : int 2
   ..$ korder    : int 6
@@ -258,7 +257,7 @@ List of 5
   ..$ y         : num [1:75] 1.97 1.9 1.64 1.43 2.4 ...
   ..$ x.out     : num [1:300] 0.00667 0.01103 0.0154 0.01976 0.02 ...
   ..$ est       : num [1:300] -1684 -1619 -1554 -1488 -1485 ...
-  ..$ n         : int 75
+  ..$ nobs      : int 75
   ..$ n.out     : int 300
   ..$ deriv     : int 3
   ..$ korder    : int 5
@@ -284,7 +283,7 @@ List of 5
   ..$ y         : num [1:75] 1.97 1.9 1.64 1.43 2.4 ...
   ..$ x.out     : num [1:300] 0.00667 0.01103 0.0154 0.01976 0.02 ...
   ..$ est       : num [1:300] 198209 192068 185921 179769 179436 ...
-  ..$ n         : int 75
+  ..$ nobs      : int 75
   ..$ n.out     : int 300
   ..$ deriv     : int 4
   ..$ korder    : int 6
@@ -327,7 +326,7 @@ List of 3
   ..$ y         : num [1:75] 1.97 1.9 1.64 1.43 2.4 ...
   ..$ x.out     : num [1:300] 0.00667 0.01103 0.0154 0.01976 0.02 ...
   ..$ est       : num [1:300] 1.89 1.88 1.88 1.87 1.87 ...
-  ..$ n         : int 75
+  ..$ nobs      : int 75
   ..$ n.out     : int 300
   ..$ deriv     : int 0
   ..$ korder    : int 4
@@ -353,7 +352,7 @@ List of 3
   ..$ y         : num [1:75] 1.97 1.9 1.64 1.43 2.4 ...
   ..$ x.out     : num [1:300] 0.00667 0.01103 0.0154 0.01976 0.02 ...
   ..$ est       : num [1:300] -5.25 -4.5 -3.84 -3.28 -3.25 ...
-  ..$ n         : int 75
+  ..$ nobs      : int 75
   ..$ n.out     : int 300
   ..$ deriv     : int 1
   ..$ korder    : int 5
@@ -379,7 +378,7 @@ List of 3
   ..$ y         : num [1:75] 1.97 1.9 1.64 1.43 2.4 ...
   ..$ x.out     : num [1:300] 0.00667 0.01103 0.0154 0.01976 0.02 ...
   ..$ est       : num [1:300] -39.9 -39.7 -39.5 -39.2 -39.2 ...
-  ..$ n         : int 75
+  ..$ nobs      : int 75
   ..$ n.out     : int 300
   ..$ deriv     : int 2
   ..$ korder    : int 4

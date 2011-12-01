@@ -91,7 +91,8 @@ lokerns(x , y, deriv = 0, n.out=300, x.out=NULL, x.inOut = TRUE,
   }
 }
 \value{
-  a list including used parameters and estimator.
+  an object of class(es) \code{c("lokerns", "KernS")}, which is
+  a list including used parameters and estimator, containing among others
   \item{x}{vector of ordered design points.}
   \item{y}{vector of observations ordered with respect to x.}
   \item{bandwidth}{local bandwidth array which was used for kernel
@@ -143,6 +144,15 @@ lokerns(x , y, deriv = 0, n.out=300, x.out=NULL, x.inOut = TRUE,
 \examples{
 data(cars)
 lofit <- lokerns(cars$ speed, cars$ dist)
+lofit # print() method
+if(require("sfsmisc")) {
+  TA.plot(lofit)
+} else { plot(residuals(lofit) ~ fitted(lofit)); abline(h = 0, lty=2) }
+qqnorm(residuals(lofit), ylab = "residuals(lofit)")
+
+## nice simple plot of data + smooth
+plot(lofit)
+
 (sb <- summary(lofit$bandwidth))
 op <- par(fg = "gray90", tcl = -0.2, mgp = c(3,.5,0))
 plot(lofit$band, ylim=c(0,3*sb["Max."]), type="h",#col="gray90",
@@ -159,9 +169,5 @@ lines(lofit$x.out, lofit$est, col=4)
 mtext(paste("bandwidth in [",
             paste(format(sb[c(1,6)], dig = 3),collapse=","),
             "];  Median b.w.=",formatC(sb["Median"])))
-
-## When residuals() and fitted() work, we can use  sfsmisc::TA.plot():
-require("sfsmisc")
-TA.plot(lofit)
 }
 \keyword{smooth}

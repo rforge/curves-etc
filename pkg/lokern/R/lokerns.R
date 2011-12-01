@@ -5,12 +5,12 @@
 		     hetero,is.rand,inputb,
 		     m1,xl,xu,s,sig,bandwidth)
 {
-    r <- .Fortran("lokerns",			 # Fortran arg.names :
+    r <- .Fortran(lokern_s,			 # Fortran arg.names :
 		  x = as.double(x),		 # t
 		  y = as.double(y),		 # x
 		  x.out = as.double(x.out),	 # tt
 		  est	= double(n.out),	  # y
-		  n = as.integer(n),		 # n
+		  nobs = as.integer(n),		 # n
 		  n.out= as.integer(n.out),	 # m
 		  deriv = as.integer(deriv),	 # nue
 		  korder = as.integer(korder),	 # kord
@@ -25,8 +25,7 @@
 		  work1 = double((n+1)*5),
 		  work2 = double(3 * m1),
 		  work3 = double(n.out),
-		  bandwidth = as.double(bandwidth),
-		  PACKAGE = "lokern"
+		  bandwidth = as.double(bandwidth)
 		  )[-c(1:2, 17:19)]	# all but (x,y) & work*
     if(r$korder != korder)
 	warning(gettextf("'korder' reset from %d to %d, internally",
@@ -206,7 +205,6 @@ predict.KernS <- function (object, x, deriv = 0, ...)
 }
 
 plot.KernS <- function (x, ...) {
-    ## as we depend on 'sfsmisc' anyway
-    sfsmisc::plotDS(x$x, yd = x$y, ys = list(x = x$x.out, y = x$est),
-		    ...)
+    ## sfsmisc::
+    plotDS(x$x, yd = x$y, ys = list(x = x$x.out, y = x$est), ...)
 }

@@ -1,0 +1,14 @@
+useDynLib(lokern,
+          glkern_s, lokern_s, resest)
+
+importFrom("sfsmisc", seqXtend, plotDS)
+
+export(glkerns, lokerns,
+       varest,# <- deprecated, since Apr 2, 2009 (lokern_1.0-7.tar.gz)
+       varNPreg)
+
+S3method(fitted, KernS)
+S3method(print, KernS)
+S3method(predict, KernS)
+S3method(plot, KernS)
+S3method(residuals, KernS)

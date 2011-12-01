@@ -1,6 +1,6 @@
 
-R version 2.12.0 alpha (2010-09-24 r52998)
-Copyright (C) 2010 The R Foundation for Statistical Computing
+R version 2.14.0 Patched (2011-11-25 r57751)
+Copyright (C) 2011 The R Foundation for Statistical Computing
 ISBN 3-900051-07-0
 Platform: x86_64-unknown-linux-gnu (64-bit)
 
@@ -18,7 +18,6 @@ Type 'q()' to quit R.
 
 > require(lokern)
 Loading required package: lokern
-Loading required package: sfsmisc
 > data(xSim)
 > (n <- length(xSim))
 [1] 75
@@ -33,7 +32,7 @@ List of 24
  $ y         : num [1:75] 1.97 1.9 1.64 1.43 2.4 ...
  $ x.out     : num [1:300] 0.00667 0.01103 0.0154 0.01976 0.02 ...
  $ est       : num [1:300] 1.87 1.86 1.85 1.85 1.85 ...
- $ n         : int 75
+ $ nobs      : int 75
  $ n.out     : int 300
  $ deriv     : int 0
  $ korder    : int 2
