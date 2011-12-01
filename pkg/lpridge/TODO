@@ -3,7 +3,4 @@
 2)  should return a simple S3 class with print(), residuals(), fitted(),
    etc.  Possibly use seqXtend() as now in  lokerns() in ../lokern/R/lokerns.R
 
-3) Look at  ../lpridge.Rcheck-64b/00install.out  and eliminate remaining
-   Fortran warnings
-
 4) Don't have examples (nor tests, yet) using  'deriv > 0'

@@ -425,7 +425,7 @@ c
       return
       end
 C     ---
-      SUBROUTINE lpsv(A,D,y,NA,nzer,SINout,sin,ZER,dif)
+      SUBROUTINE lpsv(A,D,y,NA,ZER,dif)
 
 ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 c
@@ -442,8 +442,8 @@ c
 ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
       implicit none
-      INTEGER NA,nzer,dif
-      double precision A(NA,NA),D(NA),y(na),SINout,sin,ZER
+      INTEGER NA, dif
+      double precision A(NA,NA), D(NA), y(na), ZER
 
       double precision XX
       INTEGER II,JJ,KK,NN1

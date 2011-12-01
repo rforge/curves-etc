@@ -64,7 +64,8 @@ ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
      .   sin(2),zer
       integer pmax
 
-      integer again,dif,i,iaux,io,ioold,irec,iu,iuold,iup,j,k,kk,l,m2,
+      logical again
+      integer dif,i,iaux,io,ioold,irec,iu,iuold,iup,j,k,kk,l,m2,
      .   na,nmin,nsin,nsub,nzer,pow,powmax
       double precision bb,chol(20,2),nuefak,sino,sins(2,2,2),
      .   tbar,tk,tkt,tleft,tright,tti,ttti,xbar,xsin,ysin
@@ -86,6 +87,7 @@ c - internal and parameters for numerical stability and speed
 c
 ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
+       tk= 0. ! -Wall
        pmax=24
        sin(1)=.99d0
        sin(2)=1d-2
@@ -94,11 +96,13 @@ ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
 c - limits for singularity: sins(i,*,*)=lower and upper,
 c      (*,i,*)=update and restart, (*,*,i)=weighted and unweighted
-       do 10 i=1,2
-          do 10 j=1,2
+       do i=1,2
+          do j=1,2
              sins(2,i,j)=2d0
              if (sin(i).gt.0d0) sins(2,i,j)=chol(p+1,j)/sin(i)
-10           sins(1,i,j)=chol(p+1,j)*sin(i)
+             sins(1,i,j)=chol(p+1,j)*sin(i)
+          enddo
+       enddo
 c - maximum order of moments
       powmax=2+2*p
       if(nvar.gt.0) powmax=powmax+2
@@ -110,11 +114,13 @@ c - nuefak = faktorial of nue
       do 20 i=1,nue
 20       nuefak=nuefak*i
 c - binomial coefficients
-      do 40 kk=0,powmax
+      do kk=0,powmax
          bin(kk,0)=1
-         do 30 k=1,kk-1
-30          bin(kk,k)=bin(kk-1,k-1)+bin(kk-1,k)
-40       bin(kk,kk)=1
+         do k=1,kk-1
+            bin(kk,k)=bin(kk-1,k-1)+bin(kk-1,k)
+         enddo
+         bin(kk,kk)=1
+      enddo
 c**********************************************************************
 c Smoothing loop over outputgrid
 c
@@ -130,28 +136,26 @@ c**********************************************************************
       m2=(m+1)/2
       do 990 iaux=1,m
          if (iaux.lt.m2) then
-c - left half of smoothing interval is done from the left to the right
+c     - left half of smoothing interval is done from the left to the right
             i=iaux
+         else if (iaux.gt.m2) then
+c     - right half of smoothing interval is done from the right to the left
+            i=m+m2-iaux
          else
-            if (iaux.gt.m2) then
-c - right half of smoothing interval is done from the right to the left
-               i=m+m2-iaux
-            else
-c - if center of smoothing interval is reached,
-c      switch to the right boundary and restart
-               i=m
-               iup=mnew
-               iu=n
-               io=n+1
-            endif
+c     - iaux == m2 : center of smoothing interval is reached,
+c     - switch to the right boundary and restart
+            i=m
+            iup=mnew
+            iu=n
+            io=n+1
          endif
 c - minimal number of points in the smoothing interval
          nmin=p+1
 c
 c - determine smoothing interval
 c
-110      tleft=tt(i)-b(i)
-         tright=tt(i)+b(i)
+110      tleft = tt(i)-b(i)
+         tright= tt(i)+b(i)
 c - determine indices corresponding to the smoothing interval
 c   - first left boundary (iu)
 c     - check whether we have to move left
@@ -178,7 +182,7 @@ c     - check whether we have to move right
 c - Now iu and io have their new values
 c - check if there are enough points in smoothing interval
 160      if (io-iu.lt.nmin) then
-            again=0
+            again=.true.
 170         if (iu.gt.1) then
                if (io.le.n) then
                   if (abs(tt(i)-t(io)).lt.abs(tt(i)-t(iu-1))) then
@@ -197,17 +201,18 @@ c - check if there are enough points in smoothing interval
                io=io+1
             endif
             if (io-iu.lt.nmin) goto 170
-            if (again.eq.0) then
+            if (again) then
                tk=tkt
-               again=1
+               again=.false.
                goto 170
+            else
+               b(i)=(abs(tt(i)-tk)+abs(tt(i)-tkt))/2
+               goto 110
             endif
-            b(i)=(abs(tt(i)-tk)+abs(tt(i)-tkt))/2
-            goto 110
          endif
 c - Now we have enough points
 c
-c - compute sums
+c - compute sums --------------------------------------------------------
 c
 200      iup=iup+1
 c - Restart Sum ?
@@ -257,32 +262,42 @@ c
 c compute and solve LSE
 c
 c - for p+1 points use unweighted LSE
-         if (io-iu.le.p+1) goto 400
-c - weighted LSE
-c    - calculate Sn,l
-         bb=1d0/(b(i)*b(i))
-         tti=tt(i)-tbar
-         do 310 l=0,2*p
-310         w(l,4)=w(l,1)-bb*(tti*tti*w(l,1)-2d0*tti*w(l+1,1)+w(l+2,1))
-c    - calculate Tn,l
-         do 320 l=0,p
-320         w(l,5)=w(l,2)-bb*(tti*tti*w(l,2)-2d0*tti*w(l+1,2)+w(l+2,2))
-c    - construct matrix
-         do 360 j=0,p
-            do 360 l=1,j+1
-360            w1(j*na+l)=w(l+j-1,4)
-         irec=1
-         goto 500
-c - unweighted LSE
-c    - store t_n,l
-400      do 420 l=0,p
-420         w(l,5)=w(l,2)
-c    - construct matrix
+         if (io-iu .gt. p+1) then
+c     ----> weighted LSE
+
+c     - calculate Sn,l
+            bb=1d0/(b(i)*b(i))
+            tti=tt(i)-tbar
+            do l=0,2*p
+               w(l,4) = w(l,1) - bb*
+     +              (tti*tti*w(l,1) - 2d0*tti*w(l+1,1) + w(l+2,1))
+            enddo
+c     - calculate Tn,l
+            do l=0,p
+               w(l,5)=w(l,2)-bb*
+     +              (tti*tti*w(l,2) - 2d0*tti*w(l+1,2) + w(l+2,2))
+            enddo
+c     - construct matrix
+            do 360 j=0,p
+               do 360 l=1,j+1
+ 360              w1(j*na+l)=w(l+j-1,4)
+            irec=1
+            goto 500
+         endif
+c  -- else -- (but we jump here from outside, hence "need" goto 500 above)
+c     ----> unweighted LSE
+
+c     - store t_n,l
+ 400     do 420 l=0,p
+ 420        w(l,5)=w(l,2)
+c     - construct matrix
          do 430 j=0,p
             do 430 l=1,j+1
-430            w1(j*na+l)=w(l+j-1,1)
+ 430           w1(j*na+l)=w(l+j-1,1)
          iup=mnew
          irec=2
+c  -- endif
+
 c    - solve linear equations
 500      if (nsub.eq.0) then
             xsin=sins(1,2,irec)
@@ -308,6 +323,7 @@ c - 3. try more points
          iuold=iu
          nmin=nmin+1
          goto 160
+c        ---------
 
 c - limits for singularity: sins(i,*,*)=lower and upper,
 c      (*,i,*)=update and restart, (*,*,i)=weighted and unweighted
@@ -320,9 +336,10 @@ c - compute estimate y(i)
          y(i)=0d0
          tti=tt(i)-tbar
          ttti=1d0
-         do 640 j=nue,p
+         do j=nue,p
             y(i)=y(i)+bin(j,nue)*ttti*w(j,5)
-640         ttti=ttti*tti
+            ttti=ttti*tti
+         enddo
          if (nue.eq.0) y(i)=y(i)+xbar
          y(i)=y(i)*nuefak
 c - store old values
@@ -339,27 +356,29 @@ c
          do 740 j=nue,p
             w(j,3)=bin(j,nue)*ttti*nuefak
 740         ttti=ttti*tti
-         call lpsv(w1,work,w(0,3),na,nzer,sino,xsin,zer,na)
-         if (irec.eq.2) goto 850
-c    - weighted LSE
-         bb=1d0/(b(i)*b(i))
-         do 810 l=0,2*p
-810         w(l,4)=w(l,1)
-     .         -2d0*bb*(tti*tti*w(l,1)-2d0*tti*w(l+1,1)+w(l+2,1))
-     .         +bb*bb*(tti*tti*tti*tti*w(l,1)-4d0*tti*tti*tti*w(l+1,1)
-     .         +6d0*tti*tti*w(l+2,1)-4d0*tti*w(l+3,1)+w(l+4,1))
-         goto 880
-c    - unweighted LSE
-850      do 860 l=0,2*p
-860         w(l,4)=w(l,1)
-c    - variance (sigma = 1)
-c    - var = u'* (X'W X)**-1 X'W**2 X (X'W X)**-1 * u
-880      var(i)=0d0
-         do 890 j=0,p
+         call lpsv(w1,work,w(0,3),na, zer,na)
+         if (irec.ne.2) then
+c     ----> weighted LSE
+            bb=1d0/(b(i)*b(i))
+            do 810 l=0,2*p
+ 810           w(l,4)=w(l,1)
+     .           -2d0*bb*(tti*tti*w(l,1)-2d0*tti*w(l+1,1)+w(l+2,1))
+     .           +bb*bb*(tti*tti*tti*tti*w(l,1)-4d0*tti*tti*tti*w(l+1,1)
+     .           +6d0*tti*tti*w(l+2,1)-4d0*tti*w(l+3,1)+w(l+4,1))
+         else
+c     ----> unweighted LSE
+            do 860 l=0,2*p
+ 860           w(l,4)=w(l,1)
+c     - variance (sigma = 1)
+c     - var = u'* (X'W X)**-1 X'W**2 X (X'W X)**-1 * u
+         endif
+         var(i)=0d0
+         do j=0,p
             var(i)=var(i)-w(j+j,4)*w(j,3)*w(j,3)
-            do 890 l=0,j
-890            var(i)=var(i)+2d0*w(l+j,4)*w(j,3)*w(l,3)
-
+            do l=0,j
+               var(i)=var(i)+2d0*w(l+j,4)*w(j,3)*w(l,3)
+            enddo
+         enddo
 c**********************************************************************
 c - end of smoothing loop over outputgrid
 c**********************************************************************

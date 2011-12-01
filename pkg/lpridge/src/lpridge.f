@@ -75,7 +75,8 @@ ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
      .   bb(0:24),tti(0:24),wk2(0:24),sin(2),zer
       integer nmini,pmax
 
-      integer again,dif,i,iaux,io,ioold,irec,iu,iuold,iup,j,k,kk,l,m2,
+      logical again
+      integer dif,i,iaux,io,ioold,irec,iu,iuold,iup,j,k,kk,l,m2,
      .   na,nmin,nsin,nsub,nzer,pow,powmax
       double precision chol(20,2),nuefak,sino,sins(2,2,2),
      .   tbar,tk,tkt,tleft,tright,tttj,tttl,xbar,xsin,xx,ysin
@@ -97,6 +98,7 @@ c - internal and parameters for numerical stability and speed
 c
 ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
+       tk= 0. ! -Wall
        nmini=1
        pmax=24
        sin(1)=.99d0
@@ -198,7 +200,7 @@ c     - check whether we have to move right
 c - Now iu and io have their new values
 c - check if there are enough points in smoothing interval
 160      if (io-iu.lt.nmin) then
-            again=0
+            again=.true.
 170         if (iu.gt.1) then
                if (io.le.n) then
                   if (abs(tt(i)-t(io)).lt.abs(tt(i)-t(iu-1))) then
@@ -223,13 +225,14 @@ c - check if there are enough points in smoothing interval
                endif
             endif
             if (io-iu.lt.nmin) goto 170
-            if (again.eq.0) then
+            if (again) then
                tk=tkt
-               again=1
+               again=.false.
                goto 170
+            else
+               b(i)=(abs(tt(i)-tk)+abs(tt(i)-tkt))/2
+               goto 110
             endif
-            b(i)=(abs(tt(i)-tk)+abs(tt(i)-tkt))/2
-            goto 110
          endif
 c - Now we have enough points
 c
@@ -397,7 +400,7 @@ c     - w(,3) = u, u from y = u' * beta
             w(j,3)=kk*bin(j,nue)*tti(j-nue)*nuefak
 740         kk=-kk
 c    - w(,3) = (H + X'W X)**-1 * u
-         call lpsv(w1,work,w(0,3),na,nzer,sino,xsin,zer,na)
+         call lpsv(w1,work,w(0,3),na, zer,na)
          if (irec.eq.2) goto 850
 c    - w(,4) = X'W**2 X
 c    - weighted LSE
