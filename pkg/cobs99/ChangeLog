@@ -1,3 +1,11 @@
+2012-11-01  Martin Maechler  <maechler@stat.math.ethz.ch>
+
+	* DESCRIPTION (Version): 0.9-11; added trivial NAMESPACE;
+	fixed some (not all) warnings in src/drqssbc.f
+
+	* R/cobs.R (symbol.For): dummy;
+	(.First.lib): no longer
+
 2010-08-11  Martin Maechler  <maechler@stat.math.ethz.ch>
 
 	* DESCRIPTION (Version): 0.9-10 - just for this:

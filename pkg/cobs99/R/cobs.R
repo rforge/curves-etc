@@ -9,7 +9,9 @@ if(!exists("is.R", mode="function"))
 
 ## S+ does not allow "cut(*, labels = FALSE)" -- use cut00() for compatibility:
 if(is.R()) {
-    .First.lib <- function(lib, pkg) library.dynam("cobs99", pkg,lib)
+    symbol.For <- function(ch) ch ## dummy, as codetools looks for it
+    ##not with NAMESPACE
+    ##not .First.lib <- function(lib, pkg) library.dynam("cobs99", pkg,lib)
     cut00 <- function(x, breaks)
         cut.default(x, breaks, labels = FALSE, include.lowest = TRUE)
 } else { ## S-plus  (tested only with S+ 6.0):

@@ -1,6 +1,7 @@
 \name{cobs-internal}
 \title{Internal COBS functions}
 %      -----------------------
+\alias{symbol.For}% dummy, just for codetools, to keep code S+ "compatible"
 %%-- maybe more of these really should be documented and ``exported''
 \alias{getdim}
 \alias{l1.design}
