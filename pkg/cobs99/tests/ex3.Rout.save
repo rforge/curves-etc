@@ -1,0 +1,137 @@
+
+R : Copyright 2006, The R Foundation for Statistical Computing
+Version 2.3.1 Patched (2006-08-03 r38783)
+ISBN 3-900051-07-0
+
+R is free software and comes with ABSOLUTELY NO WARRANTY.
+You are welcome to redistribute it under certain conditions.
+Type 'license()' or 'licence()' for distribution details.
+
+R is a collaborative project with many contributors.
+Type 'contributors()' for more information and
+'citation()' on how to cite R or R packages in publications.
+
+Type 'demo()' for some demos, 'help()' for on-line help, or
+'help.start()' for an HTML browser interface to help.
+Type 'q()' to quit R.
+
+> library(cobs99)
+> options(digits = 6)
+> postscript("ex3.ps")
+> 
+> data(women) # 15 obs.
+> attach(women)
+> 
+> ## Interpolation! very easy problem (very smooth data!),   BUT :
+> try( ## gives  "ifl = 5" !!!!!
++ cobw <- cobs(weight, height, knots = weight, nknots = length(weight))
++ )
+  N[rq,L1]= (15, 0); ([ei]qc= 0,0, vars=16)  _fixed_ (tau,lam)= (0.5, 1):
+Error: cobs(): ifl = 5 -- should not have happened
+> 
+> ## scobs() "works"  (gives solution with extraneous "waves")
+> 
+> ## this works fine
+> cobw. <- cobs(weight, height, nknots = length(weight), constraint="concave")
+
+ qbsks(): Performing general knot selection nknots= 15 ...
+  N[rq,L1]= (15, 0); ([ei]qc= 0,1, vars=3)  _fixed_ (tau,lam)= (0.5, 1):
+  N[rq,L1]= (15, 0); ([ei]qc= 0,2, vars=4)  _fixed_ (tau,lam)= (0.5, 1):
+  N[rq,L1]= (15, 0); ([ei]qc= 0,3, vars=5)  _fixed_ (tau,lam)= (0.5, 1):
+  N[rq,L1]= (15, 0); ([ei]qc= 0,4, vars=6)  _fixed_ (tau,lam)= (0.5, 1):
+  N[rq,L1]= (15, 0); ([ei]qc= 0,5, vars=7)  _fixed_ (tau,lam)= (0.5, 1):
+  N[rq,L1]= (15, 0); ([ei]qc= 0,6, vars=8)  _fixed_ (tau,lam)= (0.5, 1):
+  N[rq,L1]= (15, 0); ([ei]qc= 0,7, vars=9)  _fixed_ (tau,lam)= (0.5, 1):
+  N[rq,L1]= (15, 0); ([ei]qc= 0,8, vars=10)  _fixed_ (tau,lam)= (0.5, 1):
+  N[rq,L1]= (15, 0); ([ei]qc= 0,9, vars=11)  _fixed_ (tau,lam)= (0.5, 1):
+  N[rq,L1]= (15, 0); ([ei]qc= 0,10, vars=12)  _fixed_ (tau,lam)= (0.5, 1):
+  N[rq,L1]= (15, 0); ([ei]qc= 0,11, vars=13)  _fixed_ (tau,lam)= (0.5, 1):
+  N[rq,L1]= (15, 0); ([ei]qc= 0,12, vars=14)  _fixed_ (tau,lam)= (0.5, 1):
+  N[rq,L1]= (15, 0); ([ei]qc= 0,13, vars=15)  _fixed_ (tau,lam)= (0.5, 1):
+  N[rq,L1]= (15, 0); ([ei]qc= 0,14, vars=16)  _fixed_ (tau,lam)= (0.5, 1):
+
+ Deleting unnecessary knots ...
+
+ Computing the final fit ...
+  N[rq,L1]= (15, 0); ([ei]qc= 0,1, vars=3)  _fixed_ (tau,lam)= (0.5, 1):
+> cobw.
+COBS regression spline (degree = 2) from call:
+  cobs(x = weight, y = height, constraint = "concave", nknots = length(weight))
+{tau=0.5}-quantile;  dimensionality of fit: 3 (3)
+knots[1 .. 2]: 115, 164
+> plot(weight, height); lines(predict(cobw.), col=2); rug(cobw.$knot, col="blue")
+> 
+> ## Simple smoothing spline with "full" knots -- gave bug in earliier versions of cobs99:
+> (con <- rbind(c( 1, weight[1], height[1]),
++               c(-1, weight[3], height[3]),
++               c( 0, weight[9], height[9])))
+     [,1] [,2] [,3]
+[1,]    1  115   58
+[2,]   -1  120   60
+[3,]    0  139   66
+> 
+> n <- length(weight)
+> coS   <- cobs(weight, height, nknots=n, n.sub=n, lambda = 1)
+  N[rq,L1]= (15, 1); ([ei]qc= 0,28, vars=17)  _fixed_ (tau,lam)= (0.5, 1):
+> coS.  <- cobs(weight, height, nknots=n, n.sub=n, lambda = 1,
++               pointwise = con)
+  N[rq,L1]= (15, 1); ([ei]qc= 1,30, vars=17)  _fixed_ (tau,lam)= (0.5, 1):
+> coSc  <- cobs(weight, height, nknots=n, n.sub=n, lambda = 1, constraint="concave")
+  N[rq,L1]= (15, 1); ([ei]qc= 0,42, vars=17)  _fixed_ (tau,lam)= (0.5, 1):
+> coSc. <- cobs(weight, height, nknots=n, n.sub=n, lambda = 1, constraint="concave",
++               pointwise = con)
+  N[rq,L1]= (15, 1); ([ei]qc= 1,44, vars=17)  _fixed_ (tau,lam)= (0.5, 1):
+Warning message:
+cobs(): The algorithm has not converged after 300 iterations.
+Increase the `maxiter' counter and restart cobs with both
+`coef' and `knots' set to the values at the last iteration.
+ 
+> 
+> co1S  <- cobs(weight, height, degree=1, nknots=n, n.sub=n, lambda = 1)
+  N[rq,L1]= (15, 13); ([ei]qc= 0,0, vars=15)  _fixed_ (tau,lam)= (0.5, 1):
+> ## failed in earlier cobs99 versions:
+> co1S. <- cobs(weight, height, degree=1, nknots=n, n.sub=n, lambda = 1,
++              pointwise = con)
+  N[rq,L1]= (15, 13); ([ei]qc= 1,2, vars=15)  _fixed_ (tau,lam)= (0.5, 1):
+> ## both these two give non-convergence in 300 iterations
+> co1Sc <- cobs(weight, height, degree=1, nknots=n, n.sub=n, lambda = 1, constraint="concave")
+  N[rq,L1]= (15, 13); ([ei]qc= 0,13, vars=15)  _fixed_ (tau,lam)= (0.5, 1):
+Warning message:
+cobs(): The algorithm has not converged after 300 iterations.
+Increase the `maxiter' counter and restart cobs with both
+`coef' and `knots' set to the values at the last iteration.
+ 
+> co1Sc.<- cobs(weight, height, degree=1, nknots=n, n.sub=n, lambda = 1, constraint="concave",
++               pointwise = con)
+  N[rq,L1]= (15, 13); ([ei]qc= 1,15, vars=15)  _fixed_ (tau,lam)= (0.5, 1):
+> ## but with large enough 'maxiter', they do converge:
+> co1Sc <- cobs(weight, height, degree=1, nknots=n, n.sub=n, lambda = 1,
++               constraint="concave", maxiter = 50000)
+  N[rq,L1]= (15, 13); ([ei]qc= 0,13, vars=15)  _fixed_ (tau,lam)= (0.5, 1):
+> co1Sc.<- cobs(weight, height, degree=1, nknots=n, n.sub=n, lambda = 1,
++               constraint="concave", maxiter = 10000, pointwise = con)
+  N[rq,L1]= (15, 13); ([ei]qc= 1,15, vars=15)  _fixed_ (tau,lam)= (0.5, 1):
+> 
+> round( cbind(resid(coS ), resid(coS. ),
++              resid(coSc), resid(coSc.),
++              resid(co1S ), resid(co1S. ),
++              resid(co1Sc), resid(co1Sc.)
++              ), 3)
+      [,1] [,2]   [,3]  [,4]   [,5] [,6]   [,7]  [,8]
+ [1,]    0    0  0.000 0.000  0.000    0  0.000 0.000
+ [2,]    0    0  0.120 0.120  0.000    0  0.000 0.000
+ [3,]    0    0  0.000 0.000  0.000    0  0.000 0.000
+ [4,]    0    0  0.000 0.000  0.000    0  0.000 0.000
+ [5,]    0    0  0.000 0.000  0.000    0  0.000 0.000
+ [6,]    0    0  0.000 0.000  0.000    0  0.000 0.000
+ [7,]    0    0  0.000 0.000  0.000    0  0.000 0.000
+ [8,]    0    0  0.000 0.091  0.000    0  0.000 0.143
+ [9,]    0    0 -0.190 0.000 -0.143    0 -0.143 0.000
+[10,]    0    0  0.024 0.182  0.000    0  0.000 0.143
+[11,]    0    0  0.000 0.091  0.000    0  0.000 0.000
+[12,]    0    0  0.000 0.000  0.000    0  0.000 0.000
+[13,]    0    0  0.056 0.030  0.000    0  0.000 0.000
+[14,]    0    0  0.000 0.000  0.000    0  0.000 0.000
+[15,]    0    0  0.000 0.000  0.000    0  0.000 0.000
+> 
+> 
