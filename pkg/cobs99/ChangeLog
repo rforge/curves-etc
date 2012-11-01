@@ -1,3 +1,8 @@
+2010-08-11  Martin Maechler  <maechler@stat.math.ethz.ch>
+
+	* DESCRIPTION (Version): 0.9-10 - just for this:
+	* man/qbsks.Rd: make 'R CMD check' happy
+
 2009-12-01  Martin Maechler  <maechler@stat.math.ethz.ch>
 
 	* DESCRIPTION (Version): 0.9-9 - just for this fix:

@@ -19,44 +19,37 @@ qbsks(x,y,w,pw, knots,nknots, degree,Tlambda, constraint,
   \item{y}{numeric, same length as \code{x}, the observations.}
   \item{w}{numeric vector of weights, same length as \code{x}, as in
     \code{\link{cobs}}.}
-  \item{pw}{penalty weights vector ... ...}
-  \item{knots}{ ~~Describe \code{knots} here~~ }
-  \item{nknots}{ ~~Describe \code{nknots} here~~ }
+  \item{pw}{penalty weights vector ... ...}%% << FIXME, currently unused
+  \item{knots}{numeric vector of knots of which \code{nknots} will be used.}
+  \item{nknots}{number of \code{knots} to be used.}% FIXME: Say more in \details
   \item{degree}{integer specifying polynomial degree; must be 1 or 2.}
-  \item{Tlambda}{ ~~Describe \code{Tlambda} here~~ }
-  \item{constraint}{ ~~Describe \code{constraint} here~~ }
+  \item{Tlambda}{(vector of) smoothing parameter(s) \eqn{\lambda}, see
+    \code{\link{drqssbc}}.}
+  \item{constraint}{string (or empty) specifying the global constraints;
+    see \code{\link{cobs}}.}
   \item{n.sub}{integer, not larger than sample size \code{n}; the
     default has \code{n.sub == n} as long as \code{n} is less than 1000.}
-  \item{equal}{ ~~Describe \code{equal} here~~ }
-  \item{smaller}{ ~~Describe \code{smaller} here~~ }
-  \item{greater}{ ~~Describe \code{greater} here~~ }
-  \item{gradient}{ ~~Describe \code{gradient} here~~ }
-  \item{coef}{ ~~Describe \code{coef} here~~ }
-  \item{maxiter}{ ~~Describe \code{maxiter} here~~ }
-  \item{trace}{ ~~Describe \code{trace} here~~ }
-  \item{n.equal}{ ~~Describe \code{n.equal} here~~ }
-  \item{n.smaller}{ ~~Describe \code{n.smaller} here~~ }
-  \item{n.greater}{ ~~Describe \code{n.greater} here~~ }
-  \item{n.gradient}{ ~~Describe \code{n.gradient} here~~ }
-  \item{nrq}{ ~~Describe \code{nrq} here~~ }
-  \item{nl1}{ ~~Describe \code{nl1} here~~ }
-  \item{neqc}{ ~~Describe \code{neqc} here~~ }
-  \item{nj0}{ ~~Describe \code{nj0} here~~ }
-  \item{tau}{ ~~Describe \code{tau} here~~ }
-  \item{lam}{ ~~Describe \code{lam} here~~ }
-  \item{tmin}{ ~~Describe \code{tmin} here~~ }
-  \item{kmax}{ ~~Describe \code{kmax} here~~ }
-  \item{lstart}{ ~~Describe \code{lstart} here~~ }
-  \item{ks}{ ~~Describe \code{ks} here~~ }
-  \item{mk.flag}{ ~~Describe \code{mk.flag} here~~ }
-  \item{knots.add}{ ~~Describe \code{knots.add} here~~ }
-  \item{ic}{ ~~Describe \code{ic} here~~ }
-  \item{print.mesg}{ ~~Describe \code{print.mesg} here~~ }
-  \item{factor}{ ~~Describe \code{factor} here~~ }
-  \item{tol.kn}{``tolerance'' for shifting the outer knots.}
+  \item{equal,smaller,greater,gradient}{optional constraint
+    specifications; simply passed to \code{\link{drqssbc}}.}
+  \item{coef,maxiter,trace}{simply passed to \code{\link{drqssbc}}.}
+  \item{n.equal, n.smaller, n.greater, n.gradient}{simply passed to
+    \code{\link{drqssbc}}.}
+  \item{nrq,nl1,neqc}{integers specifying dimensionalities, directly
+    passed to \code{\link{drqssbc}}, see there.}
+  \item{nj0}{passed to \code{\link{drqssbc}}, see there.}
+  \item{tau}{desired quantile level (in interval \eqn{(0,1)}).}
+  \item{lam,tmin,kmax,lstart}{passed to \code{\link{drqssbc}}, see there.}
+  \item{ks}{(seems unused)}
+  \item{mk.flag}{logical; if true, perform first step knots selection.}
+  \item{knots.add}{logical, see \code{\link{cobs}}.}
+  \item{ic}{information criterion to use, see \code{\link{cobs}}.}
+  \item{print.mesg}{an integer indicating how \code{qbsks2()} should
+    print message about its current stages.}
+  \item{factor}{passed to \code{\link{drqssbc}}, see there.}
+  \item{tol.kn}{\dQuote{tolerance} for shifting the outer knots.}
   \item{eps}{tolerance passed to \code{\link{drqssbc}}.}
   \item{print.warn}{flag indicating if and how much warnings and
-    information is to be printed;  currently just passed to \code{\link{drqssbc}}.}
+    information is to be printed; currently just passed to \code{\link{drqssbc}}.}
 }
 \details{
   This is an auxiliary function for \code{\link{cobs}(*, lambda = 0)},

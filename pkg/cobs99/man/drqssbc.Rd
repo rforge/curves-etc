@@ -24,9 +24,11 @@ drqssbc(x, y, w= rep(1,n), pw, knots, degree, Tlambda, constraint,
     \code{\link{cobs}}.}
   \item{pw}{penalty weights vector passed to \code{\link{l1.design}} or
     \code{\link{loo.design}}.}
-  \item{knots}{ ~~Describe \code{knots} here~~ }
+  \item{knots}{numeric vector of knots for the splines.}
   \item{degree}{integer, must be 1 or 2.}
-  \item{Tlambda}{ ~~Describe \code{Tlambda} here~~ }
+  \item{Tlambda}{vector of smoothing parameter values \eqn{\lambda}; if
+    it is longer than one, an \dQuote{optimal} value will be selected
+    from these.}
   \item{constraint}{see \code{\link{cobs}} (but cannot be abbreviated here).}
   \item{n.sub}{integer, not larger than sample size \code{n}; the
     default has \code{n.sub == n} as long as \code{n} is less than 1000.}
@@ -36,20 +38,25 @@ drqssbc(x, y, w= rep(1,n), pw, knots, degree, Tlambda, constraint,
   \item{gradient}{3-column matrix for gradient constraints.}
   \item{coef}{numeric vector, the initial guess for the B-spline coefficients.}
   \item{maxiter}{upper bound of the number of iteration; default to 20*n.}
-  \item{trace}{ ~~Describe \code{trace} here~~ }
-  \item{n.equal,n.smaller,n.greater,n.gradient}{
-    ~~Describe \code{n.gradient} here~~ }
-  \item{nrq}{ ~~Describe \code{nrq} here~~ }
-  \item{nl1}{ ~~Describe \code{nl1} here~~ }
+  \item{trace}{integer or logical indicating the tracing level of the
+    \emph{underlying} algorithms; not much implemented (due to lack of trace
+    in quantreg ..).}
+  \item{n.equal,n.smaller,n.greater,n.gradient}{integers, each specifying the
+    corresponding number of constraints.}
+  \item{nrq}{integer, \eqn{= n}, the number of observations.}
+  \item{nl1}{integer, number of observations in the l1 norm that
+    correspond to roughness measure (may be zero).}
   \item{neqc}{integer giving the number of equations.}
   \item{niqc}{integer giving the number of \bold{i}ne\bold{q}uality
-    \bold{c}onstraints.}
+    \bold{c}onstraints; of the same length as \code{constraint}.}
   \item{nvar}{integer giving the number of equations \emph{and} constraints.}
-  \item{nj0}{ ~~Describe \code{nj0} here~~ }
+  \item{nj0}{integer; upper limit for the number of unique tau or lambda
+    solutions.}
   \item{tau}{desired quantile level; defaults to 0.5 (median).}
-  \item{lam}{ ~~Describe \code{lam} here~~ }
-  \item{tmin}{ ~~Describe \code{tmin} here~~ }
-  \item{kmax}{ ~~Describe \code{kmax} here~~ }
+  \item{lam}{initial \eqn{\lambda} value.}
+  \item{tmin}{smallest value of tau to begin PLP in tau.}
+  \item{kmax}{integer \eqn{k_0}, the largest effective dimension of the
+    model allowed during PLP in lambda.}
   \item{lstart}{number, see \code{\link{cobs}.}}
   \item{factor}{number in [1,4], see \code{\link{cobs}}.}
   \item{eps}{tolerance used in the fortran code in many different contexts.}
@@ -63,10 +70,11 @@ drqssbc(x, y, w= rep(1,n), pw, knots, degree, Tlambda, constraint,
 }
 \value{
   a list with components
-  \item{comp1 }{Description of `comp1'}
-  \item{comp2 }{Description of `comp2'}
-  ...
+  ......
+
+  (use the \pkg{cobs} package instead!)
 }
+
 \references{
   Ng, P. (1996)
   An Algorithm for Quantile Smoothing Splines,
@@ -74,7 +82,7 @@ drqssbc(x, y, w= rep(1,n), pw, knots, degree, Tlambda, constraint,
 }
 \author{Pin Ng; this help page: Martin Maechler.}
 \seealso{
-  the main function \code{\link{cobs}} and its auxiliary
+  The main function \code{\link{cobs}} and its auxiliary
   \code{\link{qbsks}} which calls \code{drqssbc()} repeatedly.
 }
 \examples{
