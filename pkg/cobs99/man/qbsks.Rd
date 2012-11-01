@@ -88,7 +88,5 @@ qbsks(x,y,w,pw, knots,nknots, degree,Tlambda, constraint,
 \seealso{the main function \code{\link{cobs}}; further
   \code{\link{drqssbc}} which is called from \code{qbsks()}.
 }
-\examples{
-}
 \keyword{smooth}
 \keyword{utilities}

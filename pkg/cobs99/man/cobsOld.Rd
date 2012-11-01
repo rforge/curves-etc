@@ -1,7 +1,6 @@
 \name{cobsOld}
 \alias{cobsOld}
 \title{COnstrained B-Splines Nonparametric Regression Quantiles}
-}
 \description{
   Computes constrained quantile curves using linear or
   quadratic splines.  The median spline (\eqn{L_1} loss) is a robust
@@ -38,7 +37,7 @@ cobsOld(x, y, constraint = c("none", "increase", "decrease",
   \item{knots}{vector of locations of the knot mesh; if missing,
     \code{nknots} number of \code{knots} will be created using the
     specified \code{method} and automatic knot selection will be carried
-    out for regression B-spline (lambda=0); if not missing and
+    out for regression B-spline (\code{lambda=0}); if not missing and
     \code{length(knots)==nknots}, the provided knot mesh will be used in
     the fit and no automatic knot selection will be performed;
     otherwise, automatic knots selection will be performed on the
@@ -99,7 +98,7 @@ cobsOld(x, y, constraint = c("none", "increase", "decrease",
   \item{factor}{
     determines how big a step to the next smaller lambda should be while
     performing parametric programming in lambda; the default \code{1}
-    will give all unique lambda's; use of a bigger factor \eqn{(> 1 &  < 4)}
+    will give all unique lambda's; use of a bigger factor \eqn{(> 1  and  < 4)}
     will save time for big problems.}
 }
 \value{
@@ -170,7 +169,7 @@ cobsOld(x, y, constraint = c("none", "increase", "decrease",
 }
 \seealso{\code{\link{smooth.spline}} for unconstrained smoothing
     splines; \code{\link[splines]{bs}} for unconstrained (regression)
-    B-splines.}
+    B-splines.
 }
 \examples{
 x <- seq(-1,1,,50)

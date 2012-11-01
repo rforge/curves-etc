@@ -27,9 +27,6 @@
   \item{level}{confidence level}
   \item{\dots}{further arguments passed to and from methods.}
 }
-\details{
-
-}
 \value{
   \code{predict.cobs} produces aa matrix of
   predictions and bounds if    \code{interval} is set (not "none").

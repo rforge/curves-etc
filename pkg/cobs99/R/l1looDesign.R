@@ -239,7 +239,7 @@ loo.design <- function(x, w, constraint, equal, smaller, greater, gradient,
     if(n.gradient > 0) {
         o.gradient <- order(gradient[,2])
         gradient.o <- gradient[,2][o.gradient]
-        z1.1 <- .splBasis(ord = ks, knots, ncoef, xo = gradient.o,
+        z1.2 <- .splBasis(ord = ks, knots, ncoef, xo = gradient.o,
                           derivs = rep(1, neqc2))
         idx1.2 <- cbind(rep(nrql1+neqc1 + o.gradient, rep(ks, neqc2)),
                         c(outer(1:ks, z1.2$offsets,"+")))

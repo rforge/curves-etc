@@ -1,6 +1,5 @@
 \name{DublinWind}
 \alias{DublinWind}
-\non_function{}
 \title{Daily Wind Speeds in Dublin}
 \usage{data(DublinWind)}
 \description{
