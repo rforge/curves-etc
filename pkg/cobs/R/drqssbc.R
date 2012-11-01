@@ -1,4 +1,4 @@
-#### $Id: drqssbc.R,v 1.41 2009/02/24 13:51:20 maechler Exp $
+#### $Id: drqssbc.R,v 1.41 2009/02/24 13:51:20 maechler Exp maechler $
 
 drqssbc2 <-
     function(x,y, w = rep.int(1,n), pw, knots, degree, Tlambda, constraint,
@@ -46,6 +46,7 @@ drqssbc2 <-
     ##* Note: if  nrq != length(x) , e.g., in case of sub.sampling+ fit full
     ##*  if(select.lambda < 0)
     ##*      n <- nrq
+
     ## Y values of pointwise constraints in ptConstr need
     ## to be sorted according to the X values (consistent with those (l1|loo).design2):
     Tequal   <- if(ptConstr$n.equal   > 0)  ptConstr$equal[order(ptConstr$equal [,2]),3] # else NULL
