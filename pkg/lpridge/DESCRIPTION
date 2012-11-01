@@ -6,5 +6,5 @@ Author: Burkhardt Seifert <seifert@ifspm.unizh.ch> (S original);
 	Packaged for R by Martin Maechler
 Maintainer: Martin Maechler <maechler@stat.math.ethz.ch>
 Description: Local Polynomial Regression with Ridging.
-Depends: stats, R (>= 2.5.0)
+Depends: stats
 License: GPL (>= 2)
