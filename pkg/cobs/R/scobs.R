@@ -1,13 +1,13 @@
-#### $Id: scobs.R,v 1.42 2007/08/08 11:21:38 maechler Exp $
+#### $Id: scobs.R,v 1.43 2008/01/26 11:01:13 maechler Exp $
 
-".First.lib" <- function(lib, pkg) {
-    require(SparseM) ## -> "methods"
-    require(quantreg)
-    library.dynam("cobs", pkg, lib)
+.onLoad <- function(lib, pkg) {
+
+    ##now have NAMESPACE library.dynam("cobs", pkg, lib)
+
     MSG <- if(getRversion() >= "2.5") packageStartupMessage else message
     if(interactive() || getOption("verbose")) # not in test scripts
 	MSG(sprintf("Package %s (%s) loaded.  To cite, see citation(\"%s\")\n",
-                    pkg, packageDescription(pkg)$Version, pkg))
+		    pkg, utils::packageDescription(pkg)$Version, pkg))
 }
 
 ## S+ does not allow "cut(*, labels = FALSE)" -- use cut00() for compatibility:
