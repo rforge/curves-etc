@@ -1,11 +1,11 @@
-#### $Id: scobs.R,v 1.40 2006/09/27 15:42:17 maechler Exp maechler $
+#### $Id: scobs.R,v 1.41 2007/04/10 08:18:06 maechler Exp $
 
 ".First.lib" <- function(lib, pkg) {
     require(SparseM) ## -> "methods"
     require(quantreg)
     library.dynam("cobs", pkg, lib)
     if(interactive() || getOption("verbose")) # not in test scripts
-	cat(sprintf("Package %s (%s) loaded.  To cite, see citation(\"%s\")\n",
+	message(sprintf("Package %s (%s) loaded.  To cite, see citation(\"%s\")\n",
 		    pkg, packageDescription(pkg)$Version, pkg))
 }
 
@@ -399,7 +399,7 @@ predict.cobs <-
 	}
 
         if(is.null(object$x.ps))
-            stop("no 'x.ps' pseudo.x component; must use cobs(*, give.x.ps = TRUE)")
+	    stop("no 'x.ps' pseudo.x component; must use cobs(*, keep.x.ps = TRUE)")
         ##MM: We should have crossprod() and qr() working for sparse matrices,
         ## 	at least '%*%' and t() work; [hmm, but there is  slm() in 'SparseM' !]
 	## Tqr <- qr(crossprod(object$x.ps))
