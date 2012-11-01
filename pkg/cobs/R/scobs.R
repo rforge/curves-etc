@@ -1,13 +1,11 @@
-#### $Id: scobs.R,v 1.43 2008/01/26 11:01:13 maechler Exp $
+#### $Id: scobs.R,v 1.44 2009/02/18 08:37:38 maechler Exp $
 
 .onLoad <- function(lib, pkg) {
-
-    ##now have NAMESPACE library.dynam("cobs", pkg, lib)
-
-    MSG <- if(getRversion() >= "2.5") packageStartupMessage else message
+    ## now have NAMESPACE library.dynam("cobs", pkg, lib)
     if(interactive() || getOption("verbose")) # not in test scripts
-	MSG(sprintf("Package %s (%s) loaded.  To cite, see citation(\"%s\")\n",
-		    pkg, utils::packageDescription(pkg)$Version, pkg))
+	packageStartupMessage(sprintf(
+		"Package %s (%s) loaded.  To cite, see citation(\"%s\")\n",
+		pkg, utils::packageDescription(pkg)$Version, pkg))
 }
 
 ## S+ does not allow "cut(*, labels = FALSE)" -- use cut00() for compatibility:
@@ -521,7 +519,7 @@ dn <- function(p, n, hs = FALSE, alpha)
 plot.cobs <-
     function(x, which = if(x$select.lambda) 1:2 else 2, show.k = TRUE,
 	     col = par("col"), l.col = c("red","pink"), k.col = gray(c(0.6, 0.8)),
-             lwd = 2, cex = 0.4,
+             lwd = 2, cex = 0.4, ylim = NULL,
 	     xlab = deparse(x$call[[2]]),
 	     ylab = deparse(x$call[[3]]),
 	     main = paste(deparse(x$call, width.cut = 100), collapse="\n"),
@@ -531,7 +529,7 @@ plot.cobs <-
     both.plots <- all(which == 1:2)
 
     if(any(which == 1)) { ## --- SIC ~ lambda --------------
-	stopifnot(x$select.lambda) # have no $pp.lambda ...
+	stopifnot(x$select.lambda) # have no $pp.lambda . . .
 
 	if(both.plots) {
 	    op <- par(mfcol = 1:2, mgp = c(1.6, 0.5, 0),
@@ -590,7 +588,8 @@ plot.cobs <-
                   las = 2, col = k.col[1])
             if(any(i.bad)) {
                 points(x$pp.lambda[i.bad], x$k0[i.bad], col = gray(.9), pch = 1)
-                points(x$pp.lambda[i.bad & i.show], x$k0[i.bad & i.show], col = gray(.8), pch = 1)
+                points(x$pp.lambda[i.bad & i.show], x$k0[i.bad & i.show],
+                       col = gray(.8), pch = 1)
             }
 	}
     }
@@ -600,15 +599,17 @@ plot.cobs <-
     ## FIXME -- do something (?) for 'lambda = 0', i.e. select.knots
 
     if(any(which == 2)) { ## ---------- (x,y) + smooth cobs curve ----
-
 	if(is.null(x$x)) {
 	    ## MM: "works"	only if original (x,y) objects are still "there":
 	    x$x <- eval.parent(x$call[[2]])
 	    x$y <- eval.parent(x$call[[3]])
 	}
-	plot(x$x, x$y, xlab = xlab, ylab = ylab,
-	     main = if(!both.plots) main, col = col, cex = cex, ...)
-	lines(predict(x), col = l.col[1], lwd = lwd, ...)
+        px <- predict(x)
+	if(is.null(ylim)) # make sure ylim fits (y & predict(.)):
+            ylim <- range(x$y, px[,"fit"], finite=TRUE)
+        plot(x$x, x$y, xlab = xlab, ylab = ylab, ylim= ylim,
+             main = if(!both.plots) main, col = col, cex = cex, ...)
+	lines(px, col = l.col[1], lwd = lwd, ...)
 	if(both.plots) {
 	    mtext(subtit[2], side = 3, font = par("font.main"))
 	    par(op)		# <- back to 1x1 figure (we assume ..)
