@@ -1,5 +1,5 @@
 useDynLib(cobs, spline_basis, spline_value)
-##        ----  TODO: replace the above by calling into splines' package!!
+##        ----  TODO: replace the above by calling into splines package!!
 
 import("SparseM") # need at least as.matrix()
 ## Import non-base functions we need explicitly,
@@ -10,6 +10,7 @@ importFrom("stats",    knots, fitted, residuals)
 
 export(cobs,
        conreg,
+       SR,
        drqssbc2,
        qbsks2,
        mk.pt.constr,
