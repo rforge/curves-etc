@@ -1,6 +1,6 @@
 
-R version 2.14.0 Patched (2011-11-25 r57751)
-Copyright (C) 2011 The R Foundation for Statistical Computing
+R version 2.15.2 Patched (2012-11-13 r61118) -- "Trick or Treat"
+Copyright (C) 2012 The R Foundation for Statistical Computing
 ISBN 3-900051-07-0
 Platform: x86_64-unknown-linux-gnu (64-bit)
 
@@ -60,7 +60,7 @@ List of 23
 > glkerns(tt,xSim, deriv = 2)$bandwidth
 [1] 0.1190404
 > 
-> demo("glk-derivs")
+> demo("glk-derivs", ask = grDevices::dev.interactive(TRUE))
 
 
 	demo(glk-derivs)
@@ -304,6 +304,7 @@ List of 5
   ..$ x.inOut   : logi TRUE
   ..$ call      : language glkerns(x = x.dat, y = y.dat, deriv = nu, korder = k0, is.rand = is.rand,      bandwidth = bw)
   ..- attr(*, "class")= chr [1:2] "glkerns" "KernS"
+> ##   ------------
 > 
 > p.3glks(tt, xSim, kord = 3)
 deriv = 0: modifying korder from 3 to 2
@@ -406,3 +407,6 @@ deriv = 3: modifying korder from 6 to 5
 > 
 > ## "FIXME" visually compare with numerical derivatives (e.g. from splines).
 > 
+> proc.time()
+   user  system elapsed 
+  0.764   0.070   0.986 
