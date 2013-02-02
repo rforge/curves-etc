@@ -32,7 +32,6 @@ estep.nm <- function(x, obj, par)
     ## fx are the density components apart from the common factor  1/sqrt(2*pi)
     fx <- matrix(obj[,"w"] * exp(-.5 * ((xxl - obj[,"mu"]) / sd)^2) / sd,
                  n,m, byrow=TRUE)
-
     ## z_{i,j} =  \pi_j f_j(x_i) / sum_j' \pi_j' f_j'(x_i)
     fx / rowSums(fx)
 }
@@ -54,8 +53,6 @@ emstep.nm <- function(x, obj)
 {
     ## Purpose:   E-step + M-step  for 1-dim normal mixture <norMix>
     ##    return: an 'updated' <norMix>
-    ## ----------------------------------------------------------------------
-    ## Arguments:
     ## ----------------------------------------------------------------------
     ## Author: Martin Maechler, Date:  1 Jan 2008, 17:38
 
@@ -80,8 +77,7 @@ emstep.nm <- function(x, obj)
 
     norMix(w = n.j / n, mu = mu, sig2 = sig2, name="")
 }
-
-
+##--end---------------------------- [em]step.nm() ---------------------------
 
 norMixEM <- function(x, m, name = NULL, sd.min = 1e-7 * diff(range(x))/m,
                      maxiter = 100, tol = sqrt(.Machine$double.eps), trace = 1)
@@ -150,5 +146,62 @@ norMixEM <- function(x, m, name = NULL, sd.min = 1e-7 * diff(range(x))/m,
 
     structure(norMix(mu = mu, sig2 = sd^2, w = n.j/n, name = name),
               loglik = llh+l.fac, iter = it, tol = relEr, converged = conv,
-              class = c("fitEM", "norMix"))
+              class = c("fitEM", "nMfit", "norMix"))
+}
+
+
+norMixMLE <- function(x, m, name = NULL, ## sd.min = 1e-7 * diff(range(x))/m,
+                     maxiter = 100, tol = sqrt(.Machine$double.eps), trace = 2)
+{
+    call. <- match.call()
+    if(is.null(name))
+	name <- sub("\\(x = ","(",
+		    sub(", trace = [^,)]+", '', deparse(call.)))
+    stopifnot(is.numeric(x), (n <- length(x)) >= 1,
+              (maxiter <- as.integer(maxiter)[1]) >= 1)
+    m <- as.integer(m)
+    stopifnot((mm <- max(m)) >= 1)
+    if(length(m) > 1) {
+	init <- rep(m, length = n)
+	m <- mm
+    }
+    else {
+        q <- quantile(x, seq(0, 1, by = 1/m))
+        init <- as.integer(cut(x, q, labels=FALSE, include.lowest=TRUE))
+    }
+    ## stopifnot(is.numeric(sd.min), length(sd.min) == 1, sd.min >= 0)
+
+    ## z := the "posterior" probabilities, here 0/1 from the grouping
+    z <- matrix(0, nrow = n, ncol = m)
+    z[cbind(1:n, init)] <- 1
+
+    ## 1 M-Step, to get initial
+    n.j <- colSums(z)
+    mu   <- colSums(z * x) / n.j
+    sig2 <- colSums(z* outer(x, mu, "-")^2) / n.j
+    par <- .nM2par(mu = mu, sig2 = sig2, w = n.j / n)
+
+    neglogl <- function(par) -llnorMix(par, x=x)
+
+## FIXME ??  Use  mle() and stats4 --> many methods !!
+
+    optr <- optim(par, neglogl, method = "BFGS", control =
+                list(maxit=maxiter, reltol = tol,
+                     trace=(trace > 0), REPORT= pmax(1, 10 %/% trace)))
+    conv <- optr$convergence == 0
+    it <- optr$counts[2:1] ## "gradient" (= high-level it.) first
+    m.s.w <- .par2nM(optr $ par)
+
+    if(!conv)
+	warning(gettextf("MLE did not converge in %d iterations (with 'tol'=%g)",
+			 maxiter, tol))
+    else if(trace == 1)
+	cat(gettextf("MLE converged in %d iterations", it[[1]]), "\n", sep="")
+    sd <- m.s.w$sd
+    ## if(min(sd) - sd.min < 1e-5*sd.min)
+    ##     warning(gettextf("some 'sd' ended up very close to 'sd.min'=%g",
+    ##     		 sd.min))
+    structure(norMix(mu = m.s.w$mu, sig2 = sd^2, w = m.s.w$w, name = name),
+              loglik = -optr $ value, iter = it, tol = NA, converged = conv,
+              class = c("fitMLE", "nMfit", "norMix"))
 }

@@ -500,15 +500,38 @@ nM2par <- function(obj)
     ## logit() == qlogis(); log(sqrt(.)) = log(.)/2
     c(qlogis(obj[-1,"w"]), obj[,"mu"], log(obj[,"sig2"])/2)
 }
-## FIXME? This is nowhere used
-.nM2par <- function(lst)
+
+.nM2par <- function(mu, sig2, w, check=TRUE)
 {
     ## Purpose: Fast version of nM2par()
     ## -------------------------------------------------
     ## Author: Martin Maechler, Date: 18 Dec 2007
-    c(qlogis(lst$w[-1]), lst$mu, log(lst$sig2)/2)
+    if(check) stopifnot(length(w) == (p <- length(mu)), length(sig2) == p)
+    c(qlogis(w[-1]), mu, log(sig2)/2)
 }
 
+
+.par2nM <- function(p)
+{
+    ## Purpose: get (mu, sd, w)  from our parametrization par.vector
+    ## ----------------------------------------------------------------------
+    lp <- length(p)
+    stopifnot(is.numeric(p), lp %% 3 == 2)
+    m <- (lp + 1L) %/% 3
+    m1 <- m - 1L
+    names(p) <- NULL # so they are not transferred to mu,...
+    mu  <- p[m:(m+m1)]
+    sd <- exp(p[(m+m):(m+m+m1)]) ## sigma = exp(tau)
+    if(m == 1)
+        list(mu=mu, sd=sd, w=1)
+    else { ## -- m >= 2
+        pi. <- plogis(p[1:m1]) ## \pi_j = inv_logit(\lambda_j)
+        if((sp <- sum(pi.)) > 1)
+            stop(sprintf("weights sum up to %.3g > 1 !", sp))
+
+        list(mu=mu, sd=sd, w = c(1 - sp, pi.))
+    }
+}
 
 par2norMix <- function(p, name = sprintf("{from %s}",
 			  deparse(substitute(p))[1]))
@@ -516,24 +539,9 @@ par2norMix <- function(p, name = sprintf("{from %s}",
     ## Purpose: build norMix object from our parametrization par.vector
     ## ----------------------------------------------------------------------
     ## Author: Martin Maechler, Date: 17 Dec 2007
-
     force(name) # substitute(..)
-    lp <- length(p)
-    stopifnot(is.numeric(p), lp %% 3 == 2)
-    m <- (lp + 1L) %/% 3
-    m1 <- m - 1L
-    names(p) <- NULL # so they are not transferred to mu,...
-    mu  <- p[m:(m+m1)]
-    sig2 <- exp(2 * p[(m+m):(m+m+m1)]) ## sigma^2 = exp(tau)^2 = exp(2*tau)
-    if(m == 1)
-        norMix(mu, sig2, name= name)
-    else { ## -- m >= 2
-        pi. <- plogis(p[1:m1]) ## \pi_j = inv_logit(\lambda_j)
-        if((sp <- sum(pi.)) > 1)
-            stop(sprintf("weights sum up to %.3g > 1 !", sp))
-
-        norMix(mu, sig2, w = c(1 - sp, pi.), name = name)
-    }
+    with(.par2nM(p),
+	 norMix(mu=mu, sig2 = sd^2, w=w, name = name))
 }
 
 

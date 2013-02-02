@@ -23,6 +23,7 @@ export(
        "clus2norMix", "nM2par", "par2norMix",
        "r.norMix"
     , "norMixEM"
+    , "norMixMLE"
     , "estep.nm", "mstep.nm", "emstep.nm"
        )
 

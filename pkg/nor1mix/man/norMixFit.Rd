@@ -1,13 +1,18 @@
-\name{norMixEM}
+\name{norMixFit}
 \alias{norMixEM}
-\title{EM Estimation of Univariate Normal Mixtures}
+\alias{norMixMLE}
+\title{EM and MLE Estimation of Univariate Normal Mixtures}
 \description{
-  This function estimates the parameters of a univariate (finite) normal
-  mixture using the EM algorithm.
+  These function estimate the parameters of a univariate (finite) normal
+  mixture using the EM algorithm or Likelihood Maximimization via
+  \code{\link{optim}(.., method = "BFGS")}.
 }
 \usage{
 norMixEM(x, m, name = NULL, sd.min =  1e-07* diff(range(x))/m,
          maxiter = 100, tol = sqrt(.Machine$double.eps), trace = 1)
+
+norMixMLE(x, m, name = NULL, %% sd.min = 1e-7 * diff(range(x))/m,
+          maxiter = 100, tol = sqrt(.Machine$double.eps), trace = 2)
 }
 \arguments{
   \item{x}{numeric: the data for which the parameters are to be estimated.}
@@ -28,15 +33,17 @@ norMixEM(x, m, name = NULL, sd.min =  1e-07* diff(range(x))/m,
     produces one line of output per iteration.}
 }
 \details{
-  EM estimation of univariate mixtures can be very sensitive to
-  initialization.  By default \code{norMixEM} \code{\link{cut}}s the data
-  into \eqn{m} groups of approximately equal size.  See examples below for other
-  initialization possibilities.
+  Estimation of univariate mixtures can be very sensitive to
+  initialization.  By default, \code{norMixEM} and \code{norMixLME}
+  \code{\link{cut}} the data into \eqn{m} groups of approximately equal
+  size.  See examples below for other initialization possibilities.
 
   The EM algorithm consists in repeated application of E- and M- steps
   until convergence.  Mainly for didactical reasons, we also provide the
   functions \code{\link{estep.nm}}, \code{mstep.nm}, and
   \code{\link{emstep.nm}}.
+
+  The MLE
 }
 \value{
   An object of class \code{\link{norMix}}.
@@ -63,8 +70,13 @@ ex2 <- norMixEM(x, cut(x, 3))
 ex2
 
 ## initialization by kmeans():
-ex3 <- norMixEM(x, kmeans(x, 3)$cluster)
+k3 <- kmeans(x, 3)$cluster
+ex3 <- norMixEM(x, k3)
 ex3
+
+## Now, MLE instead of EM:
+exM <- norMixMLE(x, k3, tol = 1e-12, trace=4)
+exM
 
 ## real data
 data(faithful)
