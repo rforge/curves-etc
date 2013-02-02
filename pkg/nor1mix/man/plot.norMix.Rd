@@ -10,7 +10,7 @@
 \usage{
 \method{plot}{norMix}(x, type = "l", n = 511, xout = NULL, xlim = NULL,
       xlab = "x", ylab = "f(x)", main = attr(x, "name"), lwd = 1.4,
-      p.norm = TRUE, p.h0 = TRUE, p.comp = FALSE,
+      p.norm = !p.comp, p.h0 = TRUE, p.comp = FALSE,
       parNorm = list(col = 2, lty = 2, lwd = 0.4),
       parH0 = list(col = 3, lty = 3, lwd = 0.4),
       parComp = list(col= "blue3", lty = 3, lwd = 0.4), \dots)

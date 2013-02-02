@@ -1,3 +1,4 @@
-Marron_.*\.pdf-- $Id: .Rbuildignore,v 1.2 2010-07-27 18:14:32 maechler Exp $
+Marron_.*\.pdf
+normix-HK\.
 .*-post\.R.*
 .*-log

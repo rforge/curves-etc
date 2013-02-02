@@ -297,16 +297,16 @@ qnorMix <-
 	      ## since pp[] is increasing, we can start from last 'root':
 	      if(i > 1 && rq[1] < root)
 		  rq[1] <- root
-	      root <- safeUroot(ff, S = S, interval = rq, tol=tol, maxiter=maxiter,
+	      root <- safeUroot(ff, Sig = S, interval = rq, tol=tol, maxiter=maxiter,
                                 trace = traceRootsearch)$root
 	      rr[i] <- root
 	  }
       }
       else { ## other 'method's  => np > 2
-          rr[1] <- safeUroot(f.make(pp[1]), S = S, interval = outRange(pp[1]),
+          rr[1] <- safeUroot(f.make(pp[1]), Sig = S, interval = outRange(pp[1]),
                              tol=tol, maxiter=maxiter,
                              trace = traceRootsearch)$root
-          rr[np] <- safeUroot(f.make(pp[np]), S = S, interval = outRange(pp[np]),
+          rr[np] <- safeUroot(f.make(pp[np]), Sig = S, interval = outRange(pp[np]),
                               tol=tol, maxiter=maxiter,
                               trace = traceRootsearch)$root
           ni <- length(iDone <- as.integer(c(1,np)))
@@ -404,7 +404,7 @@ qnorMix <-
                   for(j in ii) {
                       ## look in between i.1[j] .. i.2[j]
                       ## NB: we can prove that  i.1[j] < iN[j] < i.2[j]
-                      rr[iN[j]] <- safeUroot(f.make(pp[iN [j]]), S = S,
+                      rr[iN[j]] <- safeUroot(f.make(pp[iN [j]]), Sig = S,
                                              lower= rr[i.1[j]],
                                              upper= rr[i.2[j]],
                                              tol=tol, maxiter=maxiter,
@@ -427,7 +427,7 @@ qnorMix <-
 plot.norMix <-
     function(x, type = "l", n = 511, xout = NULL, xlim = NULL,
 	     xlab = "x", ylab = "f(x)", main = attr(x,"name"), lwd = 1.4,
-	     p.norm = TRUE, p.h0 = TRUE, p.comp = FALSE,
+	     p.norm = !p.comp, p.h0 = TRUE, p.comp = FALSE,
 	     parNorm = list(col= 2, lty = 2, lwd = 0.4),
 	     parH0   = list(col= 3, lty = 3, lwd = 0.4),
 	     parComp = list(col= "blue3", lty = 3, lwd = 0.4),
@@ -446,13 +446,13 @@ plot.norMix <-
     else y0 <- 0
     plot(d.o, type = type, xlim = xlim, ylim = c(y0, max(d.o$y, if(p.norm) dn)),
 	 main = main, xlab = xlab, ylab = ylab, lwd = lwd, ...)
-    if(p.norm)	do.call("lines",  c(list(x = d.o$x, y = dn), parNorm))
-    if(p.h0)	do.call("abline", c(list(h = 0), parH0))
+    if(p.norm)	do.call(lines,  c(list(x = d.o$x, y = dn), parNorm))
+    if(p.h0)	do.call(abline, c(list(h = 0), parH0))
     if(p.comp) {
         m <- m.norMix(x) #-- number of components
         w <- x[,"w"]; mu <- x[,"mu"]; sd <- sqrt(x[,"sig2"])
         for(j in 1:m)
-            do.call("lines",
+            do.call(lines,
                     c(list(x = d.o$x,
                            y = w[j] * dnorm(d.o$x, mean = mu[j], sd = sd[j])),
                       parComp))
@@ -472,7 +472,7 @@ lines.norMix <-
     lines(d.o, type = type, lwd = lwd, ...)
     if(p.norm) {
 	dn <- dnorm(d.o$x, mean = mean.norMix(x), sd = sqrt(var.norMix(x)))
-	do.call("lines", c(list(x = d.o$x, y = dn), parNorm))
+	do.call(lines, c(list(x = d.o$x, y = dn), parNorm))
     }
     invisible()
 }
