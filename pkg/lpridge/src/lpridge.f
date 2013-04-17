@@ -177,26 +177,35 @@ c
 c - determine indices corresponding to the smoothing interval
 c   - first left boundary (iu)
 c     - check whether we have to move left
-120      if ((iu.gt.1).and.(t(iu-1).gt.tleft)) then
-            iu=iu-1
-            goto 120
+120      if(iu .gt. 1) then
+            if(t(iu-1) .gt. tleft) then
+               iu=iu-1
+               goto 120
+            endif
          endif
 c     - check whether we have to move right
-130      if ((iu.le.n).and.(t(iu).lt.tleft)) then
-            iu=iu+1
-            goto 130
+130      if(iu .le. n) then
+            if(t(iu) .lt. tleft) then
+               iu=iu+1
+               goto 130
+            endif
          endif
 c   - now the right boundary (io)
 c     - check whether we have to move left
-140      if ((io.gt.1).and.(t(io-1).gt.tright)) then
-            io=io-1
-            goto 140
+140      if(io .gt. 1) then
+            if(t(io-1) .gt. tright) then
+               io=io-1
+               goto 140
+            endif
          endif
 c     - check whether we have to move right
-150      if ((io.le.n).and.(t(io).lt.tright)) then
-            io=io+1
-            goto 150
-         endif
+150     if(io .le. n) then
+           if(t(io) .lt. tright) then
+              io=io+1
+              goto 150
+           endif
+        endif
+C ------------------- REPEAT ------------------------------------
 c - Now iu and io have their new values
 c - check if there are enough points in smoothing interval
 160      if (io-iu.lt.nmin) then
@@ -371,6 +380,8 @@ c - 3. try more points
          iuold=iu
          nmin=nmin+1
          goto 160
+c        --------- ----------------------------------------------------------
+
 c - limits for singularity: sins(i,*,*)=lower and upper,
 c      (*,i,*)=update and restart, (*,*,i)=weighted and unweighted
 600      if (nsin.eq.0.and.nsub.eq.0) then
