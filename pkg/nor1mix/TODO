@@ -1,1 +1,4 @@
 o  qnorMix(*, log.p=TRUE) --- Newton iteration part is not yet implemented
+
+o  MLE (and EM): provide  "inference", i.e. vcov() methods, confint(),
+   AIC(), ..

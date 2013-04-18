@@ -3,7 +3,7 @@
 \alias{norMixMLE}
 \title{EM and MLE Estimation of Univariate Normal Mixtures}
 \description{
-  These function estimate the parameters of a univariate (finite) normal
+  These functions estimate the parameters of a univariate (finite) normal
   mixture using the EM algorithm or Likelihood Maximimization via
   \code{\link{optim}(.., method = "BFGS")}.
 }
@@ -43,14 +43,18 @@ norMixMLE(x, m, name = NULL, %% sd.min = 1e-7 * diff(range(x))/m,
   functions \code{\link{estep.nm}}, \code{mstep.nm}, and
   \code{\link{emstep.nm}}.
 
-  The MLE
+  The MLE, Maximum Likelihood Estimator, maximizes the likelihood using
+  \code{\link{optim}}, using the same advantageous parametrization as
+  \code{\link{llnorMix}}.
 }
 \value{
   An object of class \code{\link{norMix}}.
 }
 \author{
-  Friedrich Leisch, originally.
-  Martin Maechler vectorized it in \eqn{m}, added \code{trace} etc.
+  EM: Friedrich Leisch, originally; Martin Maechler vectorized it in
+  \eqn{m}, added \code{trace} etc.
+
+  MLE: M.Maechler
 }
 \examples{
 ex <- norMix(mu = c(-1,2,5), sig2 = c(1, 0.5, 3))
