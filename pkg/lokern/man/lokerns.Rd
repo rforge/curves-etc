@@ -7,11 +7,11 @@
   plug-in bandwidth function.
 }
 \usage{
-lokerns(x , y, deriv = 0, n.out=300, x.out=NULL, x.inOut = TRUE,
+lokerns(x, y=NULL, deriv = 0, n.out=300, x.out=NULL, x.inOut = TRUE,
         korder = deriv + 2, hetero=FALSE, is.rand=TRUE,
         inputb= is.numeric(bandwidth) && bandwidth > 0,
         m1 = 400, xl=NULL, xu=NULL,
-        s=NULL, sig=NULL, bandwidth=NULL)
+        s=NULL, sig=NULL, bandwidth=NULL, trace.lev = 0)
 }
 %% FIXME : The argument list of lokerns() and glkerns() are identical
 %% -----   and the \arguments{..} description is 99% identical
@@ -89,6 +89,9 @@ lokerns(x , y, deriv = 0, n.out=300, x.out=NULL, x.inOut = TRUE,
     not given by input or if \code{inputb=FALSE} a data-adaptive local
     plug-in bandwidth array is used instead.
   }
+  \item{trace.lev}{integer indicating how much the internal (Fortran
+    level) computations should be \dQuote{traced}, i.e., be reported.
+    The default, \code{0}, does not print anything.}
 }
 \value{
   an object of class(es) \code{c("lokerns", "KernS")}, which is

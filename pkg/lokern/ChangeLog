@@ -1,3 +1,11 @@
+2013-04-18  Martin Maechler  <maechler@stat.math.ethz.ch>
+
+	From -fbounds-check s:
+	* src/auxkerns.f (kerncl): ist=0 is "ok" for s(0:n) but not x(1:n)
+	* src/auxkerns.f (kernel, smo,..),
+	* R/glkerns.R, R/lokerns.R (glkerns, lokerns): new argument 'trace.lev'
+	for some algorithm tracing.
+
 2012-11-14  Martin Maechler  <maechler@stat.math.ethz.ch>
 
 	* tests/glk1.R: demo(*, ask = FALSE) at least when run as 'check'

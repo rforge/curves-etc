@@ -12,7 +12,7 @@
 \usage{
 \S3method{fitted}{KernS} (object, \dots)
 \S3method{plot}{KernS} (x, \dots)
-\S3method{predict}{KernS} (object, x, deriv = 0, \dots)
+\S3method{predict}{KernS} (object, x, deriv = 0, trace.lev = 0, \dots)
 \S3method{print}{KernS} (x, digits = getOption("digits"), \dots)
 \S3method{residuals}{KernS} (object, \dots)
 }
@@ -22,6 +22,8 @@
   \item{deriv}{integer, \eqn{\ge 0}{>= 0}, specifiying order of
     derivative that should be predicted.}
   \item{digits}{number of significant digits, see \code{\link{print}}.}
+  \item{trace.lev}{integer; level of tracing of Fortran level
+    computations; see \code{\link{lokerns}}.}
   \item{\dots}{potentially further arguments passed to and from
     methods.}
 }

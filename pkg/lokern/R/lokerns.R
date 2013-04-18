@@ -3,7 +3,7 @@
 ## auxiliary, factored out of lokerns()
 .lokerns <- function(x,y,x.out,n,n.out,deriv,korder,
 		     hetero,is.rand,inputb,
-		     m1,xl,xu,s,sig,bandwidth)
+		     m1,xl,xu,s,sig,bandwidth, trace.lev)
 {
     r <- .Fortran(lokern_s,			 # Fortran arg.names :
 		  x = as.double(x),		 # t
@@ -25,8 +25,9 @@
 		  work1 = double((n+1)*5),
 		  work2 = double(3 * m1),
 		  work3 = double(n.out),
-		  bandwidth = as.double(bandwidth)
-		  )[-c(1:2, 17:19)]	# all but (x,y) & work*
+		  bandwidth = as.double(bandwidth)# = 20
+		  , as.integer(trace.lev)
+		  )[-c(1:2, 17:19, 21L)]	# all but (x,y), work*,..
     if(r$korder != korder)
 	warning(gettextf("'korder' reset from %d to %d, internally",
 			 korder, r$korder))
@@ -39,7 +40,7 @@ lokerns <- function(x, y=NULL, deriv = 0,
 		    korder = deriv + 2, hetero = FALSE, is.rand = TRUE,
 		    inputb = is.numeric(bandwidth) && bandwidth > 0,
 		    m1 = 400, xl = NULL, xu = NULL, s = NULL, sig = NULL,
-		    bandwidth = NULL)
+		    bandwidth = NULL, trace.lev = 0)
 {
     ## control and sort input (x,y) - new: allowing only y
     xy <- xy.coords(x,y)
@@ -129,7 +130,7 @@ lokerns <- function(x, y=NULL, deriv = 0,
 		.lokerns(x=x,y=y,x.out=x.out,n=n,n.out=n.out,deriv=deriv,
 			 korder=korder,hetero=hetero,is.rand=is.rand,
 			 inputb=inputb,m1=m1,xl=xl,xu=xu,
-			 s=s,sig=sig,bandwidth=bandwidth),
+			 s=s,sig=sig,bandwidth=bandwidth,trace.lev=trace.lev),
 		xinL,
 		list(m1 = m1, isOrd = isOrd, ord = if(!isOrd) ord,
 		     x.inOut = x.inOut, call = match.call())),
@@ -167,7 +168,7 @@ print.KernS <- function(x, digits = getOption("digits"), ...)
 stopifnot(identical(names(formals(.lokerns)),
                     names(formals(.glkerns))))
 
-predict.KernS <- function (object, x, deriv = 0, ...)
+predict.KernS <- function (object, x, deriv = 0, trace.lev = 0, ...)
 {
     if(deriv == object$deriv) {
 	if (missing(x) && object$x.inOut) {
@@ -189,6 +190,7 @@ predict.KernS <- function (object, x, deriv = 0, ...)
 		  "glkerns" = .glkerns,
 		  stop("invalid class(.)[1]"))
     args <- object[names(formals(FUN))]
+    args[["trace.lev"]] <- trace.lev
     args[["inputb"]] <- TRUE # we *do* provide the bandwidths
     args[["deriv"]] <- deriv
     if(missing(x)) x <- object[["x"]]

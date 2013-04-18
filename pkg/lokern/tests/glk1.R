@@ -10,7 +10,7 @@ gk$bandwidth
 glkerns(tt,xSim, deriv = 1)$bandwidth
 glkerns(tt,xSim, deriv = 2)$bandwidth
 
-demo("glk-derivs", ask = grDevices::dev.interactive(TRUE))
+demo("glk-derivs", ask = FALSE)# fails on Windows: grDevices::dev.interactive(TRUE)
 ##   ------------
 
 p.3glks(tt, xSim, kord = 3)

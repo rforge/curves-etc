@@ -3,7 +3,7 @@
 ## auxiliary, factored out of glkerns()
 .glkerns <- function(x,y,x.out,n,n.out,deriv,korder,
 		     hetero,is.rand,inputb,
-		     m1,xl,xu,s,sig,bandwidth)
+		     m1,xl,xu,s,sig,bandwidth, trace.lev)
 {
     ## calling fortran routine
     r <- .Fortran(glkern_s,			 # Fortran arg.names :
@@ -17,7 +17,7 @@
                   korder = as.integer(korder),   # kord
                   hetero = as.logical(hetero),   # hetero
                   is.rand= as.logical(is.rand),  # isrand
-		  inputb = as.logical(inputb),	 # smo
+		  inputb = as.logical(inputb),	 # inputb
 		  iter = as.integer(m1),# number of plug-in iterations on output
                   xl = as.double(xl),
                   xu = as.double(xu),
@@ -25,8 +25,9 @@
                   sig = as.double(sig),
                   work1 = double((n+1)*5),
                   work2 = double(3 * m1),
-		  bandwidth = as.double(bandwidth)
-		  )[-c(1:2, 17:18)]	# all but (x,y) & work*
+		  bandwidth = as.double(bandwidth)# = 19
+		  , as.integer(trace.lev)
+		  )[-c(1:2, 17:18, 20L)]	# all but (x,y), work*,..
     if(r$korder != korder)
 	warning(gettextf("'korder' reset from %d to %d, internally",
 			 korder, r$korder))
@@ -39,7 +40,7 @@ glkerns <- function(x, y=NULL, deriv = 0,
 		    korder = deriv + 2, hetero = FALSE, is.rand = TRUE,
 		    inputb = is.numeric(bandwidth) && bandwidth > 0,
 		    m1 = 400, xl = NULL, xu = NULL, s = NULL, sig = NULL,
-		    bandwidth = NULL)
+		    bandwidth = NULL, trace.lev = 0)
 {
     ## control and sort input (x,y) - new: allowing only y
     xy <- xy.coords(x,y)
@@ -139,7 +140,7 @@ glkerns <- function(x, y=NULL, deriv = 0,
 		.glkerns(x=x,y=y,x.out=x.out,n=n,n.out=n.out,deriv=deriv,
 			 korder=korder,hetero=hetero,is.rand=is.rand,
 			 inputb=inputb,m1=m1,xl=xl,xu=xu,
-			 s=s,sig=sig,bandwidth=bandwidth),
+			 s=s,sig=sig,bandwidth=bandwidth,trace.lev=trace.lev),
 		xinL,
 		list(m1 = m1, isOrd = isOrd, ord = if(!isOrd) ord,
 		     x.inOut = x.inOut, call = match.call())),

@@ -14,8 +14,8 @@ varNPreg <- function(x,y)
 
     ## Author: Martin Maechler, Date:  9 Jul 2001, 14:47
     if(2 >= (n <- length(x))) stop("n := length(x)  must be at least 3")
-    if(is.unsorted(x)) stop("`x' must be ordered increasingly")
-    if(n != length(y)) stop("`x' and `y' must have same length")
+    if(is.unsorted(x)) stop("'x' must be ordered increasingly")
+    if(n != length(y)) stop("'x' and 'y' must have same length")
     .Fortran(resest,
              as.double(x), as.double(y), n,
              res = double(n),

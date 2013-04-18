@@ -9,7 +9,7 @@ cc
 cc     subroutine resest(t,x,n,res,snr,sigma2)
 cc                for variance estimation
 cc
-cc     subroutine kernel(t,x,n,b,nue,kord,ny,s,tt,m,y)
+cc     subroutine kernel(t,x,n,b,nue,kord,ny,s,tt,m,y, trace)
 cc                driver subroutine for kernel regression estimation
 cc                calls fast or convential kernel routine
 cc
@@ -123,9 +123,9 @@ c- snr := explained variance
          snr= 0.
       endif
       return
-      end
+      end ! resest
 
-      subroutine kernel(t,x,n,b,nue,kord,ny,s,tt,m,y)
+      subroutine kernel(t,x,n,b,nue,kord,ny,s,tt,m,y, trace)
 c-----------------------------------------------------------------------
 c       short-version may, 1995
 c
@@ -147,32 +147,37 @@ c  input    tt(m)        output grid. must be part of input grid for ieq=0
 c  input    m            number of points where function is estimated,
 c                         or  length of tt. default is m=400
 c  input    y(m)         bandwith sequence for ny=1, dummy for ny=0
+c  input    trace        integer: > 0 means "print tracing info"
 c  output   y(m)         estimated regression function
 c
 c-----------------------------------------------------------------------
-      integer n,nue, kord,ny,m
+      integer n,nue, kord,ny,m, trace
       double precision t(n),x(n), b,s(0:n),tt(m),y(m)
 c
-      double precision chan
+      double precision chan, chR
 c
 c------  computing change point
       chan=(5.+kord)*max(1.,sqrt(float(n)/float(m)))
 c------
-      if(b*(n-1)/(t(n)-t(1)).lt.chan) then
-         call kerncl(t,x,n,b,nue,kord,ny,s,tt,m,y)
+      chR = chan * (t(n)-t(1)) / (n-1)
+
+      if(trace .gt. 0) call monitk0(n,m, b, chan, chR, (b .lt. chR))
+
+      if(b .lt. chR) then
+         call kerncl(t,x,n,b,nue,kord,ny,s,tt,m,y, trace)
       else
-         call kernfa(t,x,n,b,nue,kord,ny,s,tt,m,y)
+         call kernfa(t,x,n,b,nue,kord,ny,s,tt,m,y, trace)
       end if
       return
-      end
+      end ! kernel
 
 
-      subroutine kernp(t,x,n,b,nue,kord,ny,s,tt,m,y)
+      subroutine kernp(t,x,n,b,nue,kord,ny,s,tt,m,y, trace)
 c-----------------------------------------------------------------------
 c       short-version january, 1997
 c
-c       driver subroutine for kernel smoothing, chooses between
-c       standard and O(n) algorithm
+c       driver subroutine for *local bandwidth* kernel smoothing,
+c       chooses between standard and O(n) algorithm
 c       without using boundary kernels
 c
 c  parameters :
@@ -190,28 +195,31 @@ c  input    tt(m)        output grid. must be part of input grid for ieq=0
 c  input    m            number of points where function is estimated,
 c                         or  length of tt. default is m=400
 c  input    y(m)         bandwith sequence for ny=1, dummy for ny=0
+c  input    trace        integer: > 0 means "print tracing info"
 c  output   y(m)         estimated regression function
 c
 c-----------------------------------------------------------------------
-
-      integer n,nue, kord,ny,m
+      integer n,nue, kord,ny,m, trace
       double precision t(n),x(n), b,s(0:n),tt(m),y(m)
 c
-      double precision chan
+      double precision chan, chR
 c
 c------  computing change point
       chan=(5.+kord)*max(1.,sqrt(float(n)/float(m)))
 c------
-      if(b*(n-1)/(t(n)-t(1)).lt.chan) then
-         call kerncp(t,x,n,b,nue,kord,ny,s,tt,m,y)
-      else
-         call kernfp(t,x,n,b,nue,kord,ny,s,tt,m,y)
-      end if
-c
-      return
-      end
+      chR = chan * (t(n)-t(1)) / (n-1)
 
-      subroutine kernfa(t,x,n,b,nue,kord,ny,s,tt,m,y)
+      if(trace .gt. 0) call monitk0(n,m, b, chan, chR, (b .lt. chR))
+
+      if(b .lt. chR) then
+         call kerncp(t,x,n,b,nue,kord,ny,s,tt,m,y, trace)
+      else
+         call kernfp(t,x,n,b,nue,kord,ny,s,tt,m,y, trace)
+      end if
+      return
+      end ! kernp
+
+      subroutine kernfa(t,x,n,b,nue,kord,ny,s,tt,m,y, trace)
 c-----------------------------------------------------------------------
 c       short-version: may, 1995
 c
@@ -235,19 +243,21 @@ c  input    s(0:n)       half point interpolation sequence
 c  input    tt(m)        output grid
 c  input    m            number of points to estimate
 c  input    y(m)         bandwith sequence for ny=1, dummy for ny=0
+c  input    trace        integer: > 0 means "print tracing info"
 c  output   y(m)         estimated function
 c
 c
 c-----------------------------------------------------------------------
-      integer n,nue,kord,ny,m
+      integer n,nue,kord,ny,m, trace
       double precision t(n),x(n),s(0:n),tt(m),y(m),b
 c Var
-      integer j,k,iord,init,icall,i,iboun
-      integer jl,jr,jnr,jnl
+      integer j,k,iord,init,icall,i,iboun, jl,jr,jnr,jnl
       double precision c(7),sw(7),xf(7),dold
       double precision a(7,7),a1(7),a2(7),a3(7,7),cm(7,6)
       double precision s0,sn,bmin,bmax,bb,wwl,wwr,wid,wr,wido
 c-
+      if(trace .gt. 0) call intpr('  kernfa()',-1, 0,0)
+
 c------ compute constants for later use
       s0=1.5*t(1)-0.5*t(2)
       sn=1.5*t(n)-0.5*t(n-1)
@@ -403,9 +413,9 @@ c-
 100     continue
 c-
       return
-      end
+      end ! kernfa
 
-      subroutine kernfp(t,x,n,b,nue,kord,ny,s,tt,m,y)
+      subroutine kernfp(t,x,n,b,nue,kord,ny,s,tt,m,y, trace)
 c-----------------------------------------------------------------------
 c       short-version: january, 1997
 c
@@ -433,10 +443,10 @@ c  output   y(m)         estimated function
 c
 c
 c-----------------------------------------------------------------------
-      integer n,nue,kord,ny,m
-      integer j,k,iord,init,icall,i,iboun
-      integer jl,jr,jnr,jnl
-      double precision x(n),t(n),s(0:n),tt(m),y(m),b
+      integer n,nue,kord,ny,m, trace
+      double precision t(n),x(n),s(0:n),tt(m),y(m),b
+c Var
+      integer j,k,iord,init,icall,i,iboun, jl,jr,jnr,jnl
       double precision c(7),sw(7),xf(7),dold,qq,q,xnor
       double precision a(7,7),a1(7),a2(7),a3(7,7),cm(7,6)
       double precision s0,sn,bmin,bmax,bb,wwl,wwr,wid,wr,wido
@@ -608,7 +618,7 @@ c-
 100     continue
 c-
       return
-      end
+      end ! kernfp
 
       subroutine dreg(sw,a1,a2,iord,x,sl,sr,t,b,iflop)
 c-----------------------------------------------------------------------
@@ -759,23 +769,25 @@ c-
         end if
 c-
 c------- compute a*c and new legendre sums
-        do 10 i=iord,2,-1
+        do i=iord,2,-1
           xx=0.
-          do 20 k=1,i
+          do k=1,i
             ww=0.
-            do 30 l=k,i-1,2
-30            ww=ww+a3(l,k)*c(i,l)
+            do l=k,i-1,2
+               ww=ww+a3(l,k)*c(i,l)
+            end do
             if(mod(i-k,2).eq.0) ww=ww+a3(i,k)
             xx=xx+ww*sw(k)
-20          continue
+          end do
           sw(i)=xx
-10        continue
+        end do
         sw(1)=a3(1,1)*sw(1)
       else
-        do 111 i=iord,2,-1
-          do 112 k=1,i-1
-112         sw(i)=sw(i)+c(i,k)*sw(k)
-111       continue
+        do i=iord,2,-1
+           do k=1,i-1
+              sw(i)=sw(i)+c(i,k)*sw(k)
+           end do
+        end do
       end if
       return
       end
@@ -863,7 +875,7 @@ c-
       return
       end
 
-      subroutine kerncl(t,x,n,b,nue,kord,ny,s,tt,m,y)
+      subroutine kerncl(t,x,n,b,nue,kord,ny,s,tt,m,y, trace)
 c-----------------------------------------------------------------------
 c       short-version january 1995
 c
@@ -886,13 +898,15 @@ c  input    y(m)         bandwith sequence for ny=1, dummy for ny=0
 c  output   y(m)         estimated regression function
 c
 c-----------------------------------------------------------------------
-      integer n,nue,kord,ny,m
+      integer n,nue,kord,ny,m, trace
       double precision t(n),x(n), b, s(0:n),tt(m),y(m)
 c Var
       double precision c(7),c1(7)
       integer ist,i,iboun,iord
       double precision bb, s0,s1,sn,bmin,bmax, wid
 c-
+c      if(trace .gt. 0) call intpr('  kerncl()',-1, 0,0)
+
 c------  compute kernel coefficients for interior and some constants
       call coffi(nue,kord,c)
       iord=kord+1
@@ -904,8 +918,8 @@ c------  compute kernel coefficients for interior and some constants
       if(kord.eq.2) bmin=0.1d0*bmin
       ist=1
 c-
-c-------  loop over output grid
-      do 100 i=1,m
+c------- Loop over output grid ------------------------------
+      do i=1,m
         if(ny.ne.0) bb=y(i)
         if(bb.gt.bmax) bb=bmax
         if(bb.lt.bmin) bb=bmin
@@ -930,34 +944,40 @@ c-------  compute right boundary kernel
         end if
 c-
 c------  search first s-point of smoothing interval
+c
+c MM: "internal logic error":  ist is used as index for x(.) and s(.)
+c     but s = s(0:n)  whereas  x = x(1:n)
+c     --> below, we cannot allow ist < 1
 2       if(s(ist).le.s1) then
           ist=ist+1
           goto 2
         end if
-3       if(s(ist-1).gt.s1) then
-          ist=ist-1
-          goto 3
+3       if(ist .gt. 1) then
+           if(s(ist-1) .gt. s1) then
+              ist=ist-1
+              goto 3
+           end if
         end if
 c-
-c-------  if bandwidth is too small no smoothing
-        if(s(ist).ge.tt(i)+wid.or.ist.eq.n) then
-         y(i)=x(ist)
-         if(nue.gt.0) y(i)=0.
-        else
-c-
-c-----  compute smoothed data at tt(i)
-         if (iboun.ne.0) then
-          call smo(s,x,n,tt(i),wid,nue,iord,iboun,ist,s1,c1,y(i))
-         else
-          call smo(s,x,n,tt(i),wid,nue,iord,iboun,ist,s1,c,y(i))
-         end if
+        if(s(ist).ge.tt(i)+wid .or. ist.eq.n) then
+c         if bandwidth is too small no smoothing
+           y(i)=x(ist)
+           if(nue.gt.0) y(i)=0.
+        else ! compute smoothed data at tt(i)
+           if (iboun.ne.0) then ! boundary kernel
+              call smo(s,x,n,tt(i),wid,nue,iord,iboun,ist,s1,
+     .             c1,y(i),trace)
+           else
+              call smo(s,x,n,tt(i),wid,nue,iord,iboun,ist,s1,
+     .             c, y(i),trace)
+           end if
         end if
-100   continue
+      end do
 c-
       return
-      end
+      end ! kerncl()
 
-      subroutine smo(s,x,n,tau,wid,nue,iord,iboun,ist,s1,c,y)
+      subroutine smo(s,x,n,tau,wid,nue,iord,iboun,ist,s1,c,y, trace)
 c-----------------------------------------------------------------------
 c       short-version january 1995
 c
@@ -972,27 +992,36 @@ c  input    tau          point where function is estimated
 c  input    wid          one sided bandwidth
 c  input    nue          order of derivative (0-4)
 c  input    iord          order of kernel polynomial
-c  input    iboun         type of boundary
+c  input    iboun        type of boundary (-1: right, +1, left; 0: *no* bndry)
 c  input    ist          index of first point of smoothing interval
 c  input    s1           left boundary of smoothing interval
 c  input    c(7)         kernel coefficients
-c  output   y            smoothed value at tau
+c  OUTPUT   y            smoothed value at tau
 c  work     wo(7)        work array
 c
 c-----------------------------------------------------------------------
-      integer n,nue,iord,iboun,ist
-      double precision x(n), tau,wid, s(0:n)
-      double precision s1, c(7), y
+      integer n,nue,iord,iboun,ist, trace
+      double precision s(0:n), x(n), tau,wid, s1,c(7),y
 c Var
       double precision wo(7), yy,yyy,w,widnue
       integer jend,ibeg,incr,i,j
+      logical nu_odd
 c-
+      nu_odd = (nue.eq.1 .or. nue.eq.3)
       y=0.
       jend=0
-      ibeg=2
-      if(iboun.ne.0.or.(nue.ne.1.and.nue.ne.3)) ibeg=1
-      incr=2
-      if(iboun.ne.0) incr=1
+      if(iboun.ne.0 .or. .not.nu_odd) then
+         ibeg=1
+      else
+         ibeg=2
+      end if
+
+      if(iboun.ne.0) then
+         incr=1
+      else
+         incr=2
+      end if
+      if(trace .ge. 2) call monits(tau, ist, n, iboun)
 c-
 c------  compute initial kernel values
       if(iboun.gt.0) then
@@ -1006,7 +1035,7 @@ c------  compute initial kernel values
       end if
 c-
 c------  loop over smoothing interval
-      do 100 j=ist,n
+      do j=ist,n
         yy=(tau-s(j))/wid
         if(yy.lt.-1.) then
           yy=-1.
@@ -1015,30 +1044,28 @@ c------  loop over smoothing interval
         yyy=yy
         if(iboun.eq.0) then
           yy=yy*yy
-          if(nue.eq.1.or.nue.eq.3) yyy=yy
+          if(nu_odd) yyy=yy
         end if
-c-
-c------  loop for computing weights
+
+c       loop for computing weights
         w=0.
-        do 3 i=ibeg,iord,incr
+        do i=ibeg,iord,incr
           w=w+c(i)*(wo(i)-yyy)
           wo(i)=yyy
           yyy=yyy*yy
-3         continue
+        end do
         y=y+w*x(j)
-        if(jend.eq.1) goto 110
-100     continue
-c-
-c-------  normalizing for nue>0
-110   if(nue.gt.0) then
-        widnue=wid**nue
-        y=y/widnue
-      end if
+        if(jend.eq.1) goto 110 ! break
+      end do
+ 110  continue
+
+c     -- normalizing for nue > 0
+      if(nue.gt.0) y= y/(wid**nue)
 c-
       return
-      end
+      end ! smo
 
-      subroutine kerncp(t,x,n,b,nue,kord,ny,s,tt,m,y)
+      subroutine kerncp(t,x,n,b,nue,kord,ny,s,tt,m,y, trace)
 c-----------------------------------------------------------------------
 c       short-version january 1997
 c
@@ -1062,7 +1089,7 @@ c  input    y(m)         bandwith sequence for ny=1, dummy for ny=0
 c  output   y(m)         estimated regression function
 c
 c-----------------------------------------------------------------------
-      integer n, nue,kord,ny, m
+      integer n, nue,kord,ny, m, trace
       double precision t(n),x(n),b, s(0:n),tt(m),y(m)
 c Var
       integer ist,i,iboun,iord
@@ -1080,7 +1107,7 @@ c------  compute kernel coefficients for interior and some constants
       ist=1
 c-
 c-------  loop over output grid
-      do 100 i=1,m
+      do i=1,m
         if(ny.ne.0) bb=y(i)
         if(bb.gt.bmax) bb=bmax
         if(bb.lt.bmin) bb=bmin
@@ -1120,14 +1147,14 @@ c-------  if bandwidth is too small no smoothing
         else
 c-
 c-----  compute smoothed data at tt(i)
-          call smop(s,x,n,tt(i),wid,nue,iord,iboun,ist,s1,c,y(i))
+          call smop(s,x,n,tt(i),wid,nue,iord,iboun,ist,s1,c,y(i),trace)
         end if
-100   continue
+      end do
 c-
       return
-      end
+      end ! kerncp()
 
-      subroutine smop(s,x,n,tau,wid,nue,iord,iboun,ist,s1,c,y)
+      subroutine smop(s,x,n,tau,wid,nue,iord,iboun,ist,s1,c,y, trace)
 c-----------------------------------------------------------------------
 c       short-version january 1995
 c
@@ -1142,33 +1169,39 @@ c  input    tau          point where function is estimated
 c  input    wid          one sided bandwidth
 c  input    nue          order of derivative (0-4)
 c  input    iord          order of kernel polynomial
-c  input    iboun         type of boundary
+c  input    iboun        type of boundary (-1: right, +1, left; 0: *no* bndry)
 c  input    ist          index of first point of smoothing interval
 c  input    s1           left boundary of smoothing interval
 c  input    c(7)         kernel coefficients
-c  output   y            smoothed value at tau
+c  OUTPUT   y            smoothed value at tau
 c  work     wo(7)        work array
 c
 c-----------------------------------------------------------------------
-      integer n, nue,iord,iboun,ist
-      double precision s(0:n),x(n), tau,wid, s1,c(7),y
-c
-      integer jend,ibeg,incr,i,j
+      integer n,nue,iord,iboun,ist, trace
+      double precision s(0:n), x(n), tau,wid, s1,c(7),y
+c Var
       double precision wo(7), yy,yyy,w,widnue,ww
+      integer jend,ibeg,incr,i,j
+      logical nu_odd
 c-
+      nu_odd = (nue.eq.1 .or. nue.eq.3)
       y=0.
       ww=0.
       jend=0
-      ibeg=2
-      if(nue.ne.1.and.nue.ne.3) ibeg=1
+      if(nu_odd) then
+         ibeg=2
+      else
+         ibeg=1
+      end if
       incr=2
+      if(trace .ge. 2) call monits(tau, ist, n, iboun)
 c-
 c------  compute initial kernel values
       if(iboun.gt.0) then
         yy=(tau-s1)/wid
         wo(ibeg)=yy
         yy=yy*yy
-        if(nue.eq.1.or.nue.eq.3) wo(ibeg)=yy
+        if(nu_odd) wo(ibeg)=yy
         do 1 i=ibeg,iord-incr,incr
 1         wo(i+incr)=wo(i)*yy
       else
@@ -1177,7 +1210,7 @@ c------  compute initial kernel values
       end if
 c-
 c------  loop over smoothing interval
-      do 100 j=ist,n
+      do j=ist,n
         yy=(tau-s(j))/wid
         if(yy.lt.-1.) then
           yy=-1.
@@ -1185,29 +1218,27 @@ c------  loop over smoothing interval
         end if
         yyy=yy
         yy=yy*yy
-        if(nue.eq.1.or.nue.eq.3) yyy=yy
-c-
-c------  loop for computing weights
+        if(nu_odd) yyy=yy
+
+c       loop for computing weights
         w=0.
-        do 3 i=ibeg,iord,incr
+        do i=ibeg,iord,incr
           w=w+c(i)*(wo(i)-yyy)
           wo(i)=yyy
           yyy=yyy*yy
-3         continue
+        end do
         y=y+w*x(j)
         ww=ww+w
-        if(jend.eq.1) goto 110
-100     continue
-c-
-c-------  normalizing for nue>0
-110   if(ww.ne.0) y=y/ww
-      if(nue.gt.0) then
-        widnue=wid**nue
-        y=y/widnue
-      end if
+        if(jend.eq.1) goto 110 ! break
+      end do
+ 110  continue
+
+      if(ww.ne.0) y= y/ww
+c     -- normalizing for nue > 0
+      if(nue.gt.0) y= y/(wid**nue)
 c-
       return
-      end
+      end ! smop
 
       subroutine coffi(nue,kord,c)
 c-----------------------------------------------------------------------
@@ -1287,7 +1318,7 @@ c
       end if
 c
       return
-      end
+      end ! coffi
 
       subroutine coffb(nue,kord,q,iboun,c)
 c-----------------------------------------------------------------------
@@ -1437,7 +1468,7 @@ c
       do 2 i=j,kord,2
 2       c(i)=-c(i)
       return
-      end
+      end ! coffb
 
       subroutine constV(x,n,fa)
       integer n

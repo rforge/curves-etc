@@ -1,7 +1,6 @@
 
-R version 2.14.0 Patched (2011-11-25 r57751)
-Copyright (C) 2011 The R Foundation for Statistical Computing
-ISBN 3-900051-07-0
+R version 3.0.0 Patched (2013-04-17 r62607) -- "Masked Marvel"
+Copyright (C) 2013 The R Foundation for Statistical Computing
 Platform: x86_64-unknown-linux-gnu (64-bit)
 
 R is free software and comes with ABSOLUTELY NO WARRANTY.
@@ -26,7 +25,44 @@ Loading required package: lokern
 -3.1320 -1.6150  0.7583  0.3969  1.7710  4.4500 
 > tt <- ((1:n) - 1/2)/n # equidistant x
 > 
-> str(lk <- lokerns(tt, xSim))
+> str(lk <- lokerns(tt, xSim, trace=TRUE))
+lokerns (n=75,m=300; nue=0) -> kord=2
+ phase  2
+ phase  3
+ phase  4
+ phase  5
+ phase  6
+ phase  7
+ phase  8
+ phase  9
+ phase 10
+ kernel(n= 75,m= 76; b=  0.01000531) -> (chg.pt,cut_b)=( 7.0, 0.09) => 'classic'
+ kernel(n= 75,m=400; b=       0.024) -> (chg.pt,cut_b)=( 9.0, 0.12) => 'classic'
+ kernel(n= 75,m=400; b=  0.03375978) -> (chg.pt,cut_b)=( 9.0, 0.12) => 'classic'
+ kernel(n= 75,m=400; b=   0.0479116) -> (chg.pt,cut_b)=( 9.0, 0.12) => 'classic'
+ kernel(n= 75,m=400; b=  0.05951944) -> (chg.pt,cut_b)=( 9.0, 0.12) => 'classic'
+ kernel(n= 75,m=400; b=  0.06496717) -> (chg.pt,cut_b)=( 9.0, 0.12) => 'classic'
+ kernel(n= 75,m=400; b=  0.06707809) -> (chg.pt,cut_b)=( 9.0, 0.12) => 'classic'
+ kernel(n= 75,m=400; b=  0.06782741) -> (chg.pt,cut_b)=( 9.0, 0.12) => 'classic'
+ kernel(n= 75,m=400; b=  0.06808279) -> (chg.pt,cut_b)=( 9.0, 0.12) => 'classic'
+ kernel(n= 75,m=400; b=  0.06816836) -> (chg.pt,cut_b)=( 9.0, 0.12) => 'classic'
+ kernel(n= 75,m=400; b=  0.06819685) -> (chg.pt,cut_b)=( 9.0, 0.12) => 'classic'
+ kernel(n= 75,m=400; b=  0.06820632) -> (chg.pt,cut_b)=( 9.0, 0.12) => 'classic'
+ kernel(n= 75,m=400; b=  0.06820946) -> (chg.pt,cut_b)=( 9.0, 0.12) => 'classic'
+ kernel(n= 75,m=400; b=   0.0682105) -> (chg.pt,cut_b)=( 9.0, 0.12) => 'classic'
+ kernel(n= 75,m=400; b=  0.06821085) -> (chg.pt,cut_b)=( 9.0, 0.12) => 'classic'
+ kernel(n= 75,m=400; b=  0.06821097) -> (chg.pt,cut_b)=( 9.0, 0.12) => 'classic'
+ kernel(n= 75,m=300; b=  0.04845241) -> (chg.pt,cut_b)=( 7.0, 0.09) => 'classic'
+ phase 18
+ phase 19
+ phase 20
+ kernel(n= 75,m=300; b=  0.04845241) -> (chg.pt,cut_b)=( 7.0, 0.09) => 'classic'
+ phase 21
+ kernel(n= 75,m=399; b=   0.0611626) -> (chg.pt,cut_b)=( 9.0, 0.12) => 'classic'
+ kernel(n=399,m=300; b=    0.086814) -> (chg.pt,cut_b)=( 8.1, 0.02) => 'fast O(n)'
+ phase 22
+ phase 23
+ kernel(n= 75,m=300; b=  0.04845241) -> (chg.pt,cut_b)=( 7.0, 0.09) => 'classic'
 List of 24
  $ x         : num [1:75] 0.00667 0.02 0.03333 0.04667 0.06 ...
  $ y         : num [1:75] 1.97 1.9 1.64 1.43 2.4 ...
@@ -51,7 +87,7 @@ List of 24
  $ isOrd     : logi TRUE
  $ ord       : NULL
  $ x.inOut   : logi TRUE
- $ call      : language lokerns(x = tt, y = xSim)
+ $ call      : language lokerns(x = tt, y = xSim, trace.lev = TRUE)
  - attr(*, "class")= chr [1:2] "lokerns" "KernS"
 > summary(lk$est)
    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
@@ -59,7 +95,116 @@ List of 24
 > summary((lk1 <- lokerns(tt,xSim, deriv = 1))$est)
    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
 -41.230  -8.198  -5.577  -4.945  -1.786  35.280 
-> summary((lk2 <- lokerns(tt,xSim, deriv = 2))$est)
+> summary((lk2 <- lokerns(tt,xSim, deriv = 2, trace=TRUE))$est)
+lokerns (n=75,m=300; nue=2) -> kord=4
+ phase  2
+ phase  3
+ phase  4
+ phase  5
+ phase  6
+ phase  7
+ phase  8
+ phase  9
+ phase 10
+ kernel(n= 75,m= 76; b=  0.00909058) -> (chg.pt,cut_b)=( 7.0, 0.09) => 'classic'
+ kernel(n= 75,m=400; b=  0.06913456) -> (chg.pt,cut_b)=(11.0, 0.15) => 'classic'
+ kernel(n= 75,m=400; b=  0.09087056) -> (chg.pt,cut_b)=(11.0, 0.15) => 'classic'
+ kernel(n= 75,m=400; b=   0.1116875) -> (chg.pt,cut_b)=(11.0, 0.15) => 'classic'
+ kernel(n= 75,m=400; b=   0.1331001) -> (chg.pt,cut_b)=(11.0, 0.15) => 'classic'
+ kernel(n= 75,m=400; b=   0.1559109) -> (chg.pt,cut_b)=(11.0, 0.15) => 'fast O(n)'
+  kernfa()
+ kernel(n= 75,m=400; b=   0.1663355) -> (chg.pt,cut_b)=(11.0, 0.15) => 'fast O(n)'
+  kernfa()
+ kernel(n= 75,m=400; b=   0.1698105) -> (chg.pt,cut_b)=(11.0, 0.15) => 'fast O(n)'
+  kernfa()
+ kernel(n= 75,m=400; b=   0.1709302) -> (chg.pt,cut_b)=(11.0, 0.15) => 'fast O(n)'
+  kernfa()
+ kernel(n= 75,m=400; b=   0.1712874) -> (chg.pt,cut_b)=(11.0, 0.15) => 'fast O(n)'
+  kernfa()
+ kernel(n= 75,m=400; b=   0.1714011) -> (chg.pt,cut_b)=(11.0, 0.15) => 'fast O(n)'
+  kernfa()
+ kernel(n= 75,m=400; b=   0.1714373) -> (chg.pt,cut_b)=(11.0, 0.15) => 'fast O(n)'
+  kernfa()
+ kernel(n= 75,m=400; b=   0.1714489) -> (chg.pt,cut_b)=(11.0, 0.15) => 'fast O(n)'
+  kernfa()
+ kernel(n= 75,m=400; b=   0.1714526) -> (chg.pt,cut_b)=(11.0, 0.15) => 'fast O(n)'
+  kernfa()
+ kernel(n= 75,m=400; b=   0.1714538) -> (chg.pt,cut_b)=(11.0, 0.15) => 'fast O(n)'
+  kernfa()
+ kernel(n= 75,m=400; b=   0.1714541) -> (chg.pt,cut_b)=(11.0, 0.15) => 'fast O(n)'
+  kernfa()
+ kernel(n= 75,m=400; b=   0.1714542) -> (chg.pt,cut_b)=(11.0, 0.15) => 'fast O(n)'
+  kernfa()
+ kernel(n= 75,m=400; b=   0.1714543) -> (chg.pt,cut_b)=(11.0, 0.15) => 'fast O(n)'
+  kernfa()
+ kernel(n= 75,m=400; b=   0.1714543) -> (chg.pt,cut_b)=(11.0, 0.15) => 'fast O(n)'
+  kernfa()
+ kernel(n= 75,m=400; b=   0.1714543) -> (chg.pt,cut_b)=(11.0, 0.15) => 'fast O(n)'
+  kernfa()
+ kernel(n= 75,m=400; b=   0.1714543) -> (chg.pt,cut_b)=(11.0, 0.15) => 'fast O(n)'
+  kernfa()
+ kernel(n= 75,m=400; b=   0.1714543) -> (chg.pt,cut_b)=(11.0, 0.15) => 'fast O(n)'
+  kernfa()
+ kernel(n= 75,m=400; b=   0.1714543) -> (chg.pt,cut_b)=(11.0, 0.15) => 'fast O(n)'
+  kernfa()
+ kernel(n= 75,m=400; b=   0.1714543) -> (chg.pt,cut_b)=(11.0, 0.15) => 'fast O(n)'
+  kernfa()
+ kernel(n= 75,m=400; b=   0.1714543) -> (chg.pt,cut_b)=(11.0, 0.15) => 'fast O(n)'
+  kernfa()
+ kernel(n= 75,m=400; b=   0.1714543) -> (chg.pt,cut_b)=(11.0, 0.15) => 'fast O(n)'
+  kernfa()
+ kernel(n= 75,m=400; b=   0.1714543) -> (chg.pt,cut_b)=(11.0, 0.15) => 'fast O(n)'
+  kernfa()
+ kernel(n= 75,m=400; b=   0.1714543) -> (chg.pt,cut_b)=(11.0, 0.15) => 'fast O(n)'
+  kernfa()
+ kernel(n= 75,m=400; b=   0.1714543) -> (chg.pt,cut_b)=(11.0, 0.15) => 'fast O(n)'
+  kernfa()
+ kernel(n= 75,m=400; b=   0.1714543) -> (chg.pt,cut_b)=(11.0, 0.15) => 'fast O(n)'
+  kernfa()
+ kernel(n= 75,m=400; b=   0.1714543) -> (chg.pt,cut_b)=(11.0, 0.15) => 'fast O(n)'
+  kernfa()
+ kernel(n= 75,m=400; b=   0.1714543) -> (chg.pt,cut_b)=(11.0, 0.15) => 'fast O(n)'
+  kernfa()
+ kernel(n= 75,m=400; b=   0.1714543) -> (chg.pt,cut_b)=(11.0, 0.15) => 'fast O(n)'
+  kernfa()
+ kernel(n= 75,m=400; b=   0.1714543) -> (chg.pt,cut_b)=(11.0, 0.15) => 'fast O(n)'
+  kernfa()
+ kernel(n= 75,m=400; b=   0.1714543) -> (chg.pt,cut_b)=(11.0, 0.15) => 'fast O(n)'
+  kernfa()
+ kernel(n= 75,m=400; b=   0.1714543) -> (chg.pt,cut_b)=(11.0, 0.15) => 'fast O(n)'
+  kernfa()
+ kernel(n= 75,m=400; b=   0.1714543) -> (chg.pt,cut_b)=(11.0, 0.15) => 'fast O(n)'
+  kernfa()
+ kernel(n= 75,m=400; b=   0.1714543) -> (chg.pt,cut_b)=(11.0, 0.15) => 'fast O(n)'
+  kernfa()
+ kernel(n= 75,m=400; b=   0.1714543) -> (chg.pt,cut_b)=(11.0, 0.15) => 'fast O(n)'
+  kernfa()
+ kernel(n= 75,m=400; b=   0.1714543) -> (chg.pt,cut_b)=(11.0, 0.15) => 'fast O(n)'
+  kernfa()
+ kernel(n= 75,m=400; b=   0.1714543) -> (chg.pt,cut_b)=(11.0, 0.15) => 'fast O(n)'
+  kernfa()
+ kernel(n= 75,m=400; b=   0.1714543) -> (chg.pt,cut_b)=(11.0, 0.15) => 'fast O(n)'
+  kernfa()
+ kernel(n= 75,m=400; b=   0.1714543) -> (chg.pt,cut_b)=(11.0, 0.15) => 'fast O(n)'
+  kernfa()
+ kernel(n= 75,m=400; b=   0.1714543) -> (chg.pt,cut_b)=(11.0, 0.15) => 'fast O(n)'
+  kernfa()
+ kernel(n= 75,m=400; b=   0.1714543) -> (chg.pt,cut_b)=(11.0, 0.15) => 'fast O(n)'
+  kernfa()
+ kernel(n= 75,m=400; b=   0.1714543) -> (chg.pt,cut_b)=(11.0, 0.15) => 'fast O(n)'
+  kernfa()
+ kernel(n= 75,m=300; b=   0.1190404) -> (chg.pt,cut_b)=( 9.0, 0.12) => 'classic'
+ phase 18
+ phase 19
+ phase 20
+ kernel(n= 75,m=300; b=   0.1190404) -> (chg.pt,cut_b)=( 7.0, 0.09) => 'fast O(n)'
+  kernfa()
+ phase 21
+ kernel(n= 75,m=399; b=   0.1186581) -> (chg.pt,cut_b)=(11.0, 0.15) => 'classic'
+ kernel(n=399,m=300; b=   0.1818455) -> (chg.pt,cut_b)=( 8.1, 0.02) => 'fast O(n)'
+ phase 22
+ phase 23
+ kernel(n= 75,m=300; b=   0.1190404) -> (chg.pt,cut_b)=( 9.0, 0.12) => 'classic'
     Min.  1st Qu.   Median     Mean  3rd Qu.     Max. 
 -688.700  -74.740   26.410   -4.829  169.500  352.600 
 > 
@@ -73,3 +218,6 @@ List of 24
    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
 0.07662 0.07995 0.09398 0.09034 0.09501 0.10940 
 > 
+> proc.time()
+   user  system elapsed 
+  0.403   0.060   0.533 

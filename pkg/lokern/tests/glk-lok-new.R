@@ -4,12 +4,13 @@ data(xSim)
 summary(xSim)
 tt <- ((1:n) - 1/2)/n # equidistant x
 
-lk  <- lokerns(tt, xSim)
+lk  <- lokerns(tt, xSim, trace=1)
 head(x. <- seq(-3.5, 4.5, length=1001))
-lk.  <- lokerns(tt, xSim, x.out= x.)
+lk.  <- lokerns(tt, xSim, x.out= x., trace=1)
 lkw <- tryCatch(lokerns(tt, xSim, x.out= x., x.inOut="aim"),
                 warning = function(.) .)
-stopifnot(inherits(lkw, "simpleWarning"))
+stopifnot(inherits(lkw, "simpleWarning"),
+	  grepl("x.inOut", lkw[["message"]]))
 
 lkn. <- lokerns(tt, xSim, n.out= 1000, x.inOut=FALSE)
 lknT <- lokerns(tt, xSim, n.out= 1000, x.inOut=TRUE)

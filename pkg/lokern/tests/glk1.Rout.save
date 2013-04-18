@@ -1,7 +1,6 @@
 
-R version 2.15.2 Patched (2012-11-13 r61118) -- "Trick or Treat"
-Copyright (C) 2012 The R Foundation for Statistical Computing
-ISBN 3-900051-07-0
+R version 3.0.0 Patched (2013-04-17 r62607) -- "Masked Marvel"
+Copyright (C) 2013 The R Foundation for Statistical Computing
 Platform: x86_64-unknown-linux-gnu (64-bit)
 
 R is free software and comes with ABSOLUTELY NO WARRANTY.
@@ -60,7 +59,7 @@ List of 23
 > glkerns(tt,xSim, deriv = 2)$bandwidth
 [1] 0.1190404
 > 
-> demo("glk-derivs", ask = grDevices::dev.interactive(TRUE))
+> demo("glk-derivs", ask = FALSE)# fails on Windows: grDevices::dev.interactive(TRUE)
 
 
 	demo(glk-derivs)
@@ -409,4 +408,4 @@ deriv = 3: modifying korder from 6 to 5
 > 
 > proc.time()
    user  system elapsed 
-  0.764   0.070   0.986 
+  0.713   0.075   0.924 

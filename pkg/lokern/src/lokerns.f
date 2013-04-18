@@ -1,5 +1,5 @@
       subroutine lokern_s(t,x, tt,y, n,m,nue,kord, hetero,isrand,
-     .     inputb,m1,tl,tu,s,sig,wn,w1, wm,ban)
+     .     inputb,m1,tl,tu,s,sig,wn,w1, wm,ban, trace)
 c----------------------------------------------------------------------*
 c-----------------------------------------------------------------------
 c       Short-version: January 1997
@@ -17,9 +17,9 @@ c Args
       integer n, m, nue,kord
       double precision t(n),x(n), tt(m), tl,tu, s(0:n), sig
       logical hetero, isrand, inputb
-c	 inputb (was "smo", now same as in R):
-c	 if TRUE, do not compute bandwidths but use ban(.)
-      integer m1
+c			      inputb (was "smo", now same as in R):
+c if TRUE, do not compute bandwidths but use ban(.)
+      integer m1, trace
       double precision wn(0:n,5), w1(m1,3), wm(m),ban(m), y(m)
 c Var
       logical inputs, needsrt
@@ -39,7 +39,7 @@ c-------- 1. initialisations
       nyl=1
 c Stop for invalid inputs (impossible when called from R's lokerns())
 
-c     0 <= nue <= 4;  nue <= 2 if(! smo)
+c     0 <= nue <= 4;  nue <= 2 if(! inputb)
       if(nue.gt.4 .or. nue.lt.0) call rexit("nue must be in 0..4")
       if(nue.gt.2 .and. .not. inputb)
      +     call rexit("nue must be in 0..2 if not 'inputb'")
@@ -54,7 +54,10 @@ c     kord - nue must be even :
       if(kord.gt.6 .or. kord.le.nue)  kord=nue+2
       rvar=sig
 
+      if(trace .gt. 0) call monit0(1, n, m, nue, kord, trace)
+
 c-------- 2. computation of s-sequence
+      if(trace .gt. 0) call monit1(2, trace)
       s0=1.5*t(1)-0.5*t(2)
       sn=1.5*t(n)-0.5*t(n-1)
       if(s(n).le.s(0)) then
@@ -70,10 +73,12 @@ c-------- 2. computation of s-sequence
       end if
 c-
 c-------- 3. computation of minimal, maximal allowed global bandwidth
+      if(trace .gt. 0) call monit1(3, trace)
       bmax=(sn-s0)*.5
       bmin=(sn-s0)/dble(n)*dble(kord-1)*.6
 c-
 c-------- 4. compute tl,tu
+      if(trace .gt. 0) call monit1(4, trace)
       itt=0
 40    if (tu.le.tl) then
         tl=.933*s0+.067*sn
@@ -84,6 +89,7 @@ c-------- 4. compute tl,tu
       tu=min(sn,tu)
 c-
 c-------- 5. compute indices
+      if(trace .gt. 0) call monit1(5, trace)
       il=1
       iu=n
       wn(1,1)=0.0
@@ -106,12 +112,14 @@ c-------- 5. compute indices
       end if
 c-
 c-------- 6. compute t-grid for integral approximation
+      if(trace .gt. 0) call monit1(6, trace)
       do i=1,m1
          w1(i,2)=1.0
          w1(i,1)=tl+(tu-tl)*dble(i-1)/dble(m1-1)
       end do
 c-
 c-------- 7. calculation of weight function
+      if(trace .gt. 0) call monit1(7, trace)
       alpha=1.d0/dble(13)
       do i=il,iu
          xi=(t(i) - tl)/alpha/(tu-tl)
@@ -136,11 +144,13 @@ c-------- 7. calculation of weight function
  77   continue
 c-
 c-------- 8. compute constants for iteration
+      if(trace .gt. 0) call monit1(8, trace)
       ex=1./dble(kord+kord+1)
       kk2=(kord-nue)
       kk=kk2/2
 c-
 c-------- 9. estimating variance and smoothed pseudoresiduals
+      if(trace .gt. 0) call monit1(9, trace)
       if(sig .le. 0. .and. .not.hetero) then
         call resest(t(il),x(il),nn,wn(il,2),r2,sig)
       endif
@@ -151,19 +161,22 @@ c-------- 9. estimating variance and smoothed pseudoresiduals
            wn(i,3)=t(i)
            wn(i,2)=wn(i,2)*wn(i,2)
         end do
-        call kernel(t,wn(1,2),n,bres,0,kk2,nyg,s, wn(1,3),n,wn(1,4))
+        call kernel(t,wn(1,2),n,bres,0,kk2,nyg,s,
+     .       wn(1,3),n,wn(1,4), trace)
       else
 c       not hetero
         call constV(wn(1,4),n,sig)
       end if
 c-
 c-------- 10. [LOOP:] estimate/compute integral constant
+      if(trace .gt. 0) call monit1(10, trace)
 100   vi=0.
       do i=il,iu
          vi=vi+ wn(i,1)*n*(s(i)-s(i-1))**2 * wn(i,4)
       end do
 c-
 c-------- 11. refinement of s-sequence for random design
+      if(trace .ge. 2) call monit1(11, trace)
       if(inputs .and. isrand) then
         do i=0,n
           wn(i,5)=dble(i)/dble(n+1)
@@ -173,8 +186,8 @@ c-------- 11. refinement of s-sequence for random design
         exs= -dble(3*kord+1) / dble(6*kord+3)
         exsvi=dble(kord)     / dble(6*kord+3)
         bs=0.1*(vi/(sn-s0)**2)**exsvi * n**exs
-        call kernel(wn(1,5),t,n,bs,0,2,nyg,wn(0,3),wn(0,2),n+1,s(0))
-
+        call kernel(wn(1,5),t,n,bs,0,2,nyg,wn(0,3),wn(0,2),n+1,s(0),
+     .       trace)
         vi=0.0
 111     needsrt=.false.
         do i=1,n
@@ -192,6 +205,7 @@ c-------- 11. refinement of s-sequence for random design
       b=bmin*2.
 c-
 c-------- 12. compute inflation constant and exponent and loop of iterations
+      if(trace .ge. 2) call monit1(12, trace)
       const=dble(2*nue+1)*fak2(kord)*vark(kk,nue)*vi
      .       /(dble(2*kord-2*nue)*bias(kk,nue)**2*dble(n))
       fac=1.1*(1.+(nue/10.)+0.05*(kord-nue-2.))
@@ -204,12 +218,14 @@ c     ^^^^^^  *fixed* number of iterations ( <== theory !)
       do it=1,itende
 c-
 c-------- 13. estimate derivative of order kord in iterations
+        if(trace .ge. 3) call monit1(13, trace)
         b2=b*fac
         b2=max(b2,bmin/dble(kord-1)*dble(kord+1))
         b2=min(b2,bmax)
-        call kernel(t,x,n,b2,kord,kord+2,nyg,s,w1(1,1),m1,w1(1,3))
+        call kernel(t,x,n,b2,kord,kord+2,nyg,s,w1(1,1),m1,w1(1,3),trace)
 c-
 c-------- 14. estimate integralfunctional in iterations
+        if(trace .ge. 3) call monit1(14, trace)
         xmy2= .75*(w1(1,2)*w1(1,3)*w1(1,3) + w1(m1,2)*w1(m1,3)*w1(m1,3))
         do i=2,m1-1
            xmy2=xmy2+w1(i,2)*w1(i,3)*w1(i,3)
@@ -217,15 +233,18 @@ c-------- 14. estimate integralfunctional in iterations
         xmy2=xmy2*(tu-tl)/dble(m1)
 c-
 c-------- 15. finish of iterations
+        if(trace .ge. 3) call monit1(15, trace)
         b=(const/xmy2)**ex
         b=max(bmin,b)
         b=min(bmax,b)
       end do
 
 c-------- 16  compute smoothed function with global plug-in bandwidth
-      call kernel(t,x,n,b,nue,kord,nyg,s,tt,m,y)
+      if(trace .ge. 2) call monit1(16, trace)
+      call kernel(t,x,n,b,nue,kord,nyg,s,tt,m,y, trace)
 c-
 c-------- 17. variance check
+      if(trace .ge. 2) call monit1(17, trace)
       if(hetero) sig=rvar
       if(hetero.or. r2.lt.0.88 .or. nue.gt.0) goto 180
       ii=0
@@ -260,11 +279,14 @@ c-------- 17. variance check
 c     -------- end loop
 c
 c-------- 18. local initializations
- 180  bvar=b
+ 180  continue
+      if(trace .gt. 0) call monit1(18, trace)
+      bvar=b
       nuev=0
       kordv=2
 c-
 c-------- 19. compute inner bandwidths
+      if(trace .gt. 0) call monit1(19, trace)
       g1=0.86*(1.+dble(kord-nue-2)*.05)*b
       g1=g1*dble(n)**(4./dble(2*kord+1)/(2*kord+5))
       g1=max(g1,bmin/dble(kord-1)*dble(kord+1))
@@ -276,6 +298,7 @@ c-------- 19. compute inner bandwidths
       g2=min(g2,bmax)
 c-
 c-------- 20. estimate/compute integral constant vi locally
+      if(trace .gt. 0) call monit1(20, trace)
       do i=1,n
          wn(i,4)=dble(n)*wn(i,4)*(s(i)-s(i-1))
       end do
@@ -294,9 +317,10 @@ c-------- 20. estimate/compute integral constant vi locally
             wm(j)=tt(j)-.5*dist*g1
          end if
       end do
-      call kernel(t,wn(1,4),n,bvar,nuev,kordv,nyl,s,wm,m,ban)
+      call kernel(t,wn(1,4),n,bvar,nuev,kordv,nyl,s,wm,m,ban,trace)
 c-
 c-------- 21. estimation of kord-th derivative locally
+      if(trace .gt. 0) call monit1(21, trace)
       wstep=(tt(m)-tt(1))/dble(m1-2)
       do j=2,m1
          w1(j,2)=tt(1)+dble(j-2)*wstep
@@ -304,7 +328,7 @@ c-------- 21. estimation of kord-th derivative locally
       end do
       w1(1,1)=tt(1)+.5*wstep
 
-      call kernel(t,x,n,g1,kord,kord+2,nyg,s,w1(2,2),m1-1,w1(2,3))
+      call kernel(t,x,n,g1,kord,kord+2,nyg,s,w1(2,2),m1-1,w1(2,3),trace)
 
       do j=2,m1
         w1(j,3)=w1(j,3)*w1(j,3)
@@ -320,10 +344,12 @@ c-------- 21. estimation of kord-th derivative locally
          end if
       end do
 
-      call kernp(w1(2,2),w1(2,3),m1-1,g2,nuev,kordv,nyl, w1(1,1),wm,m,y)
+      call kernp(w1(2,2),w1(2,3),m1-1,g2,nuev,kordv,nyl, w1(1,1),wm,m,y,
+     .     trace)
 c-
 c-------- 22. finish
 c-what for? irnd=1-irnd
+      if(trace .gt. 0) call monit1(22, trace)
       do j=1,m
          xh=bmin**(2*kord+1)*abs(y(j))*vi/const
          xxh=const*abs(ban(j))/vi/bmax**(2*kord+1)
@@ -337,12 +363,15 @@ c-what for? irnd=1-irnd
       end do
 c-
 c-------- 23. compute smoothed function with local plug-in bandwidth
- 230  do j=1,m
+ 230  continue
+      if(trace .gt. 0) call monit1(23, trace)
+      do j=1,m
         y(j)=ban(j)
       end do
-      call kernel(t,x,n,b,nue,kord,nyl,s,tt,m,y)
+      call kernel(t,x,n,b,nue,kord,nyl,s,tt,m,y, trace)
 c-  return #{iter} (iff aplicable)
       m1=itende
+
       return
       end
 c     --- of lokern_s()
