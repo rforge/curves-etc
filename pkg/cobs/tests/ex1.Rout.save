@@ -2,7 +2,7 @@
 R version 2.13.0 Patched (2011-04-24 r55634)
 Copyright (C) 2011 The R Foundation for Statistical Computing
 ISBN 3-900051-07-0
-Platform: i686-pc-linux-gnu (32-bit)
+Platform: x86_64-unknown-linux-gnu (64-bit)
 
 R is free software and comes with ABSOLUTELY NO WARRANTY.
 You are welcome to redistribute it under certain conditions.
@@ -421,9 +421,8 @@ qbsks2():
        (c) Use a coarser grid by reducing the argument
  	   'lambda.length' from the default value of 25.
 WARNING: Some lambdas had problems in rq.fit.sfnc():
-      lambda icyc ifl   fidel sum|res|_s  k
-[1,] 2.30776   16  18 250.300    7.59990 11
-[2,] 4.51708   16  18 258.955    1.78571  6
+      lambda icyc ifl fidel sum|res|_s  k
+[1,] 2.30776   16  18 250.3     7.5999 11
 
    The algorithm has converged.  You might
    plot() the returned object (which plots 'sic' against 'lambda')
@@ -461,13 +460,13 @@ List of 24
  $ pp.sic       : num [1:25] 2.23 2.23 2.23 2.23 2.23 ...
  $ i.mask       : logi [1:25] TRUE TRUE TRUE TRUE TRUE TRUE ...
           cb.lo     ci.lo      fit   ci.up    cb.up
-1   -18.0106904 -9.829675  6.86289 23.5554  31.7365
-2   -15.9869429 -8.308682  7.35806 23.0248  30.7031
-3   -14.7253905 -7.299596  7.85201 23.0036  30.4294
-4   -14.0304378 -6.671153  8.34475 23.3607  30.7199
-5   -13.6842240 -6.277147  8.83627 23.9497  31.3568
-6   -13.4881974 -5.984332  9.32657 24.6375  32.1413
-7   -13.2846860 -5.686895  9.81565 25.3182  32.9160
+1   -18.0106902 -9.829675  6.86289 23.5554  31.7365
+2   -15.9869427 -8.308682  7.35806 23.0248  30.7031
+3   -14.7253903 -7.299595  7.85201 23.0036  30.4294
+4   -14.0304377 -6.671152  8.34475 23.3607  30.7199
+5   -13.6842238 -6.277147  8.83627 23.9497  31.3568
+6   -13.4881973 -5.984332  9.32657 24.6375  32.1413
+7   -13.2846859 -5.686895  9.81565 25.3182  32.9160
 8   -12.9604501 -5.308840 10.30352 25.9159  33.5675
 9   -12.4418514 -4.800750 10.79017 26.3811  34.0222
 10  -11.6889866 -4.135844 11.27560 26.6871  34.2402
@@ -582,11 +581,11 @@ coef  :
        (c) Use a coarser grid by reducing the argument
  	   'lambda.length' from the default value of 25.
 WARNING: Some lambdas had problems in rq.fit.sfnc():
-         lambda icyc ifl  fidel sum|res|_s  k
-[1,] 0.00279592   15  18 263.50          4 18
-[2,] 0.00547257   15  18 263.50          4 18
-[3,] 0.30774511   12  18 263.50          4 18
-[4,] 2.30776272   16  18 264.75          1 15
+        lambda icyc ifl   fidel sum|res|_s  k
+[1,] 0.0107117   16  18 263.500    4.00000 18
+[2,] 0.3077451   12  18 263.500    4.00000 18
+[3,] 1.1790290   15  18 263.944    1.77778 16
+[4,] 2.3077627   16  18 264.750    1.00000 15
 
  WARNING!  Since the optimal lambda chosen by SIC 
    corresponds to the roughest possible fit, you should
@@ -620,7 +619,7 @@ List of 24
  $ lambda       : Named num 66.3
   ..- attr(*, "names")= chr "lambda"
  $ icyc         : int [1:25] 15 15 16 13 13 12 12 12 14 15 ...
- $ ifl          : int [1:25] 18 18 1 1 1 1 1 18 1 1 ...
+ $ ifl          : int [1:25] 1 1 18 1 1 1 1 18 1 18 ...
  $ pp.lambda    : num [1:25] 0 0.01 0.01 0.02 0.04 0.08 0.16 0.31 0.6 1.18 ...
  $ pp.sic       : num [1:25] 2.37 2.37 2.37 2.37 2.37 ...
  $ i.mask       : logi [1:25] TRUE TRUE TRUE TRUE TRUE TRUE ...
@@ -899,25 +898,19 @@ coef  :
 > dx <- diff(range(ux <- unique(x)))
 > rx <- range(xx <- seq(ux[1] - dx/20, ux[length(ux)] + dx/20, len = 201))
 > cpuTime(cxyI  <- cobs(x,y, "decrease", knots = ux, nknots = length(ux)))
-Time elapsed: 0.199 
-Warning messages:
-1: In cobs(x, y, "decrease", knots = ux, nknots = length(ux)) :
+Time elapsed: 0.29 
+Warning message:
+In cobs(x, y, "decrease", knots = ux, nknots = length(ux)) :
   The number of knots can't be equal to the number of unique x for degree = 2.
 'cobs' has automatically deleted the middle knot.
-2: In cobs(x, y, "decrease", knots = ux, nknots = length(ux)) :
-  Check 'ifl'
 > ## 17.3 sec. (Pent. III, 700 MHz)
 > summary(cxyI)
 COBS regression spline (degree = 2) from call:
 	 cobs(x = x, y = y, constraint = "decrease", knots = ux, nknots = length(ux))
-
- **** ERROR in algorithm: ifl = 18
-
-
 {tau=0.5}-quantile;  dimensionality of fit: 465 from {465}
 x$knots[1:464]: -3.17701, -2.82300, -2.46600, ... ,  2.58701
 coef[1:465]: 23.4711460, 21.8076240, 12.7756454, 11.3273211,  8.8347075, ... ,  0.0163826
-R^2 = 95.93% ;  empirical tau (over all): 247/500 = 0.494 (target tau= 0.5)
+R^2 = 95.93% ;  empirical tau (over all): 246/500 = 0.492 (target tau= 0.5)
 > pxx <- predict(cxyI, xx)
 > plot(x,y, cex = 3/4, xlim = rx, ylim = range(y, pxx[,"fit"]),
 +      main = "Artificial (x,y), N=500 : `interpolating' cobs()")
@@ -927,14 +920,14 @@ R^2 = 95.93% ;  empirical tau (over all): 247/500 = 0.494 (target tau= 0.5)
 > 
 > ## Deg = 1
 > cpuTime(cI1 <- cobs(x,y, "decrease", knots= ux, nknots= length(ux), degree = 1))
-Time elapsed: 0.147 
+Time elapsed: 0.171 
 > summary(cI1)
 COBS regression spline (degree = 1) from call:
 	 cobs(x = x, y = y, constraint = "decrease", knots = ux, nknots = length(ux),     degree = 1)
 {tau=0.5}-quantile;  dimensionality of fit: 465 from {465}
 x$knots[1:465]: -3.17701, -2.82300, -2.46600, ... ,  2.58701
 coef[1:465]: 23.4711921, 17.3106528, 11.7497490, 10.0279800,  8.8347075, ... ,  0.0163826
-R^2 = 96.02% ;  empirical tau (over all): 248/500 = 0.496 (target tau= 0.5)
+R^2 = 96.02% ;  empirical tau (over all): 249/500 = 0.498 (target tau= 0.5)
 > pxx <- predict(cI1, xx)
 > plot(x,y, cex = 3/4, xlim = rx, ylim = range(y, pxx[,"fit"]),
 +      main = paste("Artificial, N=500, `interpolate'", deparse(cI1$call)))
@@ -959,7 +952,7 @@ R^2 = 96.02% ;  empirical tau (over all): 248/500 = 0.496 (target tau= 0.5)
    so that you can determine if you need to adjust any or all of
    'lambda.lo', 'lambda.hi' and 'lambda.length' and refit the model.
 
-Time elapsed: 1.262 
+Time elapsed: 1.214 
 > ## somewhat <  2 sec. (Pent. III, 700 MHz)
 > pxx <- predict(cxyS, xx)
 > pxx[xx > max(x) , ]# those outside to the right -- currently all = Inf !
@@ -1315,7 +1308,7 @@ coef  :
  [6]  2.23561e+00  2.04531e+00  1.86770e+00  1.71424e+00  1.56563e+00
 [11]  1.41157e+00  1.21704e+00  1.03882e+00  8.72683e-01  7.05337e-01
 [16]  5.19867e-01  2.74588e-01 -5.12686e-03 -3.68213e-01 -1.20011e+00
-[21] -1.82479e+00  3.65434e-11
+[21] -1.82479e+00  3.65435e-11
 > 
 > 
 > dev.off()

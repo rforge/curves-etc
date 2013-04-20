@@ -1,10 +1,10 @@
 #### $Id: scobs.R,v 1.46 2011/04/29 15:16:14 maechler Exp $
 
-.onLoad <- function(lib, pkg) {
+.onAttach <- function(lib, pkg) {
     ## now have NAMESPACE library.dynam("cobs", pkg, lib)
     if(interactive() || getOption("verbose")) # not in test scripts
 	packageStartupMessage(sprintf(
-		"Package %s (%s) loaded.  To cite, see citation(\"%s\")\n",
+		"Package %s (%s) attached.  To cite, see citation(\"%s\")\n",
 		pkg, utils::packageDescription(pkg)$Version, pkg))
 }
 

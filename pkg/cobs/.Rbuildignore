@@ -1,3 +1,8 @@
+convexreg-PietGr
+src/nrutil.*
+src/SR.c
+R/SR.R
+.----------------------
 .Rhistory
 .Data
 00-FIXME

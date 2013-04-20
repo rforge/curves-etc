@@ -10,7 +10,6 @@ importFrom("stats",    knots, fitted, residuals)
 
 export(cobs,
        conreg,
-       SR,
        drqssbc2,
        qbsks2,
        mk.pt.constr,
