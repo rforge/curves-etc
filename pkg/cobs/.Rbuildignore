@@ -10,6 +10,10 @@ He-example
 INDEX-manual
 cobs_cs.ps
 ls-l.orig
+NAMESPACE\+.*
+no-NAME.*
+scobs.*
+src/Notes_SR
 tests/ex1.Rout-dbg
 tests/.*-N-.*
 tests/.*.Rout.save-[3264].*
