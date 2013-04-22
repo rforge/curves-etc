@@ -12,7 +12,7 @@ cobs_cs.ps
 ls-l.orig
 NAMESPACE\+.*
 no-NAME.*
-scobs.*
+scobs_.*\.txt
 src/Notes_SR
 tests/ex1.Rout-dbg
 tests/.*-N-.*
