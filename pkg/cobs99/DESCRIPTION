@@ -1,6 +1,6 @@
 Package: cobs99
-Version: 0.9-11
-Date: 2012-11-01
+Version: 0.9-12
+Date: 2013-06-12
 Title: Constrained B-splines -- outdated 1999 version
 Author: Pin T. Ng <Pin.Ng@nau.edu> and Xuming He, U. Illinois;
 	R port by Martin Maechler

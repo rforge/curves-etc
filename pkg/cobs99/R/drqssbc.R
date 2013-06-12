@@ -62,25 +62,27 @@ drqssbc <- function(x,y, w = rep(1,n), pw, knots, degree,Tlambda, constraint,
     ##storage.mode(X) <- "single" # would round to ~ 7 digits in S+, not in R
     d <- matrix(0.0, Tnobs + 5, nvar + 2) # double
     sol <- matrix(0.0, nvar + 6, nj0) # double -- to contain "sol"ution
+    iw <- as.integer(((3 * nvar + 13) * nvar + 2)/2 + 2 * Tnobs)# iw := |w|
     z0 <- .Fortran("drqssbc",
-		   as.integer(n),
+		   as.integer(n),	# nrq
 		   as.integer(nl1),
 		   as.integer(neqc),
 		   as.integer(niqc),
 		   as.integer(niqc1),
-		   as.integer(nvar),
+		   as.integer(nvar),	# nvars
+		   as.integer(Tnobs),	# nobs
 		   integer(1),		# nact
 		   ifl = integer(1),
 		   as.integer(maxiter), # mxs
 		   as.integer(trace),
-		   X = as.double(t(X)), # e
+		   X = as.double(t(X)), # e = [ner x indx] = [nvar x Tobs]
 		   as.integer(nvar),	# ner
 		   coef = as.double(coef),# x
 		   as.double(Y),	# f
 		   obj = double(1),	# erql1n
 		   resid = double(Tnobs),
 		   integer(Tnobs),	# indx
-		   double(((3 * nvar + 13) * nvar + 2)/2 + 2 * Tnobs),# w
+		   double(iw), iw,      # w, iw
 		   nt = integer(1),	# nt
 		   as.integer(nj0),	# nsol
 		   sol = sol,

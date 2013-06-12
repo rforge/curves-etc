@@ -18,8 +18,8 @@ C From original file drqssbc.r by Ng and He (1997)
 C Pretty edited (and ratfor "bugs" fixed):
 C Copyright © 2001 by Martin Maechler <maechler@stat.math.ethz.ch>
 c
-      subroutine drqssbc(nrq,nl1,neqc,niqc,niqc1,nvars,nact,ifl,mxs,
-     *     trace, e,ner,x,f,erql1n,res,indx,w,nt, nsol,sol, tl,
+      subroutine drqssbc(nrq,nl1,neqc,niqc,niqc1,nvars,nobs,nact,ifl,
+     *     mxs, trace, e, ner,x,f,erql1n,res,indx,w,iw,nt, nsol,sol, tl,
      *     toler,big,eps, it, tmin,k,k0,lstart,factor)
 
       implicit none
@@ -62,6 +62,7 @@ C niqc1  int.    none      in      part of niqc that belongs to
 C                                  the loo roughness measure (may be zero)
 C
 C nvars  int.    none      in      number of variables
+C nobs   int.    none      in      number of ("observations" = columns of matrix e)
 C
 C nact   int.    none      out     number of active equations/constraints at
 C                                  termination (if any, their associated column
@@ -260,27 +261,30 @@ C on the other hand, increasingly more details of each minimization cycle
 C will be printed if  trace  is set > 0.
 C
 C Args
-      integer nrq,nl1,neqc,niqc,niqc1,nvars,nact,ifl,mxs, ner, trace
-      integer it(2), indx(1), nt,nsol, k,k0
-      double precision e(ner,1),x(1),f(1), res(1),w(1),sol(nvars+6,nsol)
+      integer nrq,nl1,neqc,niqc,niqc1,nvars,nobs, nact,ifl,mxs, ner,
+     *     iw, it(2), indx(*), nt,nsol, k,k0, trace
+      double precision e(ner,nobs),x(*),f(*), res(*),w(iw),
+     *     sol(nvars+6,nsol)
       double precision tl(2),erql1n, toler,big,eps, tmin, lstart,factor
 
-      call dcrql1lt(nrq,nl1,neqc,niqc,niqc1,nvars,nact,ifl,mxs,
-     *     trace, e,ner,x,f,erql1n,res,indx,w,nt,nsol,sol, tl(1),tl(2),
-     *     toler,big,eps, it(1),it(2), tmin,k,k0,lstart,factor)
+      call dcrql1lt(nrq,nl1,neqc,niqc,niqc1,nvars,nobs,nact,ifl,mxs,
+     *     trace, e,ner,x,f,erql1n,res,indx,w,iw,nt,nsol,sol,
+     *     tl(1),tl(2), toler,big,eps, it(1), it(2),
+     *     tmin,k,k0,lstart,factor)
       return
       end
 
-      subroutine dcrql1lt(nrq,nl1,neqc,niqc,niqc1,nvars,nact,ifl,mxs,
-     *     trace, e,ner,x,f,erql1n,res, indx,w,nt,nsol,sol, t,lam,
-     *     toler,big,eps, icyc,totcyc, tmin,k,k0,lstart,factor)
+      subroutine dcrql1lt(nrq,nl1,neqc,niqc,niqc1,nvars,nobs,nact,ifl,
+     *     mxs, trace, e,ner,x,f,erql1n,res, indx,w,iw,nt,nsol,sol,
+     *     t,lam, toler,big,eps, icyc,totcyc, tmin,k,k0,lstart,factor)
 
       implicit none
 
 C     Args
-      integer nrq,nl1,neqc,niqc,niqc1,nvars,nact,ifl,mxs, ner, trace
-      integer indx(1), nt,nsol, icyc, totcyc, k,k0
-      double precision e(ner,1),x(1),f(1), res(1),w(1),sol(nvars+6,nsol)
+      integer nrq,nl1,neqc,niqc,niqc1,nvars,nobs,nact,ifl,mxs, ner
+      integer indx(*),iw, nt,nsol, icyc, totcyc, k,k0, trace
+      double precision e(ner,nobs), x(*),f(*), res(*),w(iw),
+     *     sol(nvars+6,nsol)
       double precision erql1n, t,lam,toler,big,eps, tmin, lstart,factor
 
 C     VAR
@@ -343,11 +347,13 @@ C     Note: penpar is assigned outside the loop
 C REPEAT
  100  continue
       call drql1sup(nrq,nl1,neqc,niqc,nvars,ddx,grdx,grd1x,px,ptex,rrx,
-     *     topx,zzx,icyc,ifl,e,ner,amag,cgmag,lnxt)
+     *     topx,zzx,icyc,ifl,e,ner,nobs,amag,cgmag,lnxt)
 c     penpar not touched above, but ifl = 2 (or = 5 if "fail"), icyc= -1;
 c      -->  penpar /= 8  below
-      call dnewpen(iaddc,idelc,nact,nrql1,neqc,niqc,nvars,ifl,e,ner,x,f,
-     *     res,w(ptex),alpha,penpar,indx)
+      if(ifl .eq. 5) goto 40 ! give up
+
+      call dnewpen(iaddc,idelc,nact,nrql1,neqc,niqc,nvars,ifl,
+     *     e,ner,nobs, x,f, res, w(ptex),alpha,penpar,indx)
 
       if(trace .ge. 2) call monit11(nt, nact, amag, cgmag, ifl, trace)
 
@@ -355,7 +361,7 @@ c      -->  penpar /= 8  below
 c  Repeat
  20   continue
       call drql1up(iaddc,idelc,nact,nrq,nl1,neqc,niqc,nvars,icyc,
-     *     ifl,mxs,e,ner,x,f,res,w(grdx),erql1n,pen,penpar,indx,
+     *     ifl,mxs,e,ner,nobs, x,f,res,w(grdx),erql1n,pen,penpar,indx,
      *     w(zzx),nvars, w(ddx),w(rrx),w(topx), tnxt,eps,w(grd1x))
 
       if(trace .ge. 3) call monit2(nact,icyc,trace,
@@ -363,12 +369,12 @@ c  Repeat
 c               monit2(.) --> ./monitor.c
 
 c     Find descent direction (or discover optimality):
-      call drql1fp(idelc,nact,nrq,nl1,neqc,niqc,nvars,ifl,e,ner,x,f,res,
-     *     w(grdx),w(px),erql1n,amag,cgmag,penpar,indx,w(zzx),nvars,
-     *     w(ddx),w(rrx),w(topx),tnxt,big,eps)
+      call drql1fp(idelc,nact,nrq,nl1,neqc,niqc,nvars,ifl,e,ner,nobs,
+     *     x,f,res, w(grdx),w(px),amag,cgmag,penpar,indx,w(zzx),
+     *     nvars, w(ddx),w(rrx),w(topx),tnxt,big,eps)
 c     Piecewise line search :
-      call drql1stp(iaddc,nact,nrq,nl1,neqc,niqc,nvars,ifl,e,ner,x,res,
-     *     w(grdx),w(px),w(ptex),alpha,penpar,indx,w(topx),tnxt,
+      call drql1stp(iaddc,nact,nrq,nl1,neqc,niqc,nvars,ifl,e,ner,nobs,
+     *     x,res, w(grdx),w(px),w(ptex),alpha,penpar,indx,w(topx),tnxt,
      *     big,eps,w(grd1x),idelc)
       if(ifl .eq. 0) goto 20
 c  Until (ifl != 0)
@@ -380,11 +386,11 @@ c  Until (ifl != 0)
       if(.not.(itend.and.ilend) .and.
      *     (ifl .ne.2 .or. cgmag+penpar*amag .eq. cgmag)) then
 c        Next Lambda or Tau, i.e. number [nt + 1]
-         call drql1nlt(nt,tmin,tmax,res,e,f,ner,indx,nact,nvars,
+         call drql1nlt(nt,tmax,res,e,f,ner,nobs,indx,nact,nvars,
      *        nrq,nl1,neqc,niqc,niqc1,w(zzx),nvars,w(rrx),w(grdx),
      *        w(px), w(topx),w(topx+nvars),ifl,idelc,iaddc,icyc,
-     *        alpha,amag, cgmag,trace,penpar,nsol,sol,x,ilfix,l0,l1,
-     *        tnxt,lnxt,toler, erql1n,eps,big,told,k0,factor)
+     *        alpha,amag,cgmag, nsol,sol,x,ilfix,l0,
+     *        tnxt,lnxt, eps,big,told,k0,factor)
 
          if(trace .ge. 2) call monit13(nt, nact, itend, ilend,
      *        tnxt, lnxt, ifl, trace)
@@ -407,22 +413,24 @@ C
 C     compute the effective dimensionality:
  30   continue
       k = 0
-      do 40 i=1,nact
+      do i=1,nact
          if(indx(i) .le. nrq .or.
      1     (indx(i) .gt. nrq+nl1 .and. indx(i) .le. nrq+nl1+neqc) .or.
      2      indx(i) .gt. nrq+nl1+neqc+niqc1) then
             k = k+1
          endif
+      enddo
+
  40   continue
       return
       end
-c     --- end dcrql1lt { = only main routine of drqssbc() }
+c     --- end dcrql1lt { = *the* only subroutine of drqssbc() }
 
-      subroutine drql1nlt(nt,tmin,tmax,res,e,f,ner,indx,
+      subroutine drql1nlt(nt,tmax,res,e,f,ner,nobs,indx,
      1     nact,nvars,nrq, nl1,neqc,niqc,niqc1, zz,nzzr,rr,
      2     a,aa,b,bb, ifl,idelc,iaddc,icyc, alpha,amag,cgmag,
-     3     trace,penpar,nsol,sol, x,ilfix, l0,l1,tnxt,lnxt,
-     4     toler,erql1n,eps,big,told,k0,factor)
+     3     nsol,sol, x,ilfix, l0,tnxt,lnxt,
+     4     eps,big,told,k0,factor)
 C
 C     ***************
 C     perform parametric programming in "lambda" and "tau",
@@ -431,14 +439,14 @@ C     ***************
 C
       implicit none
 
-      integer nt, ner,indx(1),nact,nvars,nrq,nl1,neqc,niqc,niqc1, nzzr
-      integer ifl,idelc,iaddc,icyc, nsol,  k0, trace
+      integer nt, ner,nobs,indx(*),nact,nvars,nrq,nl1,neqc,niqc,niqc1,
+     *     nzzr, ifl,idelc,iaddc,icyc, nsol, k0
       logical ilfix
 
-      double precision tmin,tmax,res(1),e(ner,1),f(1),zz(nzzr,1),rr(1)
-      double precision a(1),aa(1),b(1),bb(1), alpha,amag,cgmag
-      double precision penpar, sol(nvars+6,nsol), x(1),l0,l1
-      double precision toler,erql1n,eps,big,told, factor
+      double precision tmax,res(*),e(ner,nobs),f(*),zz(nzzr,*),
+     *     rr(*), a(*),aa(*),b(*),bb(*), alpha,amag,cgmag,
+     *     sol(nvars+6,nsol), x(*),l0,
+     *     eps,big,told, factor
 C VAR
       logical fail
       integer nrql1, isave, k,nactp1,nallq,nalqp1,ncols,nqnp1,i,j,ix
@@ -453,6 +461,8 @@ C
       data zero/0.d00/
       data two/2.d00/
 C
+      isave=0 ! -Wall
+c
       nrql1=nrq+nl1
       nallq=nrql1+neqc
       nalqp1=nallq+1
@@ -759,13 +769,13 @@ C     remove lambda from e for next iteration
 c     --- drql1nlt()
 
       subroutine drql1sup(nrq,nl1,neqc,niqc,nvars,ddx,grdx,grd1x,
-     *     px,ptex,rrx,topx,zzx,icyc,ifl,e,ner,amag,cgmag,lam)
+     *     px,ptex,rrx,topx,zzx,icyc,ifl, e, ner,nobs,amag,cgmag,lam)
 C
       implicit none
 
-      integer ddx,grdx,icyc,ifl,neqc,nrql1,ner,nrq,nl1,grd1x
+      integer ddx,grdx,icyc,ifl,neqc,nrql1,ner,nobs,nrq,nl1,grd1x
       integer niqc,nvars,px,ptex,rrx,topx,zzx
-      double precision amag,cgmag,e(ner,1),lam
+      double precision amag,cgmag,e(ner,nobs),lam
 C
 C     ***************
 C     crql1  version.
@@ -878,13 +888,13 @@ C
       end
 
       subroutine dnewpen(iaddc,idelc,nact,neqns,neqc,niqc,nvars,ifl,
-     *     e,ner,x,f,res,pte,alpha,penpar,indx)
+     *     e,ner,nobs,x,f,res,pte,alpha,penpar,indx)
 C
       implicit none
 
-      integer iaddc,idelc,ifl,indx(1),nact
-      integer neqc,neqns,ner,niqc,nvars
-      double precision alpha,e(ner,1),f(1),penpar,pte(1),res(1),x(1)
+      integer iaddc,idelc,ifl,indx(*),nact
+      integer neqc,neqns,ner,nobs,niqc,nvars
+      double precision alpha,e(ner,nobs),f(*),penpar,pte(*),res(*),x(*)
 C
 C     ***************
 C     cl1  version.
@@ -935,8 +945,8 @@ C
       end
 
       subroutine drql1up(iaddc,idelc,nact,nrq,nl1,neqc,niqc,nvars,icyc,
-     *     ifl,mxs,e,ner,x,f,res, grd, erql1n,pen,penpar,indx,zz,nzzr,
-     *     dd, rr,w, theta,eps,grd1)
+     *     ifl,mxs,e,ner,nobs,x,f,res, grd, erql1n,pen,penpar,indx,
+     *     zz,nzzr, dd, rr,w, theta,eps,grd1)
 C
 C     ***************
 C     crql1  version.
@@ -947,9 +957,9 @@ C
       implicit none
 c Args
       integer iaddc,idelc,nact,nrq,nl1,neqc,niqc,nvars,icyc
-      integer ifl,mxs, ner, indx(1), nzzr
-      double precision e(ner,1),x(1),f(1),res(1),grd(1),grd1(1)
-      double precision zz(nzzr,1), dd(1),rr(1),w(1)
+      integer ifl,mxs, ner,nobs, indx(*), nzzr
+      double precision e(ner,nobs),x(*),f(*),res(*),grd(*),grd1(*)
+      double precision zz(nzzr,*), dd(*),rr(*),w(*)
       double precision erql1n,pen,penpar, theta,eps
 C VAR
       integer nrql1,nallq,ncols
@@ -969,24 +979,26 @@ C
             ifl = 3
          else
             call ddelcol1(iaddc,idelc,nact,nvars,zz,nzzr,dd,rr,indx)
-            call dresid  (iaddc,nact,ncols,nvars,e,ner,x,f,res,indx,eps)
-            call daddcol (iaddc,idelc,nact,nvars,zz,nzzr,dd,rr,e,ner,
-     *           indx,w,eps)
-            call drql1obj(iaddc,nact,nrq,nl1,nallq,ncols,nvars,e,ner,
-     *           res,grd,erql1n,pen,penpar,indx,theta,grd1)
+            call dresid  (iaddc,nact,ncols,nvars,e,ner,nobs,
+     *           x,f,res,indx,eps)
+            call daddcol (iaddc,idelc,nact,nvars,zz,nzzr,dd,rr,
+     *           e,ner,nobs, indx,w,eps)
+            call drql1obj(iaddc,nact,nrq,nl1,nallq,ncols,nvars,
+     *           e,ner,nobs, res,grd,erql1n,pen,penpar,indx,theta,grd1)
          endif
       endif
       return
       end
 
       subroutine drql1fp(idelc,nact,nrq,nl1,neqc,niqc,nvars,ifl,
-     *     e,ner,x,f,res,grd,p,erql1n,amag,cgmag,penpar,indx,zz,nzzr,
-     *     dd,rr,w, theta,big,eps)
+     *     e,ner,nobs,x,f,res,grd,p,amag,cgmag,penpar,indx,
+     *     zz,nzzr, dd,rr,w, theta,big,eps)
 C
-      integer idelc,nact,nrq,nl1,neqc,niqc,nvars,ifl, ner,indx(1),nzzr
-      double precision e(ner,1),x(1),f(1),res(1),grd(1),p(1),
-     *     erql1n,amag,cgmag,penpar
-      double precision zz(nzzr,1),dd(1),rr(1),w(1), theta,big,eps
+      integer idelc,nact,nrq,nl1,neqc,niqc,nvars,ifl, ner,nobs,
+     *     indx(*),nzzr
+      double precision e(ner,nobs),x(*),f(*),res(*),grd(*),p(*),
+     *     amag,cgmag,penpar
+      double precision zz(nzzr,*),dd(*),rr(*),w(*), theta,big,eps
 C
 C     ***************
 C     crql1  version.
@@ -1087,12 +1099,12 @@ C     to be deleted from activity by the value
 C     of  idelc.  for optimality,  idelc=0.
 C     ***************
 C
-            call drql1gv(idelc,nact,nvars,nrq,nl1,nallq,e,ner,
+            call drql1gv(idelc,nact,nvars,nrq,nl1,nallq,e,ner,nobs,
      *           grd,w(coefx),penpar,indx,theta,eps)
             pnrm = zero
             if(idelc.ne.0) then
                call dzdrgit(nvars,nact,zz,nzzr,rr,w(coefx),p,
-     *              fail,w(topx),big,eps)
+     *              fail,w(topx),big)
                if(fail) then
                   ifl = 4
                   return
@@ -1136,8 +1148,8 @@ C     ***************
          endif
 
          ifl = 1
-C     call drql1rf(nact,nrq,nl1,ncols,nvars,ifl,e,ner,x,f,erql1n,res,indx,zz,
-C               nzzr, rr ,w,theta,big,eps)
+C     call drql1rf(nact,nrq,nl1,ncols,nvars,ifl,e,ner,nobs,x,f,erql1n,res,
+C               rr,theta)
          if(ifl.eq.1) then
 C
 C     ***************
@@ -1176,13 +1188,14 @@ C     test = eps*test
       return
       end
 
-      subroutine drql1stp(iaddc,nact,nrq,nl1,neqc,niqc,nvars,ifl,e,ner,
-     *     x,res,grd,p,pte,alpha,penpar,indx,alf,theta,
+      subroutine drql1stp(iaddc,nact,nrq,nl1,neqc,niqc,nvars,ifl,
+     *     e,ner,nobs, x,res,grd,p,pte,alpha,penpar,indx,alf,theta,
      *     big,eps,grd1,idelc)
 C
-      integer iaddc,nact,nrq,nl1,neqc,niqc,nvars,ifl, ner,indx(1),idelc
-      double precision e(ner,1),x(1),res(1),grd(1),p(1),pte(1)
-      double precision alpha,penpar, alf(1),theta,big,eps, grd1(1)
+      integer iaddc,nact,nrq,nl1,neqc,niqc,nvars,ifl, ner,nobs,
+     *     indx(*),idelc
+      double precision e(ner,nobs),x(*),res(*),grd(*),p(*),pte(*)
+      double precision alpha,penpar, alf(*),theta,big,eps, grd1(*)
 
       integer nrql1
       double precision sgn1
@@ -1370,12 +1383,12 @@ C
       end
 
 c Used to be called from drql1fp() --- NOT USED ANYMORE :
-      subroutine drql1rf(nact,nrq,nl1,ncols,nvars,ifl, e,ner, x,f,
-     *     erql1n,res,indx,zz,nzzr,rr,w,theta,big,eps)
+      subroutine drql1rf(nact,nrq,nl1,ncols,nvars,ifl, e,ner,nobs, x,f,
+     *     erql1n,res, theta)
 C
-      integer nact,nrq,nl1,ncols,nvars,ifl,ner, indx(1),nzzr
-      double precision e(ner,1),x(1),f(1),erql1n,res(1),zz(nzzr,1)
-      double precision rr(1),w(1),theta, big,eps
+      integer nact,nrq,nl1,ncols,nvars,ifl,ner,nobs
+      double precision e(ner,nobs),x(*),f(*),erql1n,res(*)
+      double precision theta
 C
 C     ***************
 C     a routine for refining the solution
@@ -1432,8 +1445,8 @@ C     ---------------
 C
       subroutine ddelcol1(iaddc,idelc,nact,nrow,zz,nzzr,dd,rr,indx)
 C
-      integer indx(1),nzzr,nact,idelc,iaddc,nrow
-      double precision dd(1),rr(1),zz(nzzr,1)
+      integer indx(*),nzzr,nact,idelc,iaddc,nrow
+      double precision dd(*),rr(*),zz(nzzr,*)
 C
 C     ***************
 C     cl1  version of  ddelcol1.
@@ -1476,10 +1489,11 @@ C
       return
       end
 
-      subroutine dresid(iaddc,nact,ncols,nvars,e,ner,x,f,res,indx,eps)
+      subroutine dresid(iaddc,nact,ncols,nvars,e,ner,nobs,
+     *     x,f,res,indx,eps)
 C
-      integer iaddc,indx(1),nact,ncols,ner,nvars
-      double precision e(ner,1),f(1),res(1),x(1)
+      integer iaddc,indx(*),nact,ncols,ner,nobs,nvars
+      double precision e(ner,nobs),f(*),res(*),x(*)
 C
 C
 C     ***************
@@ -1588,11 +1602,11 @@ C
       end
 
       subroutine daddcol(iaddc,idelc,nact,nvars,zz,nzzr,dd,rr,
-     *     e,ner,indx,w,eps)
+     *     e,ner,nobs,indx,w,eps)
 C
-      integer iaddc,idelc,indx(1),nact,ner,nvars,nzzr
-      double precision dd(1),e(ner,1),rr(1)
-      double precision w(1),zz(nzzr,1)
+      integer iaddc,idelc,indx(*),nact,ner,nobs,nvars,nzzr
+      double precision dd(*),e(ner,nobs),rr(*)
+      double precision w(*),zz(nzzr,*)
       double precision eps
 C
 C     ***************
@@ -1656,12 +1670,13 @@ C
       return
       end
 
-      subroutine drql1obj(iaddc,nact,nrq,nl1,nallq,ncols,nvars,e,ner,
-     *     res,grd,erql1n,pen,penpar,indx,theta,grd1)
+      subroutine drql1obj(iaddc,nact,nrq,nl1,nallq,ncols,nvars,
+     *     e,ner,nobs, res,grd,erql1n,pen,penpar,indx,theta,grd1)
 C
-      integer iaddc,indx(1),nact,nallq,nrq,nl1,ncols,ner,nvars,nrql1
-      double precision e(ner,1),erql1n,grd(1),pen,penpar,res(1),theta,
-     +     grd1(1)
+      integer iaddc,indx(*),nact,nallq,nrq,nl1,ncols,ner,nobs,nvars,
+     *     nrql1
+      double precision e(ner,nobs),erql1n, grd(*),pen,penpar,
+     +     res(*), theta, grd1(*)
 C
 C     ***************
 C     crql1 version of object.
@@ -1760,11 +1775,11 @@ C     why <= zero?
       return
       end
 
-      subroutine drql1gv(idelc,nact,nvars,nrq,nl1,nallq,e,ner,grd,
+      subroutine drql1gv(idelc,nact,nvars,nrq,nl1,nallq,e,ner,nobs,grd,
      *     coef,penpar,indx,theta,eps)
 C
-      integer idelc,indx(1),nact,nallq,nrq,nl1,ner,nvars,nrql1
-      double precision coef(1),e(ner,1),grd(1),penpar,theta
+      integer idelc,indx(*),nact,nallq,nrq,nl1,ner,nobs,nvars,nrql1
+      double precision coef(*),e(ner,nobs),grd(*),penpar,theta
 C
 C     ***************
 C     crql1  version.
@@ -1878,9 +1893,9 @@ C     ---------------
 C
       subroutine ddkheap(make,ir,indx,aray)
 C
-      integer indx(1),ir
+      integer indx(*),ir
       logical make
-      double precision aray(1)
+      double precision aray(*)
 C
 C     ***************
 C     an adaptation of d. e. knuth,s heaping
@@ -2086,7 +2101,7 @@ C  ***
 C
       integer k,n,nzzr
       logical fail
-      double precision col(1),dd(1),rr(1),w(1),zz(nzzr,1)
+      double precision zz(nzzr,*), dd(n),rr(*), col(*),w(n)
 C
 C     ***************
 C     prepared by richard bartels
@@ -2245,7 +2260,7 @@ C
 C
       integer ic,k,n,nzzr
       logical fail
-      double precision dd(1),rr(1),zz(nzzr,1)
+      double precision dd(*),rr(*),zz(nzzr,*)
 C
 C     ***************
 C     prepared by richard bartels
@@ -2316,6 +2331,7 @@ C
 c-    double precision di,rj
 C
 C     /////////////////  begin program  //////////////////
+      lstrt=0 ! -Wall
 C
       fail = k.lt.1 .or. k.gt.n .or. n.gt.nzzr
       if(fail) return
@@ -2397,11 +2413,11 @@ C
       return
       end
 
-      subroutine dzdrgit(n,k,zz,nzzr,rr,gv,sol,fail,w,big,eps)
+      subroutine dzdrgit(n,k,zz,nzzr,rr,gv,sol,fail,w,big)
 C
       integer k,n,nzzr
       logical fail
-      double precision gv(1),rr(1),w(1),sol(1),zz(nzzr,1)
+      double precision gv(*),rr(*),w(n),sol(*),zz(nzzr,*)
 C
 C     ***************
 C     prepared by richard bartels
@@ -2490,7 +2506,7 @@ C     precision of the arithmetic being used.
 C     +++++++++++++++
 C
       integer i,j,jdel
-      double precision big,wi,one,rrj,zero,eps
+      double precision big,wi,one,rrj,zero
 C
 C     +++++++++++++++
 C     the following declarations are necessary
@@ -2556,7 +2572,7 @@ C
 C
       integer k,n,nzzr
       logical fail
-      double precision gv(1),rr(1),sol(1),zz(nzzr,1)
+      double precision gv(*),rr(*),sol(*),zz(nzzr,*)
 C
 C     ***************
 C     prepared by richard bartels
@@ -2696,7 +2712,7 @@ C
 C
       integer k,n,nzzr
       logical fail
-      double precision dd(1),poc(1),gv(1),zz(nzzr,1)
+      double precision dd(*),poc(*),gv(*),zz(nzzr,*)
 C
 C     ***************
 C     prepared by richard bartels
