@@ -1,5 +1,5 @@
 
-R version 3.0.0 Patched (2013-04-17 r62607) -- "Masked Marvel"
+R Under development (unstable) (2013-11-15 r64222) -- "Unsuffered Consequences"
 Copyright (C) 2013 The R Foundation for Statistical Computing
 Platform: x86_64-unknown-linux-gnu (64-bit)
 
@@ -309,9 +309,9 @@ List of 5
 deriv = 0: modifying korder from 3 to 2
 deriv = 2: modifying korder from 3 to 2
 Warning messages:
-1: In .glkerns(x = x, y = y, x.out = x.out, n = n, n.out = n.out, deriv = deriv,  :
+1: In .glkerns(x = x, y = y, x.out = x.out, nobs = n, n.out = n.out,  :
   'korder' reset from 3 to 2, internally
-2: In .glkerns(x = x, y = y, x.out = x.out, n = n, n.out = n.out, deriv = deriv,  :
+2: In .glkerns(x = x, y = y, x.out = x.out, nobs = n, n.out = n.out,  :
   'korder' reset from 2 to 4, internally
 > 
 > p.3glks(tt, xSim, kord = 4, useB = 0.15)
@@ -408,4 +408,4 @@ deriv = 3: modifying korder from 6 to 5
 > 
 > proc.time()
    user  system elapsed 
-  0.713   0.075   0.924 
+  0.572   0.020   0.666 

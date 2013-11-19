@@ -1,7 +1,7 @@
 ### lokerns   kernel regression smoothing with local bandwidth selection
 
 ## auxiliary, factored out of lokerns()
-.lokerns <- function(x,y,x.out,n,n.out,deriv,korder,
+.lokerns <- function(x,y,x.out,nobs,n.out,deriv,korder,
 		     hetero,is.rand,inputb,
 		     m1,xl,xu,s,sig,bandwidth, trace.lev)
 {
@@ -9,8 +9,8 @@
 		  x = as.double(x),		 # t
 		  y = as.double(y),		 # x
 		  x.out = as.double(x.out),	 # tt
-		  est	= double(n.out),	  # y
-		  nobs = as.integer(n),		 # n
+		  est	= double(n.out),	 # y
+		  nobs = as.integer(nobs),	 # n
 		  n.out= as.integer(n.out),	 # m
 		  deriv = as.integer(deriv),	 # nue
 		  korder = as.integer(korder),	 # kord
@@ -22,7 +22,7 @@
 		  xu = as.double(xu),
 		  s = as.double(s),
 		  sig = as.double(sig),
-		  work1 = double((n+1)*5),
+		  work1 = double((nobs+1)*5),
 		  work2 = double(3 * m1),
 		  work3 = double(n.out),
 		  bandwidth = as.double(bandwidth)# = 20
@@ -127,7 +127,7 @@ lokerns <- function(x, y=NULL, deriv = 0,
 
     xinL <- if(x.inOut) list(ind.x = ind.x, seqXmethod = seqXmethod)
     structure(c(xy[c("x","y")], # (x,y) possibly unsorted..
-		.lokerns(x=x,y=y,x.out=x.out,n=n,n.out=n.out,deriv=deriv,
+		.lokerns(x=x,y=y,x.out=x.out,nobs=n,n.out=n.out,deriv=deriv,
 			 korder=korder,hetero=hetero,is.rand=is.rand,
 			 inputb=inputb,m1=m1,xl=xl,xu=xu,
 			 s=s,sig=sig,bandwidth=bandwidth,trace.lev=trace.lev),
@@ -168,7 +168,8 @@ print.KernS <- function(x, digits = getOption("digits"), ...)
 stopifnot(identical(names(formals(.lokerns)),
                     names(formals(.glkerns))))
 
-predict.KernS <- function (object, x, deriv = 0, trace.lev = 0, ...)
+predict.KernS <- function (object, x, deriv = object[["deriv"]],
+			   korder = deriv+2, trace.lev = 0, ...)
 {
     if(deriv == object$deriv) {
 	if (missing(x) && object$x.inOut) {
@@ -189,10 +190,12 @@ predict.KernS <- function (object, x, deriv = 0, trace.lev = 0, ...)
 		  "lokerns" = .lokerns,
 		  "glkerns" = .glkerns,
 		  stop("invalid class(.)[1]"))
-    args <- object[names(formals(FUN))]
+    nf <- names(formals(FUN))
+    args <- object[nf[nf != "trace.lev"]]
     args[["trace.lev"]] <- trace.lev
     args[["inputb"]] <- TRUE # we *do* provide the bandwidths
     args[["deriv"]] <- deriv
+    args[["korder"]] <- korder
     if(missing(x)) x <- object[["x"]]
     args[["n.out"]] <- length(x)
     if(cl1 == "lokerns") {
@@ -206,7 +209,8 @@ predict.KernS <- function (object, x, deriv = 0, trace.lev = 0, ...)
     list(x = x, y = do.call(FUN, args)[["est"]])
 }
 
-plot.KernS <- function (x, ...) {
-    ## sfsmisc::
-    plotDS(x$x, yd = x$y, ys = list(x = x$x.out, y = x$est), ...)
+plot.KernS <- function (x, type = "l", lwd = 2.5, col = 3, ...) {
+    if(x$deriv == 0)## sfsmisc:: data and curve; even residuals:
+        plotDS(x$x, yd = x$y, ys = list(x = x$x.out, y = x$est), ...)
+    else plot(x$x.out, x$est, type=type, lwd=lwd, col=col, ...)
 }

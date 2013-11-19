@@ -1,7 +1,7 @@
 ### glkerns   kernel regression smoothing with bandwidth selection
 
 ## auxiliary, factored out of glkerns()
-.glkerns <- function(x,y,x.out,n,n.out,deriv,korder,
+.glkerns <- function(x,y,x.out,nobs,n.out,deriv,korder,
 		     hetero,is.rand,inputb,
 		     m1,xl,xu,s,sig,bandwidth, trace.lev)
 {
@@ -11,7 +11,7 @@
                   y = as.double(y),              # x
                   x.out = as.double(x.out),      # tt
 		  est	= double(n.out),	 # y
-                  nobs = as.integer(n),          # n
+		  nobs = as.integer(nobs),	 # n
                   n.out= as.integer(n.out),      # m
                   deriv = as.integer(deriv),     # nue
                   korder = as.integer(korder),   # kord
@@ -23,7 +23,7 @@
                   xu = as.double(xu),
                   s = as.double(s),
                   sig = as.double(sig),
-                  work1 = double((n+1)*5),
+                  work1 = double((nobs+1)*5),
                   work2 = double(3 * m1),
 		  bandwidth = as.double(bandwidth)# = 19
 		  , as.integer(trace.lev)
@@ -137,7 +137,7 @@ glkerns <- function(x, y=NULL, deriv = 0,
 
     xinL <- if(x.inOut) list(ind.x = ind.x, seqXmethod = seqXmethod)
     structure(c(xy[c("x","y")], # (x,y) possibly unsorted..
-		.glkerns(x=x,y=y,x.out=x.out,n=n,n.out=n.out,deriv=deriv,
+		.glkerns(x=x,y=y,x.out=x.out,nobs=n,n.out=n.out,deriv=deriv,
 			 korder=korder,hetero=hetero,is.rand=is.rand,
 			 inputb=inputb,m1=m1,xl=xl,xu=xu,
 			 s=s,sig=sig,bandwidth=bandwidth,trace.lev=trace.lev),

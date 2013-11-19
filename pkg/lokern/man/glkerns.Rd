@@ -1,3 +1,4 @@
+\newcommand{\CRANpkg}{\href{http://CRAN.R-project.org/package=#1}{\pkg{#1}}}
 \name{glkerns}
 \alias{glkerns}
 \title{Kernel Regression Smoothing with Adaptive Plug-in Bandwidth}
@@ -36,7 +37,7 @@ glkerns(x, y=NULL, deriv = 0, n.out = 300, x.out=NULL, x.inOut = TRUE,
     In order for \code{\link{residuals}()} or \code{\link{fitted}()}
     methods to be applicable, it must be \code{TRUE} or a character
     string specifying one of the \code{methods}s of
-    \code{\link{seqXtend}} (package \pkg{sfsmisc}). The default,
+    \code{\link{seqXtend}} (package \CRANpkg{sfsmisc}). The default,
     \code{TRUE} corresponds to method \code{"aim"}.
   }
   \item{korder}{
@@ -193,6 +194,7 @@ n <- length(xSim)
 tt <- ((1:n) - 1/2)/n # equidistant x ==> is.rand = FALSE
 gk <- glkerns(tt, xSim, is.rand = FALSE)
 gk # print method
+plot(gk) # nice plot() method
 if(require("sfsmisc")) {
   TA.plot(gk)
 } else { plot(residuals(gk) ~ fitted(gk)); abline(h = 0, lty=2) }
