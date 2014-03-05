@@ -1,3 +1,12 @@
+2014-03-05  Martin Maechler  <maechler@stat.math.ethz.ch>
+
+	* DESCRIPTION (Version): 1.2-0, as we are not 100% back compatible
+	with this:
+
+	* R/norMix.R (norMix): allow new 'sigma' and prefer it to 'sig2',
+	After suggestions from Doug Martin (UW Seattle).
+	(`[.norMix`): new method which allows 'x[, "sig2"]' to continue working.
+
 2013-04-18  Martin Maechler  <maechler@stat.math.ethz.ch>
 
 	* DESCRIPTION (Version): 1.1-4, released to CRAN

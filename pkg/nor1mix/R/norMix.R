@@ -7,7 +7,7 @@
 #### Author: Martin Maechler, 20 Mar 1997
 #### -------------------------------------------------------------------------
 
-norMix <- function(mu, sig2 = rep(1, m), w = NULL,
+norMix <- function(mu, sig2 = rep(1, m), sigma = rep(1, m), w = NULL,
 		   name = NULL, long.name = FALSE)
 {
     ## Purpose: Constructor for 'norMix' (normal mixture) objects
@@ -21,6 +21,14 @@ norMix <- function(mu, sig2 = rep(1, m), w = NULL,
 
     if(!is.numeric(mu)) stop("'mu' must be numeric!")
     m <- length(mu)
+    if(!missing(sig2)) {
+        if(!missing(sigma))
+            stop("you must not specify both 'sig2' and 'sigma'; the latter is preferred now")
+        sigma <- sqrt(sig2)
+        message("Using 'sigma' instead 'sig2' (= sigma^2) is preferred now")
+        ##----- to become warning, ~ end of 2014:
+        ## warning("The use of 'sig2' is deprecated; do specify 'sigma' (= sqrt(sig2)) instead")
+    }
     if(length(sig2) == 1) sig2 <- rep(sig2, m)
     if(length(sig2) != m || !is.numeric(sig2)|| any(sig2 <=0))
 	stop("'sig2' = sigma^2	must be > 0 with same length as 'mu'")
@@ -45,7 +53,29 @@ norMix <- function(mu, sig2 = rep(1, m), w = NULL,
 		      pPar(mu), "_", pPar(sig2), sep="")
     }
     structure(name = name, class = "norMix",
-	      .Data = cbind(mu = mu, sig2 = sig2, w = w))
+	      .Data = cbind(mu = mu, sigma = sigma, w = w))
+}
+
+`[.norMix` <- function (x, i, j, drop = TRUE) {
+    if(!missing(j) && "sig2" %in% j) { ## back-compatibility hack
+	message("Using 'sigma' instead 'sig2' (= sigma^2) is preferred now")
+	##----- TODO become warning, ~ end of 2014
+	if(length(j) == 1L) ## return sig2 = sigma^2:
+	    if(missing(i)) x[,"sigma", drop=drop]^2 else x[i, "sigma", drop=drop]^2
+	else
+	    stop("subsetting with 'sig2' together with other columns is no longer allowed; use 'sigma'")
+    }
+    else if(missing(j) && (nargs() == 3 || !drop)) { ## a ("subset mixture") norMix object:
+	r <- NextMethod("[")
+	if(!is.matrix(r)) ## e.g. for  x[1, ]
+	    r
+	else {
+	    r[,"w"] <- r[,"w"] / sum(r[,"w"]) # renormalize 
+	    structure(r, class = class(x), name =
+		      paste0(attr(x,"name"), "[", deparse(substitute(i), 20)[1L], ",]"))
+	}
+    }
+    else NextMethod("[")
 }
 
 is.norMix <- function(obj)
@@ -63,7 +93,7 @@ mean.norMix <- function(x, ...)
 {
   ## Purpose: Return "true mean", i.e., the expectation of  a normal mixture.
   if(!is.norMix(x)) stop("'x' must be a 'Normal Mixture' object!")
-  x[,"w"] %*% x[,"mu"]
+  drop(x[,"w"] %*% x[,"mu"])
 }
 
 var.norMix <- function(x, ...)
@@ -73,7 +103,7 @@ var.norMix <- function(x, ...)
   w <- x[,"w"]
   mj <- x[,"mu"]
   mu <- w %*% mj
-  w %*% (x[,"sig2"] + (mj - mu)^2)
+  drop(w %*% (x[,"sig2"] + (mj - mu)^2))
 }
 
 print.norMix <- function(x, ...)

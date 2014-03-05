@@ -8,7 +8,7 @@ library(nor1mix)
 ## The use of sample(x, ...) inside rnorMix() typically was wrong when
 ## x was of length one
 
-obj <- norMix(mu = c(1,0), sig2 = c(25,1), w = c(.5,.5))
+obj <- norMix(mu = c(1,0), sigma = c(5,1), w = c(.5,.5))
 
 for(ss in round(runif(1000, min=0,max=1000))) {
     set.seed(ss)

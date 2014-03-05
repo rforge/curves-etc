@@ -50,7 +50,7 @@
   particularly \code{\link{dnorMix}} which is used here.
 }
 \examples{
-plot(norMix(m=c(0,3),s=c(4,1)))
+plot(norMix(m=c(0,3), sigma = c(2,1))) # -> var = c(2^2, 1) = c(4, 1)
 
 plot(MW.nm4, p.norm=FALSE, p.comp = TRUE)
 ## Further examples in  ?norMix and  ?rnorMix
