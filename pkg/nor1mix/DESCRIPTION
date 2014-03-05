@@ -1,7 +1,7 @@
 Package: nor1mix
 Title: Normal (1-d) Mixture Models (S3 Classes and Methods)
-Version: 1.1-4
-Date: 2013-04-18
+Version: 1.1-5
+Date: 2013-..-..
 Author: Martin Mächler
 Maintainer: Martin Maechler <maechler@stat.math.ethz.ch>
 Description: Onedimensional Normal Mixture Models Classes, for, e.g.,

@@ -54,10 +54,10 @@ var.norMix(x, \dots)
 }
 \author{Martin Maechler}
 \note{
-  For \emph{estimation} of the parameters of a normal mixture
-  distribution, I recommend using other \R packages,
-  such as \pkg{flexmix}.
-%% boycotting 'mclust' with its horrible new licence
+  For \emph{estimation} of the parameters of such a normal mixture,
+  we provide a smart parametrization and an efficient implementation of
+  the direct MLE or also the EM algorithm, see
+  \code{\link{norMixMLE}()} which includes \code{norMixEM()}.
 }
 \seealso{\code{\link{dnorMix}} for the density,
   \code{\link{pnorMix}} for the cumulative distribution
@@ -66,6 +66,9 @@ var.norMix(x, \dots)
   \code{\link{plot.norMix}}, the plot method.
 
   \code{\link{MarronWand}} has the Marron-Wand densities as normal mixtures.
+
+  \code{\link{norMixMLE}()} and \code{norMixEM()} provide \emph{fitting}
+  of univariate normal mixtures to data.
 }
 \examples{
 ex <- norMix(mu = c(1,2,5))# s^2 = 1, equal proportions

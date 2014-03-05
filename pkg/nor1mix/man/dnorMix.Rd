@@ -52,7 +52,7 @@ dpnorMix(x, obj, lower.tail = TRUE)
  dp <- dpnorMix(x, MW.nm7)
  lines(x, dp$d, col = "tomato", lwd=3)
  lines(x, dp$p, col = 3, lwd=2)# does not fit y-wise
- stopifnot(all.equal(dp$d, dnorMix(x, MW.nm7), tol=1e-12),
-           all.equal(dp$p, pnorMix(x, MW.nm7), tol=1e-12))
+ stopifnot(all.equal(dp$d, dnorMix(x, MW.nm7), tolerance=1e-12),
+           all.equal(dp$p, pnorMix(x, MW.nm7), tolerance=1e-12))
 }
 \keyword{distribution}

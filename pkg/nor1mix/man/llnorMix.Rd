@@ -113,6 +113,10 @@ emstep.nm(x, obj)
 
   To fit, using the EM algorithm, rather use \code{\link{norMixEM}()}
   than the \code{e.step}, \code{m.step}, or \code{em.step} functions.
+
+  Note that direct likelihood maximization, i.e., MLE, is typically
+  considerably more efficient than the EM, and typically converges well
+  with our parametrization, see \code{\link{norMixMLE}}.
 }
 \examples{
 (obj <- MW.nm10) # "the Claw" -- m = 6 components
@@ -127,7 +131,7 @@ x <- rnorMix(1000, obj)
 llnorMix(pp, x)
 
 ## Consistency check :
-all.EQ <- function(x,y, tol = 1e-15, ...) all.equal(x,y, tol=tol, ...)
+all.EQ <- function(x,y, tol = 1e-15, ...) all.equal(x,y, tolerance=tol, ...)
 stopifnot(all.EQ(pp, nM2par(par2norMix(pp))),
           all.EQ(obj, par2norMix(nM2par(obj)),
                     check.attributes=FALSE),
