@@ -101,7 +101,7 @@ emstep.nm(x, obj)
 
   \code{mstep.nm()} returns the model parameters as a
   \code{\link{list}} with components \code{w}, \code{mu}, and
-  \code{sig2}, corresponding to the arguments of \code{\link{norMix}()}.
+  \code{sigma}, corresponding to the arguments of \code{\link{norMix}()}.
 
   \code{emstep.nm()} returns an \emph{updated} \code{"norMix"} object.
 }

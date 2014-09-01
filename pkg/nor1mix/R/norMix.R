@@ -7,6 +7,8 @@
 #### Author: Martin Maechler, 20 Mar 1997
 #### -------------------------------------------------------------------------
 
+if(getRversion() < "2.15") paste0 <- function(...) paste(..., sep = '')
+
 norMix <- function(mu, sig2 = rep(1, m), sigma = rep(1, m), w = NULL,
 		   name = NULL, long.name = FALSE)
 {
@@ -29,28 +31,27 @@ norMix <- function(mu, sig2 = rep(1, m), sigma = rep(1, m), w = NULL,
         ##----- to become warning, ~ end of 2014:
         ## warning("The use of 'sig2' is deprecated; do specify 'sigma' (= sqrt(sig2)) instead")
     }
-    if(length(sig2) == 1) sig2 <- rep(sig2, m)
-    if(length(sig2) != m || !is.numeric(sig2)|| any(sig2 <=0))
-	stop("'sig2' = sigma^2	must be > 0 with same length as 'mu'")
+    if(length(sigma) == 1) sigma <- rep.int(sigma, m)
+    if(length(sigma) != m || !is.numeric(sigma)|| any(sigma <=0))
+	stop("'sigma' must be > 0 with same length as 'mu'")
     if(is.null(w))
-	w <- rep(1/m, m)
+	w <- rep.int(1/m, m)
     else {
 	if(length(w) != m || !is.numeric(w) || any(w<0))
 	    stop("'w' must be >= 0  with same length as 'mu'")
 	s <- sum(w)
-	if(abs(s-1) > 10*.Machine$double.eps) w <- w / sum(w)
+	if(abs(s-1) > 10*.Machine$double.eps) w <- w / s
     }
     if(is.null(name)) {
 	sformat <- function(v) sapply(v, format, digits=1)
 	pPar <- function(pp) {
 	    pp <- if(m >= 10) c(sformat(pp[1:9]), "....") else sformat(pp)
 	    if(long.name)
-		paste("(",paste(pp,  collapse= ","),")", sep="")
+		paste0("(", paste(pp,  collapse=","), ")")
 	    else
-		paste(pp, collapse= "")
+		paste(pp, collapse="")
 	}
-	name <- paste("NM",format(m),".",
-		      pPar(mu), "_", pPar(sig2), sep="")
+	name <- paste0("NM",format(m),".", pPar(mu), "_", pPar(sigma))
     }
     structure(name = name, class = "norMix",
 	      .Data = cbind(mu = mu, sigma = sigma, w = w))
@@ -70,7 +71,7 @@ norMix <- function(mu, sig2 = rep(1, m), sigma = rep(1, m), w = NULL,
 	if(!is.matrix(r)) ## e.g. for  x[1, ]
 	    r
 	else {
-	    r[,"w"] <- r[,"w"] / sum(r[,"w"]) # renormalize 
+	    r[,"w"] <- r[,"w"] / sum(r[,"w"]) # renormalize
 	    structure(r, class = class(x), name =
 		      paste0(attr(x,"name"), "[", deparse(substitute(i), 20)[1L], ",]"))
 	}
@@ -93,6 +94,7 @@ mean.norMix <- function(x, ...)
 {
   ## Purpose: Return "true mean", i.e., the expectation of  a normal mixture.
   if(!is.norMix(x)) stop("'x' must be a 'Normal Mixture' object!")
+  x <- unclass(x)
   drop(x[,"w"] %*% x[,"mu"])
 }
 
@@ -100,10 +102,11 @@ var.norMix <- function(x, ...)
 {
   ## Purpose: 'true' Variance, i.e. E[(X- E[X])^2]  for X ~ normal mixture.
   if(!is.norMix(x)) stop("'x' must be a 'Normal Mixture' object!")
+  x <- unclass(x)
   w <- x[,"w"]
   mj <- x[,"mu"]
   mu <- w %*% mj
-  drop(w %*% (x[,"sig2"] + (mj - mu)^2))
+  drop(w %*% (x[,"sigma"]^2 + (mj - mu)^2))
 }
 
 print.norMix <- function(x, ...)
@@ -123,7 +126,7 @@ print.norMix <- function(x, ...)
 }
 
 sort.norMix <- function(x, decreasing = FALSE, ...) {
-    ## sort according to 'mu'
+    ## sort according to 'mu' (and ensure attributes as "name" are not changed):
     x[] <- x[sort.list(x[,"mu"], decreasing = decreasing, ...) , ]
     x
 }
@@ -145,7 +148,7 @@ dnorMix <- function(x, obj, log = FALSE)
       }
       else stop("'obj' must be a 'Normal Mixture' object!")
   }
-  w <- obj[,"w"]; mu <- obj[,"mu"]; sd <- sqrt(obj[,"sig2"])
+  w <- obj[,"w"]; mu <- obj[,"mu"]; sd <- obj[,"sigma"]
   m <- length(w) #-- number of components
   if(m == 1)
       return(dnorm(x, mean = mu[1], sd = sd[1], log = log))
@@ -180,7 +183,7 @@ rnorMix <- function(n, obj)
     ## -------------------------------------------------------------------------
     ## Author: Martin Maechler, Date: 27 Jun 2002, 16:03
     mu <- obj[,"mu"]
-    sd <- sqrt(obj[,"sig2"])
+    sd <- obj[,"sigma"]
     if(n == 1) {
 	j <- sample(length(mu), size = 1, prob = obj[,"w"])
 	rnorm(1, mean = mu[j], sd = sd[j])
@@ -209,7 +212,7 @@ pnorMix <- function(q, obj, lower.tail = TRUE, log.p = FALSE)
         }
         else stop("'obj' must be a 'Normal Mixture' object!")
     }
-    sd <- sqrt(obj[,"sig2"])
+    sd <- obj[,"sigma"]
     ## if log.p just log(.) at the end [to be more accurate, need much more..]
     cc <- if(log.p) function(m) log(c(m)) else c
     ## q can be a vector: -> outer
@@ -225,9 +228,10 @@ dpnorMix <- function(x, obj, lower.tail = TRUE)
     ## ----------------------------------------------------------------------
     ## Author: Martin Maechler, Date: 3 Jan 2008
     stopifnot (is.norMix(obj))
-    w <- obj[,"w"]; mu <- obj[,"mu"]; sd <- sqrt(obj[,"sig2"])
+    obj <- unclass(obj)
+    w <- obj[,"w"]; mu <- obj[,"mu"]; sd <- obj[,"sigma"]
     ## This looks smarter, but really is slower :
-    ##     z <- sweep(outer(x, obj[,"mu"], "-"), 2, sqrt(obj[,"sig2"]), "/")
+    ##     z <- sweep(outer(x, obj[,"mu"], "-"), 2, obj[,"sigma"], "/")
     ##     list(d = c(dnorm(z) %*% w),
     ##          p = c(pnorm(z, lower.tail= lower.tail) %*% w))
     m <- length(w) #-- number of components
@@ -269,7 +273,7 @@ qnorMix <-
     else stop("'obj' must be a 'Normal Mixture' object!")
   }
   mu <- obj[, "mu"]
-  sd <- sqrt(obj[, "sig2"])
+  sd <- obj[, "sigma"]
   m <- m.norMix(obj)
   if(m == 1) # one component
       return(qnorm(p, mu, sd, lower.tail=lower.tail, log.p=log.p))
@@ -480,7 +484,7 @@ plot.norMix <-
     if(p.h0)	do.call(abline, c(list(h = 0), parH0))
     if(p.comp) {
         m <- m.norMix(x) #-- number of components
-        w <- x[,"w"]; mu <- x[,"mu"]; sd <- sqrt(x[,"sig2"])
+        w <- x[,"w"]; mu <- x[,"mu"]; sd <- x[,"sigma"]
         for(j in 1:m)
             do.call(lines,
                     c(list(x = d.o$x,
@@ -528,16 +532,16 @@ nM2par <- function(obj)
     ## Author: Martin Maechler, Date: 17 Dec 2007
     stopifnot(is.norMix(obj))
     ## logit() == qlogis(); log(sqrt(.)) = log(.)/2
-    c(qlogis(obj[-1,"w"]), obj[,"mu"], log(obj[,"sig2"])/2)
+    c(qlogis(obj[-1,"w"]), obj[,"mu"], log(obj[,"sigma"]))
 }
 
-.nM2par <- function(mu, sig2, w, check=TRUE)
+.nM2par <- function(mu, sigma, w, check=TRUE)
 {
     ## Purpose: Fast version of nM2par()
     ## -------------------------------------------------
     ## Author: Martin Maechler, Date: 18 Dec 2007
-    if(check) stopifnot(length(w) == (p <- length(mu)), length(sig2) == p)
-    c(qlogis(w[-1]), mu, log(sig2)/2)
+    if(check) stopifnot(length(w) == (p <- length(mu)), length(sigma) == p)
+    c(qlogis(w[-1]), mu, log(sigma))
 }
 
 
@@ -571,7 +575,7 @@ par2norMix <- function(p, name = sprintf("{from %s}",
     ## Author: Martin Maechler, Date: 17 Dec 2007
     force(name) # substitute(..)
     with(.par2nM(p),
-	 norMix(mu=mu, sig2 = sd^2, w=w, name = name))
+	 norMix(mu=mu, sigma = sd, w=w, name = name))
 }
 
 
@@ -629,10 +633,11 @@ clus2norMix <- function(gr, x, name = deparse(sys.call()))
     if(length(gr) != (n <- length(x)))
 	stop("'gr' and 'x' are not of the same length")
     r <- lapply(unname(split(x,gr)), ## << simple version of tapply(x, gr, *)
-		function(u){ n <- length(u); m <- mean(u)
-			     list(m, sum((u - m)^2)/(n-1), n) })
-    norMix(mu	= unlist(lapply(r,`[[`, 1L)),
-	   sig2 = unlist(lapply(r,`[[`, 2L)),
-	   w	= unlist(lapply(r,`[[`, 3L))/n,
+		function(u){ nk <- length(u); m <- mean(u)
+			     list(m, sum((u - m)^2)/(nk-1), nk) })
+    n. <- numeric(1)
+    norMix(mu	=      vapply(r, `[[`, n., 1L),
+	   sigma= sqrt(vapply(r, `[[`, n., 2L)),
+	   w	=      vapply(r, `[[`, n., 3L)/n,
 	   name = name)
 }

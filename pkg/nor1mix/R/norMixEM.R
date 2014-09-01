@@ -25,7 +25,7 @@ estep.nm <- function(x, obj, par)
         if(!is.norMix(obj))
             stop("'obj' must be a 'Normal Mixture' object!")
     }
-    sd <- sqrt(obj[,"sig2"])
+    sd <- obj[,"sigma"]
     m <- length(sd)
     n <- length(x)
     xxl <- rep(x, each = m) # so we can "recycle" (mu,sig) in next line
@@ -46,7 +46,7 @@ mstep.nm <- function(x, z)
     n.j <- colSums(z)
     mu   <- colSums(z * x) / n.j
     sig2 <- colSums(z* outer(x, mu, "-")^2) / n.j
-    list(w = n.j / n, mu = mu, sig2 = sig2)
+    list(w = n.j / n, mu = mu, sigma = sqrt(sig2))
 }
 
 emstep.nm <- function(x, obj)
@@ -59,7 +59,7 @@ emstep.nm <- function(x, obj)
     if(!is.norMix(obj))
         stop("'obj' must be a 'Normal Mixture' object!")
 
-    sd <- sqrt(obj[,"sig2"])
+    sd <- obj[,"sigma"]
     m <- length(sd)
     n <- length(x)
 
@@ -75,7 +75,7 @@ emstep.nm <- function(x, obj)
     mu   <- colSums(z * x) / n.j # and use the *updated* mu:
     sig2 <- colSums(z* matrix((xxl - mu)^2, n,m, byrow=TRUE)) / n.j
 
-    norMix(w = n.j / n, mu = mu, sig2 = sig2, name="")
+    norMix(w = n.j / n, mu = mu, sigma = sqrt(sig2), name="")
 }
 ##--end---------------------------- [em]step.nm() ---------------------------
 
@@ -144,7 +144,7 @@ norMixEM <- function(x, m, name = NULL, sd.min = 1e-7 * diff(range(x))/m,
 	warning(gettextf("some 'sd' ended up very close to 'sd.min'=%g",
 			 sd.min))
 
-    structure(norMix(mu = mu, sig2 = sd^2, w = n.j/n, name = name),
+    structure(norMix(mu = mu, sigma = sd, w = n.j/n, name = name),
               loglik = llh+l.fac, iter = it, tol = relEr, converged = conv,
               class = c("fitEM", "nMfit", "norMix"))
 }
@@ -179,7 +179,7 @@ norMixMLE <- function(x, m, name = NULL, ## sd.min = 1e-7 * diff(range(x))/m,
     n.j <- colSums(z)
     mu   <- colSums(z * x) / n.j
     sig2 <- colSums(z* outer(x, mu, "-")^2) / n.j
-    par <- .nM2par(mu = mu, sig2 = sig2, w = n.j / n)
+    par <- .nM2par(mu = mu, sigma = sqrt(sig2), w = n.j / n)
 
     neglogl <- function(par) -llnorMix(par, x=x)
 
@@ -197,11 +197,11 @@ norMixMLE <- function(x, m, name = NULL, ## sd.min = 1e-7 * diff(range(x))/m,
 			 maxiter, tol))
     else if(trace == 1)
 	cat(gettextf("MLE converged in %d iterations", it[[1]]), "\n", sep="")
-    sd <- m.s.w$sd
+    ## sd <- m.s.w$sd
     ## if(min(sd) - sd.min < 1e-5*sd.min)
     ##     warning(gettextf("some 'sd' ended up very close to 'sd.min'=%g",
     ##     		 sd.min))
-    structure(norMix(mu = m.s.w$mu, sig2 = sd^2, w = m.s.w$w, name = name),
+    structure(norMix(mu = m.s.w$mu, sigma = m.s.w$sd, w = m.s.w$w, name = name),
               loglik = -optr $ value, iter = it, tol = NA, converged = conv,
               class = c("fitMLE", "nMfit", "norMix"))
 }
