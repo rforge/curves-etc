@@ -1,5 +1,5 @@
 
-R version 3.1.1 Patched (2014-08-30 r66498) -- "Sock it to Me"
+R version 3.1.1 Patched (2014-08-31 r66504) -- "Sock it to Me"
 Copyright (C) 2014 The R Foundation for Statistical Computing
 Platform: x86_64-unknown-linux-gnu (64-bit)
 
@@ -27,10 +27,18 @@ In order(as.numeric(substring(nms, 6))) : NAs introduced by coercion
 > 
 > set.seed(123)
 > for(n in nms) {
-+     obj <- get(n, pos = ppos)
-+     cat("\n",n,":\n"); print(obj)
++     o <- get(n, pos = ppos)
++     cat("\n",n,":\n"); print(o)
 +     cat("4 random X from", n,":")
-+     print(rnorMix(4, obj))
++     print(rnorMix(4, o))
++ 
++     ## Testing of sort.norMix():
++     if(is.unsorted(o[,"mu"]))
++         o <- sort(o)
++     ae <- all.equal(o, sort(o), tolerance = 4e-16) # non-stable sorting, MW.
++     if(!isTRUE(ae)) {
++         cat("sort(o) differs from o:\n"); print(ae)
++     }
 + }
 
  MW.nm1 :
@@ -189,14 +197,6 @@ In order(as.numeric(substring(nms, 6))) : NAs introduced by coercion
 [3,]  1.0 0.6666667 0.6
 4 random X from MW.nm2.old :[1]  1.64120690 -2.18121016  0.09141929 -0.51647318
 > 
-> ## Testing of sort.norMix():
-> stopifnot(sapply(nms, function(n) {
-+     o <- get(n)
-+     if(is.unsorted(o[,"mu"]))
-+         o <- sort(o)
-+     identical(o, sort(o))
-+ }))
-> 
 > proc.time()
    user  system elapsed 
-  0.305   0.038   0.384 
+  0.359   0.048   0.456 
