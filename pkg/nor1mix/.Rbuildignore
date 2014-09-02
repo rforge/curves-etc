@@ -2,3 +2,4 @@ Marron_.*\.pdf
 normix-HK\.
 .*-post\.R.*
 .*-log
+tests/MW.Rout.save
