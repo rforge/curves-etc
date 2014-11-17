@@ -187,7 +187,10 @@ glkerns(x, y=NULL, deriv = 0, n.out = 300, x.out=NULL, x.inOut = TRUE,
   %% no longer available from
   %% \url{http://wwwbib.mathematik.tu-darmstadt.de/Math-Net/Preprints/Listen/shadow/pp1833.html})
 }
-\seealso{\code{\link{lokerns}} for \bold{lo}cal bandwidth computation.}
+\seealso{\code{\link{lokerns}} for \bold{lo}cal bandwidth computation.
+  \code{\link{plot.KernS}} documents all the methods for \code{"KernS"}
+  classed objects.
+}
 \examples{
 data(xSim)## linear plus an exponential peak, see help(xSim)
 n <- length(xSim)

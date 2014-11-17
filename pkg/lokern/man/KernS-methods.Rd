@@ -11,12 +11,12 @@
   \code{\link{lokerns}()} which are of (S3) class \code{"KernS"}.
 }
 \usage{
-\S3method{fitted}{KernS} (object, \dots)
-\S3method{plot}{KernS} (x, type = "l", lwd = 2.5, col = 3, \dots)
+\S3method{fitted}{KernS}(object, \dots)
+\S3method{plot}{KernS}(x, type = "l", lwd = 2.5, col = 3, \dots)
 \S3method{predict}{KernS}(object, x, deriv = object[["deriv"]],
         korder = deriv+2, trace.lev = 0, \dots)
-\S3method{print}{KernS} (x, digits = getOption("digits"), \dots)
-\S3method{residuals}{KernS} (object, \dots)
+\S3method{print}{KernS}(x, digits = getOption("digits"), \dots)
+\S3method{residuals}{KernS}(object, \dots)
 }
 \arguments{
   \item{x,object}{an \R object, of S3 class \code{"KernS"}, typically
@@ -31,16 +31,17 @@
   \item{trace.lev}{integer; level of tracing of Fortran level
     computations; see \code{\link{lokerns}}.}
   \item{\dots}{potentially further arguments passed to and from
-    methods.}
+    methods.  For the \code{plot(*, deriv=0)} method, these are passed to
+    \code{\link[sfsmisc]{plotDS}} from package \CRANpkg{sfsmisc}.}
 }
 \details{
-  The \code{plot()} method calls \code{\link{plotDS}} from
-  package \CRANpkg{sfsmisc}.
-
   Note that \code{fitted()} and \code{residuals()} rely on
   \code{x.inOut} having been true or \code{x.out} having contained the
   data \code{x}, in the \code{\link{lokerns}} or \code{\link{glkerns}}
   call.
+
+  The \code{plot()} method calls \code{\link{plotDS}} from
+  package \CRANpkg{sfsmisc}.
 
   \code{predict(object, x, deriv)} when either some \code{x} are not in
   \code{x.out} or \code{deriv} is not 0, basically recalls the original
@@ -62,6 +63,7 @@ y <- fx + rnorm(fx)/4
 plot(x,y)
 lof <- lokerns(x,y)
 plot(lof)
+plot(lof, cex = 1/4)# maybe preferable
 qqnorm(residuals(lof)) # hmm... overfitting?
 stopifnot(all.equal(y, fitted(lof) + residuals(lof), tolerance = 1e-15),
           predict(lof)$y == fitted(lof))

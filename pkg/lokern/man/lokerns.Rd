@@ -143,7 +143,10 @@ lokerns(x, y=NULL, deriv = 0, n.out=300, x.out=NULL, x.inOut = TRUE,
 \references{
   All the references in \code{\link{glkerns}}.
 }
-\seealso{\code{\link{glkerns}} for \bold{gl}obal bandwidth computation.}
+\seealso{\code{\link{glkerns}} for \bold{gl}obal bandwidth computation.
+  \code{\link{plot.KernS}} documents all the methods for \code{"KernS"}
+  classed objects.
+}
 \examples{
 data(cars)
 lofit <- lokerns(cars$ speed, cars$ dist)
