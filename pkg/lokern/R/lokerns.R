@@ -214,3 +214,6 @@ plot.KernS <- function (x, type = "l", lwd = 2.5, col = 3, ...) {
         plotDS(x$x, yd = x$y, ys = list(x = x$x.out, y = x$est), ...)
     else plot(x$x.out, x$est, type=type, lwd=lwd, col=col, ...)
 }
+
+lines.KernS <- function (x, ...) lines(x$x.out, x$est, ...)
+

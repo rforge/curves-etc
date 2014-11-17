@@ -2,6 +2,7 @@
 \name{KernS-methods}
 \title{Methods for ("KernS" classed) Results of lokerns() and glkerns()}
 \alias{fitted.KernS}
+\alias{lines.KernS}
 \alias{plot.KernS}
 \alias{predict.KernS}
 \alias{print.KernS}
@@ -64,6 +65,9 @@ plot(x,y)
 lof <- lokerns(x,y)
 plot(lof)
 plot(lof, cex = 1/4)# maybe preferable
+## Simpler, using the lines() method:
+plot(x,y); lines(lof, lwd=2, col=2)
+
 qqnorm(residuals(lof)) # hmm... overfitting?
 stopifnot(all.equal(y, fitted(lof) + residuals(lof), tolerance = 1e-15),
           predict(lof)$y == fitted(lof))
