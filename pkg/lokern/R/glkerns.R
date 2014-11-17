@@ -23,8 +23,8 @@
                   xu = as.double(xu),
                   s = as.double(s),
                   sig = as.double(sig),
-                  work1 = double((nobs+1)*5),
-                  work2 = double(3 * m1),
+                  work1 = double((nobs+1)*5),	# wn [0:n, 5]
+                  work2 = double(3 * m1),	# w1 [ m1, 3]
 		  bandwidth = as.double(bandwidth)# = 19
 		  , as.integer(trace.lev)
 		  )[-c(1:2, 17:18, 20L)]	# all but (x,y), work*,..

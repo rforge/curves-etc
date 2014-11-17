@@ -159,9 +159,6 @@ c-
 c-------- 9. estimating variance and smoothed pseudoresiduals
       if(trace .gt. 0) call monit1(9, trace)
       rvar=sig
-      if(sig .le. 0. .and. .not.hetero) then
-        call resest(t(il),x(il),nn,wn(il,2),r2,sig)
-      endif
       if(hetero) then
          call resest(t,x,n,wn(1,2),snr,sig)
          bres=max(bmin,.2*nn**(-.2)*(s(iu)-s(il-1)))
@@ -171,9 +168,11 @@ c-------- 9. estimating variance and smoothed pseudoresiduals
          end do
          call kernel(t,wn(1,2),n,bres,0,kk2,nyg,s,
      .        wn(il,3),nn,wn(il,4), trace)
-      else
-c       not hetero
-        call constV(wn(1,4),n,sig)
+      else !-- not hetero
+         if(sig .le. 0.) then
+            call resest(t(il),x(il),nn,wn(il,2),r2,sig)
+         end if
+         call constV(wn(1,4),n,sig)
       end if
 c-
 c-------- 10. [LOOP:] estimate/compute integral constant

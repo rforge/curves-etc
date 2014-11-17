@@ -125,7 +125,7 @@ c- snr := explained variance
       return
       end ! resest
 
-      subroutine kernel(t,x,n,b,nue,kord,ny,s,tt,m,y, trace)
+      subroutine kernel(t,x,n,b,nue,kord,ny,s,tt,m, y, trace)
 c-----------------------------------------------------------------------
 c       short-version may, 1995
 c
@@ -163,9 +163,9 @@ c------
 
       if(trace .gt. 0) call monitk0(n,m, b, chan, chR, (b .lt. chR))
 
-      if(b .lt. chR) then
+      if(b .lt. chR) then ! small bandwidth ==> classical kernel
          call kerncl(t,x,n,b,nue,kord,ny,s,tt,m,y, trace)
-      else
+      else ! fast kernel
          call kernfa(t,x,n,b,nue,kord,ny,s,tt,m,y, trace)
       end if
       return

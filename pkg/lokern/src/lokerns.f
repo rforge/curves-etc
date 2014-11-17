@@ -151,9 +151,6 @@ c-------- 8. compute constants for iteration
 c-
 c-------- 9. estimating variance and smoothed pseudoresiduals
       if(trace .gt. 0) call monit1(9, trace)
-      if(sig .le. 0. .and. .not.hetero) then
-        call resest(t(il),x(il),nn,wn(il,2),r2,sig)
-      endif
       if(hetero) then
         call resest(t,x,n,wn(1,2),snr,sig)
         bres=max(bmin,.2*nn**(-.2)*(s(iu)-s(il-1)))
@@ -161,11 +158,14 @@ c-------- 9. estimating variance and smoothed pseudoresiduals
            wn(i,3)=t(i)
            wn(i,2)=wn(i,2)*wn(i,2)
         end do
+c     smooth  (t[i], r[i]^2) , r[]= (leave-one-out interpol.) residual from reset
         call kernel(t,wn(1,2),n,bres,0,kk2,nyg,s,
      .       wn(1,3),n,wn(1,4), trace)
-      else
-c       not hetero
-        call constV(wn(1,4),n,sig)
+      else !-- not hetero
+         if(sig .le. 0. .and. .not.hetero) then
+            call resest(t(il),x(il),nn,wn(il,2),r2,sig)
+         endif
+         call constV(wn(1,4),n,sig)
       end if
 c-
 c-------- 10. [LOOP:] estimate/compute integral constant

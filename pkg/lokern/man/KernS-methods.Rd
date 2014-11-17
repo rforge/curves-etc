@@ -63,7 +63,7 @@ plot(x,y)
 lof <- lokerns(x,y)
 plot(lof)
 qqnorm(residuals(lof)) # hmm... overfitting?
-stopifnot(all.equal(y, fitted(lof) + residuals(lof), tol = 1e-15),
+stopifnot(all.equal(y, fitted(lof) + residuals(lof), tolerance = 1e-15),
           predict(lof)$y == fitted(lof))
 tt <- seq(0, 10, by=1/32)
 p0 <- predict(lof, x=tt)

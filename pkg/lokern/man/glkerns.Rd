@@ -82,7 +82,7 @@ glkerns(x, y=NULL, deriv = 0, n.out = 300, x.out=NULL, x.inOut = TRUE,
     for \code{is.rand=TRUE}.
   }
   \item{sig}{variance of the error variables.  If it is not given by
-    input or if \code{hetero=TRUE} (no default) it is calculated by a
+    input or if \code{hetero=TRUE} it is calculated by a
     nonparametric variance estimator.}
   \item{bandwidth}{
     \emph{global} bandwidth for kernel regression estimation.  If it is

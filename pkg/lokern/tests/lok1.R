@@ -12,3 +12,5 @@ summary((lk2 <- lokerns(tt,xSim, deriv = 2, trace=TRUE))$est)
 summary(lk  $bandwidth)
 summary(lk1 $bandwidth)
 summary(lk2 $bandwidth)
+
+str(lkH <- lokerns(tt, xSim, hetero=TRUE))
