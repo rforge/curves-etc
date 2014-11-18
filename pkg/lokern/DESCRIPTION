@@ -8,4 +8,5 @@ Maintainer: Martin Maechler <maechler@stat.math.ethz.ch>
 Imports: sfsmisc (>= 1.0-12)
 Description: Kernel regression smoothing with adaptive local or global plug-in
 	     bandwidth selection.
+BuildResaveData: no
 License: GPL (>= 2)
