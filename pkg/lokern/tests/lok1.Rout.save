@@ -1,6 +1,6 @@
 
-R version 3.0.0 Patched (2013-04-17 r62607) -- "Masked Marvel"
-Copyright (C) 2013 The R Foundation for Statistical Computing
+R version 3.1.2 Patched (2014-11-09 r66949) -- "Pumpkin Helmet"
+Copyright (C) 2014 The R Foundation for Statistical Computing
 Platform: x86_64-unknown-linux-gnu (64-bit)
 
 R is free software and comes with ABSOLUTELY NO WARRANTY.
@@ -218,6 +218,34 @@ lokerns (n=75,m=300; nue=2) -> kord=4
    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
 0.07662 0.07995 0.09398 0.09034 0.09501 0.10940 
 > 
+> str(lkH <- lokerns(tt, xSim, hetero=TRUE))
+List of 24
+ $ x         : num [1:75] 0.00667 0.02 0.03333 0.04667 0.06 ...
+ $ y         : num [1:75] 1.97 1.9 1.64 1.43 2.4 ...
+ $ x.out     : num [1:300] 0.00667 0.01103 0.0154 0.01976 0.02 ...
+ $ est       : num [1:300] 1.87 1.86 1.85 1.85 1.84 ...
+ $ nobs      : int 75
+ $ n.out     : int 300
+ $ deriv     : int 0
+ $ korder    : int 2
+ $ hetero    : logi TRUE
+ $ is.rand   : logi TRUE
+ $ inputb    : logi FALSE
+ $ iter      : int 15
+ $ xl        : num 0.067
+ $ xu        : num 0.933
+ $ s         : num [1:76] 0.0041 0.0133 0.0267 0.04 0.0533 ...
+ $ sig       : num 0
+ $ bandwidth : num [1:300] 0.046 0.0455 0.045 0.0444 0.0444 ...
+ $ ind.x     : int [1:75] 1 5 9 13 17 21 25 29 33 37 ...
+ $ seqXmethod: chr "aim"
+ $ m1        : int 400
+ $ isOrd     : logi TRUE
+ $ ord       : NULL
+ $ x.inOut   : logi TRUE
+ $ call      : language lokerns(x = tt, y = xSim, hetero = TRUE)
+ - attr(*, "class")= chr [1:2] "lokerns" "KernS"
+> 
 > proc.time()
    user  system elapsed 
-  0.403   0.060   0.533 
+  0.193   0.020   0.276 
