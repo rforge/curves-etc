@@ -7,6 +7,12 @@ export(glkerns, lokerns,
        varest,# <- deprecated, since Apr 2, 2009 (lokern_1.0-7.tar.gz)
        varNPreg)
 
+S3method(glkerns, formula)
+S3method(glkerns, default)
+
+S3method(lokerns, formula)
+S3method(lokerns, default)
+
 S3method(fitted, KernS)
 S3method(print, KernS)
 S3method(predict, KernS)

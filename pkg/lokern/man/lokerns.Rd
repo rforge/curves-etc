@@ -1,24 +1,31 @@
+\newcommand{\CRANpkg}{\href{http://CRAN.R-project.org/package=#1}{\pkg{#1}}}
 \name{lokerns}
-\alias{lokerns}
 \title{Kernel Regression Smoothing with Local Plug-in Bandwidth}
+\alias{lokerns}
+\alias{lokerns.default}
+\alias{lokerns.formula}
 \description{
   Nonparametric estimation of regression functions and their derivatives
   with kernel regression estimators and automatically adapted \bold{local}
   plug-in bandwidth function.
 }
 \usage{
-lokerns(x, y=NULL, deriv = 0, n.out=300, x.out=NULL, x.inOut = TRUE,
+lokerns(x, \dots)
+
+\method{lokerns}{default}(x, y=NULL, deriv = 0, n.out=300, x.out=NULL, x.inOut = TRUE,
         korder = deriv + 2, hetero=FALSE, is.rand=TRUE,
         inputb= is.numeric(bandwidth) && bandwidth > 0,
         m1 = 400, xl=NULL, xu=NULL,
-        s=NULL, sig=NULL, bandwidth=NULL, trace.lev = 0)
+        s=NULL, sig=NULL, bandwidth=NULL, trace.lev = 0, \dots)
+
+\method{lokerns}{formula}(formula, data, subset, na.action, \dots)
 }
 %% FIXME : The argument list of lokerns() and glkerns() are identical
 %% -----   and the \arguments{..} description is 99% identical
 %% ====> Really should  merge these help pages or make one of them very short!
 \arguments{
   \item{x}{vector of design points, not necessarily ordered.}
-  \item{y}{vector of observations of the same length as x.}
+  \item{y}{vector of observations of the same length as \code{x}.}
   \item{deriv}{order of derivative of the regression function to be
     estimated.  Only deriv=0,1,2 are allowed for automatic smoothing,
     whereas deriv=0,1,2,3,4  is possible when smoothing with an input
@@ -36,11 +43,11 @@ lokerns(x, y=NULL, deriv = 0, n.out=300, x.out=NULL, x.inOut = TRUE,
     In order for \code{\link{residuals}()} or \code{\link{fitted}()}
     methods to be applicable, it must be \code{TRUE} or a character
     string specifying one of the \code{methods}s of
-    \code{\link{seqXtend}} (package \pkg{sfsmisc}). The default,
+    \code{\link{seqXtend}} (package \CRANpkg{sfsmisc}). The default,
     \code{TRUE} corresponds to method \code{"aim"}.
   }
   \item{korder}{
-    nonnegative integer giving the kernel order; it defaults to
+    nonnegative integer giving the kernel order \eqn{k}; it defaults to
     \code{korder = deriv+2} or \eqn{k = \nu + 2} where \eqn{k - \nu}
     must be even.  The maximal possible values are for automatic
     smoothing, \eqn{k \le 4}{k <= 4}, whereas for smoothing with input
@@ -92,6 +99,22 @@ lokerns(x, y=NULL, deriv = 0, n.out=300, x.out=NULL, x.inOut = TRUE,
   \item{trace.lev}{integer indicating how much the internal (Fortran
     level) computations should be \dQuote{traced}, i.e., be reported.
     The default, \code{0}, does not print anything.}
+
+%%% formula method:
+  \item{formula}{a \code{\link{formula}} of the form \code{y ~ pred},
+    specifying the response variable \code{y} and predictor variable
+    \code{pred} which must be in \code{data}.}
+  \item{data}{an optional matrix or data frame (or similar: see
+    \code{\link{model.frame}}) containing the variables in the
+    formula \code{formula}.  By default the variables are taken from
+    \code{environment(formula)}.}
+  \item{subset}{an optional vector specifying a subset of observations
+    to be used.}
+  \item{na.action}{a function which indicates what should happen when
+    the data contain \code{NA}s.  Defaults to
+    \code{getOption("na.action")}.}
+  \item{\dots}{for the \code{formula} method: Optional arguments all
+    passed to \code{lokerns.default()}.}
 }
 \value{
   an object of class(es) \code{c("lokerns", "KernS")}, which is
@@ -149,8 +172,13 @@ lokerns(x, y=NULL, deriv = 0, n.out=300, x.out=NULL, x.inOut = TRUE,
 }
 \examples{
 data(cars)
-lofit <- lokerns(cars$ speed, cars$ dist)
+lofit <- lokerns(dist ~ speed, data=cars)
 lofit # print() method
+\dontshow{% equivalence of formula and (x,y) method:
+lof1 <- lokerns(cars$ speed, cars$ dist)
+ii <- names(lof1) != "call"
+stopifnot(all.equal(lof1[ii], lofit[ii], tol = 1e-15))
+}
 if(require("sfsmisc")) {
   TA.plot(lofit)
 } else { plot(residuals(lofit) ~ fitted(lofit)); abline(h = 0, lty=2) }
@@ -171,7 +199,7 @@ par(op)
 par(new=TRUE)
 plot(dist ~ speed, data = cars,
      main = "Local Plug-In Bandwidth Vector")
-lines(lofit$x.out, lofit$est, col=4)
+lines(lofit, col=4, lwd=2)
 mtext(paste("bandwidth in [",
             paste(format(sb[c(1,6)], dig = 3),collapse=","),
             "];  Median b.w.=",formatC(sb["Median"])))

@@ -1,25 +1,31 @@
 \newcommand{\CRANpkg}{\href{http://CRAN.R-project.org/package=#1}{\pkg{#1}}}
 \name{glkerns}
-\alias{glkerns}
 \title{Kernel Regression Smoothing with Adaptive Plug-in Bandwidth}
+\alias{glkerns}
+\alias{glkerns.default}
+\alias{glkerns.formula}
 \description{
   Nonparametric estimation of regression functions and their derivatives
   with kernel regression estimators and automatically adapted
   (\bold{gl}obal) plug-in bandwidth.
 }
 \usage{
-glkerns(x, y=NULL, deriv = 0, n.out = 300, x.out=NULL, x.inOut = TRUE,
+glkerns(x, \dots)
+
+\method{glkerns}{default}(x, y=NULL, deriv = 0, n.out = 300, x.out=NULL, x.inOut = TRUE,
         korder= deriv + 2, hetero=FALSE, is.rand=TRUE,
         inputb= is.numeric(bandwidth) && bandwidth > 0,
         m1 = 400, xl=NULL, xu=NULL,
-        s=NULL, sig=NULL, bandwidth=NULL, trace.lev = 0)
+        s=NULL, sig=NULL, bandwidth=NULL, trace.lev = 0, \dots)
+
+\method{glkerns}{formula}(formula, data, subset, na.action, \dots)
 }
 %% FIXME : The argument list of lokerns() and glkerns() are identical
 %% -----   and the \arguments{..} description is 99% identical
 %% ====> Really should  merge these help pages or make one of them very short!
 \arguments{
   \item{x}{vector of design points, not necessarily ordered.}
-  \item{y}{vector of observations of the same length as x.}
+  \item{y}{vector of observations of the same length as \code{x}.}
   \item{deriv}{order of derivative of the regression function to be
     estimated.  Only deriv=0,1,2 are allowed for automatic smoothing,
     whereas deriv=0,1,2,3,4 is possible when smoothing with a global input
@@ -91,8 +97,23 @@ glkerns(x, y=NULL, deriv = 0, n.out = 300, x.out=NULL, x.inOut = TRUE,
   \item{trace.lev}{integer indicating how much the internal (Fortran
     level) computations should be \dQuote{traced}, i.e., be reported.
     The default, \code{0}, does not print anything.}
-}
 
+%%% formula method:
+  \item{formula}{a \code{\link{formula}} of the form \code{y ~ pred},
+    specifying the response variable \code{y} and predictor variable
+    \code{pred} which must be in \code{data}.}
+  \item{data}{an optional matrix or data frame (or similar: see
+    \code{\link{model.frame}}) containing the variables in the
+    formula \code{formula}.  By default the variables are taken from
+    \code{environment(formula)}.}
+  \item{subset}{an optional vector specifying a subset of observations
+    to be used.}
+  \item{na.action}{a function which indicates what should happen when
+    the data contain \code{NA}s.  Defaults to
+    \code{getOption("na.action")}.}
+  \item{\dots}{for the \code{formula} method: Optional arguments all
+    passed to \code{glkerns.default()}.}
+}
 \value{
   an object of class(es) \code{c("glkerns", "KernS")}, which is
   a list including used parameters and estimator, containing among others
@@ -107,14 +128,13 @@ glkerns(x, y=NULL, deriv = 0, n.out = 300, x.out=NULL, x.inOut = TRUE,
   \item{deriv}{derivative of the regression function which was estimated.}
   \item{korder}{order of the kernel function which was used.}
   \item{xl}{lower bound for integral approximation and variance estimation.}
-  \item{xu }{upper bound for integral approximation and variance estimation.  }
+  \item{xu}{upper bound for integral approximation and variance estimation.}
   \item{s}{vector of midpoint values used for the convolution kernel
     regression estimator.}
 }
 \details{
-  This function calls an efficient
-  and fast algorithm for automatically adaptive nonparametric
-  regression estimation with a kernel method.
+  This function calls an efficient and fast algorithm for automatically
+  adaptive nonparametric regression estimation with a kernel method.
 
   Roughly spoken, the method performs a local averaging of the
   observations when estimating the regression function. Analogously, one
@@ -146,6 +166,9 @@ glkerns(x, y=NULL, deriv = 0, n.out = 300, x.out=NULL, x.inOut = TRUE,
   in the references and on
   \url{http://www.biostat.uzh.ch/research/software/kernel.html}
   %was http://www.unizh.ch/biostat/Software/kernsplus.html}.
+}
+\author{
+  The formula method was added after proposals by Andri Signorell.
 }
 \references{
   - global plug-in bandwidth estimator:\cr
@@ -190,6 +213,8 @@ glkerns(x, y=NULL, deriv = 0, n.out = 300, x.out=NULL, x.inOut = TRUE,
 \seealso{\code{\link{lokerns}} for \bold{lo}cal bandwidth computation.
   \code{\link{plot.KernS}} documents all the methods for \code{"KernS"}
   classed objects.
+
+  The \code{\link{demo}} for computing derivatives, \code{demo("glk-derivs")}.
 }
 \examples{
 data(xSim)## linear plus an exponential peak, see help(xSim)
@@ -241,8 +266,12 @@ par(op)
 data(cars)
 plot(dist ~ speed, data = cars,
      main = "Global Plug-In Bandwidth")
+## these two are equivalent
+m1glk <- glkerns(dist ~ speed, data = cars)
 m.glk <- glkerns(cars$ speed, cars$ dist)
-lines(m.glk$x.out, m.glk$est, col=2)
+lines(m.glk, col=2) # using the lines() method
 mtext(paste("bandwidth = ", format(m.glk$bandwidth, dig = 4)))
+ii <- names(m1glk) != "call"
+stopifnot(all.equal(m1glk[ii], m.glk[ii], tol = 1e-15))
 }
 \keyword{smooth}

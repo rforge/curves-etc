@@ -16,7 +16,7 @@
 		  korder = as.integer(korder),	 # kord
 		  hetero = as.logical(hetero),	 # hetero
 		  is.rand= as.logical(is.rand),	 # isrand
-		  inputb = as.logical(inputb),	 # smo
+		  inputb = as.logical(inputb),
 		  iter = as.integer(m1),# number of plug-in iterations on output
 		  xl = as.double(xl),
 		  xu = as.double(xu),
@@ -31,22 +31,50 @@
     if(r$korder != korder)
 	warning(gettextf("'korder' reset from %d to %d, internally",
 			 korder, r$korder))
-    if(r$iter < 0) r$iter <- NA_integer_
+    if(!is.finite(r$iter)) warning("r$iter = ", r$iter," is not finite..")
+    else if(r$iter < 0) r$iter <- NA_integer_
     r
 }
 
-lokerns <- function(x, y=NULL, deriv = 0,
-                    n.out = 300, x.out = NULL, x.inOut = TRUE,
-		    korder = deriv + 2, hetero = FALSE, is.rand = TRUE,
-		    inputb = is.numeric(bandwidth) && bandwidth > 0,
-		    m1 = 400, xl = NULL, xu = NULL, s = NULL, sig = NULL,
-		    bandwidth = NULL, trace.lev = 0)
+lokerns <- function(x, ...)
+    UseMethod("lokerns")
+
+## modeled along t.test.formula ( ~/R/D/r-devel/R/src/library/stats/R/t.test.R ):
+lokerns.formula <- function(formula, data, subset, na.action, ...)
+{
+    if(missing(formula)
+       || (length(formula) != 3L)
+       || (length(attr(terms(formula[-2L]), "term.labels")) != 1L))
+        stop("'formula' missing or incorrect")
+    cl <- match.call()
+    mf <- match.call(expand.dots = FALSE)
+    if(is.matrix(eval(mf$data, parent.frame())))
+        mf$data <- as.data.frame(data)
+    mf[[1L]] <- quote(stats::model.frame)
+    mf$... <- NULL
+    mf <- eval(mf, parent.frame())
+    names(mf) <- NULL
+    response <- attr(attr(mf, "terms"), "response")
+
+    r <- lokerns.default(mf[[-response]], mf[[response]], ...)
+    r$call <- cl
+    r
+}
+
+
+lokerns.default <- function(x, y=NULL, deriv = 0,
+                            n.out = 300, x.out = NULL, x.inOut = TRUE,
+                            korder = deriv + 2, hetero = FALSE, is.rand = TRUE,
+                            inputb = is.numeric(bandwidth) && bandwidth > 0,
+                            m1 = 400, xl = NULL, xu = NULL, s = NULL, sig = NULL,
+                            bandwidth = NULL, trace.lev = 0, ...)
 {
     ## control and sort input (x,y) - new: allowing only y
     xy <- xy.coords(x,y)
     x <- xy$x
     n <- length(x)
     if (n < 3) stop("must have n >= 3 observations")
+    if(length(list(...))) warning("extraneous arguments ignored: ", deparse(list(...)))
     x.isInd <- !is.null(xy$xlab) && xy$xlab == "Index"
     isOrd <- x.isInd || !is.unsorted(x)
     if(isOrd)
@@ -105,7 +133,7 @@ lokerns <- function(x, y=NULL, deriv = 0,
     }
 
     ## s	mid-point grid :
-    s <- double(if(is.null(s) || length(s) != n+1)  n+1 else s)
+    if(is.null(s) || length(s) != n+1) s <- double(n+1)
 
     ## sig          input variance
     if (is.null(sig)) sig <- 0. #-> Fortran takes 0 = "compute default"
