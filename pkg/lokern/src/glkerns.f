@@ -35,7 +35,7 @@ c-------- 1. initialisations
       nyg=0
       inputs = .false.
 
-c Stop for invalid inputs (impossible when called from R's lokerns())
+c Stop for invalid inputs (impossible when called from R's glkerns())
 
 c     0 <= nue <= 4;  nue <= 2 if(! inputb)
       if(nue.gt.4 .or. nue.lt.0) call rexit("nue must be in 0..4")
@@ -45,7 +45,7 @@ c     0 <= nue <= 4;  nue <= 2 if(! inputb)
       if(m .lt. 1) call rexit("m < 1")
       if(m1.lt. 3) call rexit("m1 < 3")
 
-c     kord - nue must be even  <<--- MM: *UN*desirable (want to fix kord, vary 'nue')!
+c     kord - nue must be even  <<--- MM: *UN*desirable (want to fix kord, vary 'nue') !
 c                        ----  <<---     but a short glimpse at coff*() ./auxkerns.f
 c                                        reveals how much work would be needed to change this
       kk=(kord-nue)/2

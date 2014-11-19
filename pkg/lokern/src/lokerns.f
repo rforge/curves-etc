@@ -53,6 +53,7 @@ c     kord - nue must be even :
       if(kord.gt.4 .and. .not.inputb) kord=nue+2
       if(kord.gt.6 .or. kord.le.nue)  kord=nue+2
       rvar=sig
+      itende = -1
 
       if(trace .gt. 0) call monit0(1, n, m, nue, kord, trace)
 
