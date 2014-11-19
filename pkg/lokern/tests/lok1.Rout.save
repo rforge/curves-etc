@@ -87,7 +87,7 @@ List of 24
  $ isOrd     : logi TRUE
  $ ord       : NULL
  $ x.inOut   : logi TRUE
- $ call      : language lokerns(x = tt, y = xSim, trace.lev = TRUE)
+ $ call      : language lokerns.default(x = tt, y = xSim, trace.lev = TRUE)
  - attr(*, "class")= chr [1:2] "lokerns" "KernS"
 > summary(lk$est)
    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
@@ -243,9 +243,9 @@ List of 24
  $ isOrd     : logi TRUE
  $ ord       : NULL
  $ x.inOut   : logi TRUE
- $ call      : language lokerns(x = tt, y = xSim, hetero = TRUE)
+ $ call      : language lokerns.default(x = tt, y = xSim, hetero = TRUE)
  - attr(*, "class")= chr [1:2] "lokerns" "KernS"
 > 
 > proc.time()
    user  system elapsed 
-  0.193   0.020   0.276 
+  0.203   0.019   0.282 

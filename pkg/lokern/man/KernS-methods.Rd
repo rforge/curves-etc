@@ -62,7 +62,7 @@ x <- sort(round(10*runif(250),2))
 fx <- 5 - x/2 + 3*exp(-(x-5)^2)
 y <- fx + rnorm(fx)/4
 plot(x,y)
-lof <- lokerns(x,y)
+lof <- lokerns(x,y, trace=1)# tracing the phases inside the Fortran code
 plot(lof)
 plot(lof, cex = 1/4)# maybe preferable
 ## Simpler, using the lines() method:
@@ -71,6 +71,7 @@ plot(x,y); lines(lof, lwd=2, col=2)
 qqnorm(residuals(lof)) # hmm... overfitting?
 stopifnot(all.equal(y, fitted(lof) + residuals(lof), tolerance = 1e-15),
           predict(lof)$y == fitted(lof))
+lof$iter # negative ?
 tt <- seq(0, 10, by=1/32)
 p0 <- predict(lof, x=tt)
 p1 <- predict(lof, x=tt, deriv=1)
