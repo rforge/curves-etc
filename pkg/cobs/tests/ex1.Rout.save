@@ -1,7 +1,6 @@
 
-R version 2.13.0 Patched (2011-04-24 r55634)
-Copyright (C) 2011 The R Foundation for Statistical Computing
-ISBN 3-900051-07-0
+R Under development (unstable) (2015-01-01 r67288) -- "Unsuffered Consequences"
+Copyright (C) 2015 The R Foundation for Statistical Computing
 Platform: x86_64-unknown-linux-gnu (64-bit)
 
 R is free software and comes with ABSOLUTELY NO WARRANTY.
@@ -898,7 +897,7 @@ coef  :
 > dx <- diff(range(ux <- unique(x)))
 > rx <- range(xx <- seq(ux[1] - dx/20, ux[length(ux)] + dx/20, len = 201))
 > cpuTime(cxyI  <- cobs(x,y, "decrease", knots = ux, nknots = length(ux)))
-Time elapsed: 0.29 
+Time elapsed: 0.158 
 Warning message:
 In cobs(x, y, "decrease", knots = ux, nknots = length(ux)) :
   The number of knots can't be equal to the number of unique x for degree = 2.
@@ -920,7 +919,7 @@ R^2 = 95.93% ;  empirical tau (over all): 246/500 = 0.492 (target tau= 0.5)
 > 
 > ## Deg = 1
 > cpuTime(cI1 <- cobs(x,y, "decrease", knots= ux, nknots= length(ux), degree = 1))
-Time elapsed: 0.171 
+Time elapsed: 0.105 
 > summary(cI1)
 COBS regression spline (degree = 1) from call:
 	 cobs(x = x, y = y, constraint = "decrease", knots = ux, nknots = length(ux),     degree = 1)
@@ -952,7 +951,7 @@ R^2 = 96.02% ;  empirical tau (over all): 249/500 = 0.498 (target tau= 0.5)
    so that you can determine if you need to adjust any or all of
    'lambda.lo', 'lambda.hi' and 'lambda.length' and refit the model.
 
-Time elapsed: 1.214 
+Time elapsed: 0.576 
 > ## somewhat <  2 sec. (Pent. III, 700 MHz)
 > pxx <- predict(cxyS, xx)
 > pxx[xx > max(x) , ]# those outside to the right -- currently all = Inf !
@@ -1315,3 +1314,6 @@ coef  :
 null device 
           1 
 > 
+> proc.time()
+   user  system elapsed 
+  5.569   0.103   5.700 
