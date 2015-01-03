@@ -1,13 +1,15 @@
 Package: cobs
-Version: 1.2-3
-Date: 2013-04-22
-Title: COBS -- Constrained B-splines (Sparse matrix based)
+Version: 1.3-0
+Date: 2015-01-02
+Title: COBS -- COnstrained B-Splines (Sparse matrix based)
 Author: Pin T. Ng <Pin.Ng@nau.edu> and Martin Maechler
 Maintainer: Martin Maechler <maechler@stat.math.ethz.ch>
-Depends: SparseM, quantreg (>= 4.65),
-        splines,grDevices,graphics,stats,utils
+Depends: R (>= 2.15.1), SparseM
+Imports: quantreg (>= 4.65), grDevices,graphics,stats
 LazyData: yes
-Description: Qualitatively Constrained (Regression) Smoothing via
+Description: Qualitatively Constrained (Regression) Smoothing Splines via
         Linear Programming and Sparse Matrices.
 URL: http://wiki.r-project.org/rwiki/doku.php?id=packages:cran:cobs
+     http://curves-etc.r-forge.r-project.org/
+     http://r-forge.r-project.org/R/?group_id=846
 License: GPL (>= 2)
