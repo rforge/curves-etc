@@ -15,7 +15,9 @@ no-NAME.*
 scobs_.*\.txt
 src/Notes_SR
 tests/ex1.Rout-dbg
-tests/.*-N-.*
+tests/ex1.Rout.save
+tests/ex2-long.Rout.save
+tests/wind.Rout.save
 tests/.*.Rout.save-[3264].*
 tests/swaplink-.*
 SAFE
