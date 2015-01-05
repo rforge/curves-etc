@@ -6,8 +6,8 @@ Description: Qualitatively Constrained (Regression) Smoothing Splines via
         Linear Programming and Sparse Matrices.
 Author: Pin T. Ng <Pin.Ng@nau.edu> and Martin Maechler
 Maintainer: Martin Maechler <maechler@stat.math.ethz.ch>
-Depends: R (>= 2.15.1), SparseM
-Imports: quantreg (>= 4.65), grDevices,graphics,stats
+Depends: R (>= 2.15.1)
+Imports: SparseM (>= 1.6), quantreg (>= 4.65), grDevices,graphics,stats
 LazyData: yes
 BuildResaveData: no
 URL: http://wiki.r-project.org/rwiki/doku.php?id=packages:cran:cobs
