@@ -1,5 +1,5 @@
 convexreg-PietGr
-src/nrutil.*
+src/nrutil.[ch]
 src/SR.c
 R/SR.R
 .----------------------
