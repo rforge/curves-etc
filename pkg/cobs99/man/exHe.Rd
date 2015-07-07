@@ -14,8 +14,9 @@
   }
 }
 \source{
-  Found at the bottom of \url{http://ux6.cso.uiuc.edu/~x-he/ftp.html},
-  signed by \email{x-he@uiuc.edu}.
+  Originally found at the bottom of
+  \verb{http://ux6.cso.uiuc.edu/~x-he/ftp.html}, the web resource
+  directory of Xuming He at the time, say 2006.
 }
 \examples{
 data(exHe)
