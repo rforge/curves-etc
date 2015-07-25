@@ -1,14 +1,16 @@
 
 ## Importing S3 "generics" for which we define S3 methods
-##N not generic! importFrom("stats", var)
 importFrom("graphics", plot, lines)
+
 ## and import what we call:
+importFrom("graphics", abline, par)
+
 importFrom("stats",
-           dnorm, pnorm, qnorm,
-           plogis, qlogis, rnorm, rmultinom,
+           dnorm, pnorm, qnorm, rnorm,
+           plogis, qlogis, rmultinom,
+           optim,
            quantile,
            splinefun, uniroot)
-importFrom("graphics", abline)
 
 export(
        "norMix",

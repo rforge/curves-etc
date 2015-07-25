@@ -42,7 +42,7 @@ mstep.nm <- function(x, z)
     ## ----------------------------------------------------------------------
     ## Author: Martin Maechler, Date: 18 Dec 2007, 08:45
     stopifnot(is.numeric(x), is.numeric(z), is.matrix(z),
-              (n <- length(x)) > 1, n == nrow(z), (m <- ncol(z)) >= 1)
+              (n <- length(x)) > 1, n == nrow(z), ncol(z) >= 1)
     n.j <- colSums(z)
     mu   <- colSums(z * x) / n.j
     sig2 <- colSums(z* outer(x, mu, "-")^2) / n.j
