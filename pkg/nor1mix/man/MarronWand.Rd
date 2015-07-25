@@ -47,8 +47,9 @@
  MW.nm16 # Distant Bimodal
 }
 \source{
-  They are translated from Steve Marron's Matlab code at
-  \url{http://www.stat.unc.edu/postscript/papers/marron/parameters/nmpar.m},
+  They have been translated from Steve Marron's Matlab code,
+  % till 2009 or so: \url{http://www.stat.unc.edu/postscript/papers/marron/parameters/nmpar.m},
+  now at \url{http://www.unc.edu/depts/stat-or/miscellaneous/marron/parameters/nmpar.m},
   however for number 2, the Matlab code had \code{MW.nm2.old}; and I've
   defined \code{MW.nm2} as from the Annals paper; see also the last
   example below.
