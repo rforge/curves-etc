@@ -25,6 +25,7 @@ export(cobs,
        l1.design2,
        loo.design2,
        shat,
+       ## SR ! -- not yet --> R/SR.R man/conreg.Rd
 
        ## Don't hide the plot methods on purpose (many surprising args):
        plot.cobs,
