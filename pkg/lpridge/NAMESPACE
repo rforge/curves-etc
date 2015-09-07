@@ -1,4 +1,3 @@
-useDynLib(lpridge,
-	  lpepa_s, lpridge_s)
+useDynLib(lpridge, lpepa_s, lpridge_s)
 
 export(lpepa, lpridge)

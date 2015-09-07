@@ -79,8 +79,7 @@ lpepa <- function(x, y, bandwidth,
                     as.integer(leng),
                     nmoms,
                     var = as.integer(var),
-                    est.var = double(n.out),
-		    DUP = FALSE)[c("bandwidth", "est", "est.var")]
+                    est.var = double(n.out))[c("bandwidth", "est", "est.var")]
 
     list(x = x, y = y, bandwidth = res$bandwidth,
          deriv = deriv, x.out = x.out, order = order,
