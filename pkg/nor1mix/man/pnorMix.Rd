@@ -1,5 +1,4 @@
 \name{pnorMix}
-\encoding{latin1}% Danish oe below
 \alias{pnorMix}
 \alias{qnorMix}
 \title{Normal Mixture Cumulative Distribution and Quantiles}
@@ -71,7 +70,7 @@ qnorMix(p, obj, lower.tail = TRUE, log.p = FALSE,
   a numeric vector of the same length as \code{p} or \code{q}, respectively.
 }
 \author{Very first version (for length-1 \code{p,q}) by
-  Erik Jørgensen \email{Erik.Jorgensen@agrsci.dk}.
+  Erik JÃ¸rgensen \email{Erik.Jorgensen@agrsci.dk}.
 }
 \seealso{\code{\link{dnorMix}} for the density function.}
 \examples{

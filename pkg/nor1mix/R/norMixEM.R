@@ -18,7 +18,7 @@ estep.nm <- function(x, obj, par)
     ## ----------------------------------------------------------------------
     ## Author: Martin Maechler, Date: 17 Dec 2007, 18:53
     if(missing(obj))
-        obj <- par2norMix(par)
+        obj <- par2norMix(par) #-> norMix.R
     else {
         if(!missing(par))
             stop("cannot specify both 'par' and 'obj'")

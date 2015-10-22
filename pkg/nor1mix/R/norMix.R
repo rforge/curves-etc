@@ -194,12 +194,12 @@ rnorMix <- function(n, obj)
     }
 }
 
-## From: Erik Jørgensen <Erik.Jorgensen@agrsci.dk>
+## From: Erik JÃ¸rgensen <Erik.Jorgensen@agrsci.dk>
 ## Date: Thu, 13 Nov 2003 02:06:27 +0100
 ##
 ## ....... Please, feel free to use them.
 ##
-## Erik Jørgensen
+## Erik JÃ¸rgensen
 ## Danish Institute of Agricultural Sciences
 
 pnorMix <- function(q, obj, lower.tail = TRUE, log.p = FALSE)
