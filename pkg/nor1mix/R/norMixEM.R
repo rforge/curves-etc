@@ -161,7 +161,7 @@ norMixMLE <- function(x, m, name = NULL, ## sd.min = 1e-7 * diff(range(x))/m,
               (maxiter <- as.integer(maxiter)[1]) >= 1)
     m <- as.integer(m)
     stopifnot((mm <- max(m)) >= 1)
-    if(length(m) > 1) {
+    if(length(m) > 1) { ## initial clustering
 	init <- rep(m, length = n)
 	m <- mm
     }
@@ -175,7 +175,7 @@ norMixMLE <- function(x, m, name = NULL, ## sd.min = 1e-7 * diff(range(x))/m,
     z <- matrix(0, nrow = n, ncol = m)
     z[cbind(1:n, init)] <- 1
 
-    ## 1 M-Step, to get initial
+    ## 1 M-Step to get initial parameters
     n.j <- colSums(z)
     mu   <- colSums(z * x) / n.j
     sig2 <- colSums(z* outer(x, mu, "-")^2) / n.j
