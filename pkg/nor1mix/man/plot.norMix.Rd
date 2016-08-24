@@ -8,7 +8,7 @@
   fitted normal density.
 }
 \usage{
-\method{plot}{norMix}(x, type = "l", n = 511, xout = NULL, xlim = NULL,
+\method{plot}{norMix}(x, type = "l", n = 511, xout = NULL, xlim = NULL, ylim,
       xlab = "x", ylab = "f(x)", main = attr(x, "name"), lwd = 1.4,
       p.norm = !p.comp, p.h0 = TRUE, p.comp = FALSE,
       parNorm = list(col = 2, lty = 2, lwd = 0.4),
@@ -28,6 +28,8 @@
   \item{xlim}{range of x values to use; particularly important if
     \code{xout} is not specified where \code{xlim} is passed to
     \code{\link{dnorMix}} and gets a smart default if unspecified.}
+  \item{ylim}{range of y values to use; by default, if not specified (or
+    containing \code{NA}), a smart default is used.}
   \item{xlab,ylab}{labels for the x and y axis with defaults.}
   \item{main}{main title of plot, defaulting to the \code{\link{norMix}}
     name.}
@@ -53,6 +55,9 @@
 plot(norMix(m=c(0,3), sigma = c(2,1))) # -> var = c(2^2, 1) = c(4, 1)
 
 plot(MW.nm4, p.norm=FALSE, p.comp = TRUE)
+plot(MW.nm4, p.norm=FALSE, p.comp = TRUE, ylim = c(0, 2))# now works
+stopifnot(all.equal(c(0,2), par("yaxp")[1:2], tol= 1e-15))
+
 ## Further examples in  ?norMix and  ?rnorMix
 }
 \keyword{distribution}

@@ -1,3 +1,9 @@
+2016-08-24  Martin Mächler  <maechler@stat.math.ethz.ch>
+
+	* DESCRIPTION (Version): 1.2-2, ready to release
+
+	* R/norMix.R (plot.norMix): allow `ylim` to work in plot() method.
+
 2015-07-25  Martin Mächler  <maechler@stat.math.ethz.ch>
 
 	* DESCRIPTION (Version): 1.2-1.

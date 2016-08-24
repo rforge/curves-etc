@@ -459,7 +459,7 @@ qnorMix <-
 }## end{qnorMix}
 
 plot.norMix <-
-    function(x, type = "l", n = 511, xout = NULL, xlim = NULL,
+    function(x, type = "l", n = 511, xout = NULL, xlim = NULL, ylim,
 	     xlab = "x", ylab = "f(x)", main = attr(x,"name"), lwd = 1.4,
 	     p.norm = !p.comp, p.h0 = TRUE, p.comp = FALSE,
 	     parNorm = list(col= 2, lty = 2, lwd = 0.4),
@@ -478,7 +478,9 @@ plot.norMix <-
     if(!is.null(ll <- list(...)[["log"]]) && "y" %in% strsplit(ll,"")[[1]])
 	y0 <- max(1e-50, min(d.o$y, if(p.norm) dn))
     else y0 <- 0
-    plot(d.o, type = type, xlim = xlim, ylim = c(y0, max(d.o$y, if(p.norm) dn)),
+    if(missing(ylim) || anyNA(ylim))
+	ylim <- c(y0, max(d.o$y, if(p.norm) dn))
+    plot(d.o, type = type, xlim = xlim, ylim = ylim,
 	 main = main, xlab = xlab, ylab = ylab, lwd = lwd, ...)
     if(p.norm)	do.call(lines,  c(list(x = d.o$x, y = dn), parNorm))
     if(p.h0)	do.call(abline, c(list(h = 0), parH0))
