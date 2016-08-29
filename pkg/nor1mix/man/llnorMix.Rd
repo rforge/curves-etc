@@ -71,8 +71,8 @@ emstep.nm(x, obj)
   For a \eqn{k}-component mixture,
   we map to and from a parameter vector \eqn{\theta} (\code{== p} as \R-vector)
   of length \eqn{3k-1}. For mixture density
-  \deqn{\sum_{j=1}^k \pi_j \phi((t - \mu_j)/\sigma_j),}{
-    sum[j=1..k]  pi[j] phi((t - mu[j])/s[j]),}
+  \deqn{\sum_{j=1}^k \pi_j \phi((t - \mu_j)/\sigma_j)/\sigma_j,}{
+    sum[j=1..k]  pi[j] phi((t - mu[j])/s[j])/s[j],}
   we logit-transform the \eqn{\pi_j}{pi[j]} (for \eqn{j \ge 2}{j >= 2})
   and log-transform the \eqn{\sigma_j}{s[j]}, such that \eqn{\theta} is
   partitioned into
@@ -102,6 +102,7 @@ emstep.nm(x, obj)
   \code{mstep.nm()} returns the model parameters as a
   \code{\link{list}} with components \code{w}, \code{mu}, and
   \code{sigma}, corresponding to the arguments of \code{\link{norMix}()}.
+  (and see the 'Examples' on using \code{\link{do.call}(norMix, *)} with it.)
 
   \code{emstep.nm()} returns an \emph{updated} \code{"norMix"} object.
 }
@@ -122,7 +123,7 @@ emstep.nm(x, obj)
 (obj <- MW.nm10) # "the Claw" -- m = 6 components
 length(pp <- nM2par(obj)) # 17 == (3*6) - 1
 par2norMix(pp)
-## really the same as the initial \code{obj} (see below)
+## really the same as the initial 'obj' above
 
 ## Log likelihood (of very artificial data):
 llnorMix(pp, x = seq(-2, 2, length=1000))
@@ -130,7 +131,7 @@ set.seed(47)## of more realistic data:
 x <- rnorMix(1000, obj)
 llnorMix(pp, x)
 
-## Consistency check :
+## Consistency check :  nM2par()  and  par2norMix()  are inverses
 all.EQ <- function(x,y, tol = 1e-15, ...) all.equal(x,y, tolerance=tol, ...)
 stopifnot(all.EQ(pp, nM2par(par2norMix(pp))),
           all.EQ(obj, par2norMix(nM2par(obj)),
@@ -141,7 +142,7 @@ stopifnot(all.EQ(pp, nM2par(par2norMix(pp))),
 
 ## E- and M- steps : ------------------------------
 rE1 <- estep.nm(x, obj)
-rE2 <- estep.nm(x, par=pp)
+rE2 <- estep.nm(x, par=pp) # the same as rE1
 z <- rE1
 str( rM <-  mstep.nm(x, z))
    (rEM <- emstep.nm(x, obj))
