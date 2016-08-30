@@ -1,9 +1,10 @@
 
-## Importing S3 "generics" for which we define S3 methods
-importFrom("graphics", plot, lines)
 
-## and import what we call:
-importFrom("graphics", abline, par)
+importFrom("graphics"
+	   ## S3 "generics" for which we define S3 methods
+	   , plot, lines
+	   ## and what we call:
+	   , abline, par)
 
 importFrom("stats",
            dnorm, pnorm, qnorm, rnorm,
