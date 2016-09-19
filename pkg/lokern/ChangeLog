@@ -1,3 +1,8 @@
+2016-09-19  Martin Maechler  <maechler@stat.math.ethz.ch>
+
+	* R/lokerns.R (predict.KernS): now 'newdata = *' works; and other
+ 	{extraneous} args give a warning.
+
 2014-11-19  Martin Maechler  <maechler@stat.math.ethz.ch>
 
 	* Thanks to Andri Signorell's insistence:

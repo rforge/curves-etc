@@ -168,11 +168,10 @@ lokerns.default <- function(x, y=NULL, deriv = 0,
 #### FIXME:  does only work when 'x.out' was 'x' originally
 #### -----   Need better: by default  x.out should contain x as  x.out[ind.x]
 fitted.KernS <- function(object, ...) {
-    if(object$x.inOut)
-        with(object, {
-            fit <- est[ind.x]
-            if(isOrd) fit else fit[order(ord)]
-        })
+    if(object$x.inOut) {
+	fit <- object$est[object$ind.x]
+	if(object$isOrd) fit else fit[order(object$ord)]
+    }
     else stop("'KernS' fit was done with 'x.out' not including data;",
                 "\n hence cannot provide fitted values or residuals")
 }
@@ -199,6 +198,17 @@ stopifnot(identical(names(formals(.lokerns)),
 predict.KernS <- function (object, x, deriv = object[["deriv"]],
 			   korder = deriv+2, trace.lev = 0, ...)
 {
+    if(missing(x) && length(dots <- list(...)) == 1 && names(dots) == "newdata") {
+	x <- dots$newdata
+	if(is.data.frame(x)) {
+	    message("using first column of data.frame as 'x'")
+	    x <- x[,1L]
+	}
+	if(!is.numeric(x))
+	    stop("Need numeric 'x' for predict(<(lo|gl)kerns>, *)")
+	## else use 'x' !
+    }
+    else chkDots(...) # useRs using other arguments -- no longer silently!
     if(deriv == object$deriv) {
 	if (missing(x) && object$x.inOut) {
 	    return(list(x = object[["x"]], y = {
