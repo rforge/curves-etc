@@ -1,7 +1,7 @@
 
-R version 3.1.2 Patched (2014-11-09 r66949) -- "Pumpkin Helmet"
-Copyright (C) 2014 The R Foundation for Statistical Computing
-Platform: x86_64-unknown-linux-gnu (64-bit)
+R Under development (unstable) (2016-09-19 r71307) -- "Unsuffered Consequences"
+Copyright (C) 2016 The R Foundation for Statistical Computing
+Platform: x86_64-pc-linux-gnu (64-bit)
 
 R is free software and comes with ABSOLUTELY NO WARRANTY.
 You are welcome to redistribute it under certain conditions.
@@ -22,7 +22,7 @@ Loading required package: lokern
 [1] 75
 > summary(xSim)
    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
--3.1320 -1.6150  0.7583  0.3969  1.7710  4.4500 
+-3.1323 -1.6148  0.7583  0.3969  1.7713  4.4505 
 > tt <- ((1:n) - 1/2)/n # equidistant x
 > 
 > str(lk <- lokerns(tt, xSim, trace=TRUE))
@@ -91,10 +91,10 @@ List of 24
  - attr(*, "class")= chr [1:2] "lokerns" "KernS"
 > summary(lk$est)
    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
--3.0720 -1.6670  0.7102  0.4164  1.7830  4.2940 
+-3.0721 -1.6666  0.7102  0.4164  1.7826  4.2935 
 > summary((lk1 <- lokerns(tt,xSim, deriv = 1))$est)
    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
--41.230  -8.198  -5.577  -4.945  -1.786  35.280 
+-41.231  -8.198  -5.577  -4.945  -1.786  35.279 
 > summary((lk2 <- lokerns(tt,xSim, deriv = 2, trace=TRUE))$est)
 lokerns (n=75,m=300; nue=2) -> kord=4
  phase  2
@@ -206,7 +206,7 @@ lokerns (n=75,m=300; nue=2) -> kord=4
  phase 23
  kernel(n= 75,m=300; b=   0.1190404) -> (chg.pt,cut_b)=( 9.0, 0.12) => 'classic'
     Min.  1st Qu.   Median     Mean  3rd Qu.     Max. 
--688.700  -74.740   26.410   -4.829  169.500  352.600 
+-688.691  -74.741   26.413   -4.829  169.492  352.630 
 > 
 > summary(lk  $bandwidth)
    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
@@ -216,7 +216,7 @@ lokerns (n=75,m=300; nue=2) -> kord=4
 0.05854 0.06545 0.06669 0.06977 0.06927 0.09286 
 > summary(lk2 $bandwidth)
    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
-0.07662 0.07995 0.09398 0.09034 0.09501 0.10940 
+0.07662 0.07995 0.09398 0.09034 0.09501 0.10938 
 > 
 > str(lkH <- lokerns(tt, xSim, hetero=TRUE))
 List of 24
@@ -248,4 +248,4 @@ List of 24
 > 
 > proc.time()
    user  system elapsed 
-  0.203   0.019   0.282 
+  0.170   0.029   0.259 
