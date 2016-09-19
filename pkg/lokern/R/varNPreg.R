@@ -2,10 +2,10 @@
 ####
 #### S/R interface to the resest() Fortran subroutine
 
-#### Copyright © Martin Maechler (2001).
+#### Copyright (C) Martin Maechler (2001).
 #### This software is distributed under the terms of the GNU GENERAL
 #### PUBLIC LICENSE Version 2, June 1991, see the COPYING file from R,
-#### or http://www.gnu.org/copyleft/gpl.html
+#### or https://www.gnu.org/copyleft/gpl.html
 
 varNPreg <- function(x,y)
 {

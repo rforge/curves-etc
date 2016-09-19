@@ -1,4 +1,4 @@
-\newcommand{\CRANpkg}{\href{http://CRAN.R-project.org/package=#1}{\pkg{#1}}}
+\newcommand{\CRANpkg}{\href{https://CRAN.R-project.org/package=#1}{\pkg{#1}}}
 \name{lokerns}
 \title{Kernel Regression Smoothing with Local Plug-in Bandwidth}
 \alias{lokerns}

@@ -1,4 +1,4 @@
-\newcommand{\CRANpkg}{\href{http://CRAN.R-project.org/package=#1}{\pkg{#1}}}
+\newcommand{\CRANpkg}{\href{https://CRAN.R-project.org/package=#1}{\pkg{#1}}}
 \name{glkerns}
 \title{Kernel Regression Smoothing with Adaptive Plug-in Bandwidth}
 \alias{glkerns}
@@ -164,7 +164,10 @@ glkerns(x, \dots)
   and boundary kernels are used with a fast and stable updating
   algorithm for kernel regression estimation.  More details can be found
   in the references and on
-  \url{http://www.biostat.uzh.ch/research/software/kernel.html}
+  \url{http://www.biostat.uzh.ch/en/research/software/kernel.html}
+  or (equivalently)
+  \url{https://www.uzh.ch/cmsssl/biostat/en/research/software/kernel.html}
+  %was http://www.biostat.uzh.ch/research/software/kernel.html
   %was http://www.unizh.ch/biostat/Software/kernsplus.html}.
 }
 \author{
@@ -175,6 +178,7 @@ glkerns(x, \dots)
   Theo Gasser, Alois Kneip & Walter Koehler (1991)
   A flexible and fast method for automatic smoothing.
   \emph{Journal of the American Statistical Association} \bold{86}, 643--652.
+  \url{https://doi.org/10.2307/2290393}
 %  \url{http://www.jstor.org/stable/2290393}
 
   Muller, H.-G. (1984)

@@ -1,11 +1,11 @@
 Package: lokern
-Version: 1.1-7
-Date: 2014-11-19
+Version: 1.1-8
+Date: 2016-09-19
 Title: Kernel Regression Smoothing with Local or Global Plug-in Bandwidth
 Author: Eva Herrmann <eherrmann@mathematik.tu-darmstadt.de> (F77 & S original);
 	Packaged for R and enhanced by Martin Maechler
 Maintainer: Martin Maechler <maechler@stat.math.ethz.ch>
-Imports: sfsmisc (>= 1.0-12)
+Imports: grDevices, graphics, stats, utils, sfsmisc (>= 1.0-12)
 Description: Kernel regression smoothing with adaptive local or global plug-in
 	     bandwidth selection.
 BuildResaveData: no
