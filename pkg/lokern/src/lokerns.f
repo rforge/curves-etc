@@ -15,12 +15,16 @@ c  used subroutines: constV, resest, kernel with further subroutines
 c-----------------------------------------------------------------------
 c Args
       integer n, m, nue,kord
-      double precision t(n),x(n), tt(m), tl,tu, s(0:n), sig
+      double precision t(n), x(n),
+     +     tt(m), y(m), ! (x.out, est)
+     +     tl, tu,
+     +     s(0:n), ! mid point values for convolution kernel
+     +     sig
       logical hetero, isrand, inputb
 c			      inputb (was "smo", now same as in R):
 c if TRUE, do not compute bandwidths but use ban(.)
       integer m1, trace
-      double precision wn(0:n,5), w1(m1,3), wm(m),ban(m), y(m)
+      double precision wn(0:n,5), w1(m1,3), wm(m), ban(m)
 c Var
       logical inputs, needsrt
       integer nyg, i,ii,iil,itt,il,iu,itende,it, j,

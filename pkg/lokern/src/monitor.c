@@ -20,6 +20,7 @@ void F77_SUB(monit1)(int *phase, int *trace)
     // TODO print more when (*trace >= 2) ...
 }
 
+// Called from auxkerns.f (only)
 void F77_SUB(monitk0)(int *n, int *m, double *b, double *chan,
 		      double *chR, int *do_classic)
 {
