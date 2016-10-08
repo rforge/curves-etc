@@ -1,5 +1,5 @@
 
-R Under development (unstable) (2016-09-19 r71307) -- "Unsuffered Consequences"
+R version 3.3.1 Patched (2016-10-03 r71441) -- "Bug in Your Hair"
 Copyright (C) 2016 The R Foundation for Statistical Computing
 Platform: x86_64-pc-linux-gnu (64-bit)
 
@@ -22,11 +22,11 @@ Loading required package: lokern
 [1] 75
 > summary(xSim)
    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
--3.1323 -1.6148  0.7583  0.3969  1.7713  4.4505 
+-3.1320 -1.6150  0.7583  0.3969  1.7710  4.4500 
 > tt <- ((1:n) - 1/2)/n # equidistant x
 > 
 > str(lk <- lokerns(tt, xSim, trace=TRUE))
-lokerns (n=75,m=300; nue=0) -> kord=2
+lokerns (n=75,m=300; nue=0, isrand=1, inputp=0) -> kord=2
  phase  2
  phase  3
  phase  4
@@ -60,6 +60,7 @@ lokerns (n=75,m=300; nue=0) -> kord=2
  phase 21
  kernel(n= 75,m=399; b=   0.0611626) -> (chg.pt,cut_b)=( 9.0, 0.12) => 'classic'
  kernel(n=399,m=300; b=    0.086814) -> (chg.pt,cut_b)=( 8.1, 0.02) => 'fast O(n)'
+ kernfp(n=399, b=    0.086814, nue=0, kord=2, ny=1):
  phase 22
  phase 23
  kernel(n= 75,m=300; b=  0.04845241) -> (chg.pt,cut_b)=( 7.0, 0.09) => 'classic'
@@ -91,12 +92,12 @@ List of 24
  - attr(*, "class")= chr [1:2] "lokerns" "KernS"
 > summary(lk$est)
    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
--3.0721 -1.6666  0.7102  0.4164  1.7826  4.2935 
+-3.0720 -1.6670  0.7102  0.4164  1.7830  4.2940 
 > summary((lk1 <- lokerns(tt,xSim, deriv = 1))$est)
    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
--41.231  -8.198  -5.577  -4.945  -1.786  35.279 
+-41.230  -8.198  -5.577  -4.945  -1.786  35.280 
 > summary((lk2 <- lokerns(tt,xSim, deriv = 2, trace=TRUE))$est)
-lokerns (n=75,m=300; nue=2) -> kord=4
+lokerns (n=75,m=300; nue=2, isrand=1, inputp=0) -> kord=4
  phase  2
  phase  3
  phase  4
@@ -202,11 +203,12 @@ lokerns (n=75,m=300; nue=2) -> kord=4
  phase 21
  kernel(n= 75,m=399; b=   0.1186581) -> (chg.pt,cut_b)=(11.0, 0.15) => 'classic'
  kernel(n=399,m=300; b=   0.1818455) -> (chg.pt,cut_b)=( 8.1, 0.02) => 'fast O(n)'
+ kernfp(n=399, b=   0.1818455, nue=0, kord=2, ny=1):
  phase 22
  phase 23
  kernel(n= 75,m=300; b=   0.1190404) -> (chg.pt,cut_b)=( 9.0, 0.12) => 'classic'
     Min.  1st Qu.   Median     Mean  3rd Qu.     Max. 
--688.691  -74.741   26.413   -4.829  169.492  352.630 
+-688.700  -74.740   26.410   -4.829  169.500  352.600 
 > 
 > summary(lk  $bandwidth)
    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
@@ -216,7 +218,7 @@ lokerns (n=75,m=300; nue=2) -> kord=4
 0.05854 0.06545 0.06669 0.06977 0.06927 0.09286 
 > summary(lk2 $bandwidth)
    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
-0.07662 0.07995 0.09398 0.09034 0.09501 0.10938 
+0.07662 0.07995 0.09398 0.09034 0.09501 0.10940 
 > 
 > str(lkH <- lokerns(tt, xSim, hetero=TRUE))
 List of 24
@@ -248,4 +250,4 @@ List of 24
 > 
 > proc.time()
    user  system elapsed 
-  0.170   0.029   0.259 
+  0.131   0.019   0.142 

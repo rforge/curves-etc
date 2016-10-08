@@ -1,5 +1,5 @@
 
-R Under development (unstable) (2016-09-19 r71307) -- "Unsuffered Consequences"
+R version 3.3.1 Patched (2016-10-03 r71441) -- "Bug in Your Hair"
 Copyright (C) 2016 The R Foundation for Statistical Computing
 Platform: x86_64-pc-linux-gnu (64-bit)
 
@@ -51,7 +51,7 @@ List of 23
  $ x.inOut   : logi TRUE
 > summary(gk$est)
    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
--3.0683 -1.6676  0.7053  0.4094  1.7819  4.2125 
+-3.0680 -1.6680  0.7053  0.4094  1.7820  4.2130 
 > gk$bandwidth
 [1] 0.04845241
 > glkerns(tt,xSim, deriv = 1)$bandwidth
@@ -408,4 +408,4 @@ deriv = 3: modifying korder from 6 to 5
 > 
 > proc.time()
    user  system elapsed 
-  0.355   0.036   0.466 
+  0.277   0.035   0.305 

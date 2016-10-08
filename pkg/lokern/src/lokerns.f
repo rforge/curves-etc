@@ -59,7 +59,8 @@ c     kord - nue must be even :
       rvar=sig
       itende = -1
 
-      if(trace .gt. 0) call monit0(1, n, m, nue, kord, trace)
+      if(trace .gt. 0) call monit0(1, n, m, nue, kord,
+     +     inputb, isrand, ban, trace)
 
 c-------- 2. computation of s-sequence
       if(trace .gt. 0) call monit1(2, trace)
@@ -158,7 +159,7 @@ c-------- 9. estimating variance and smoothed pseudoresiduals
       if(trace .gt. 0) call monit1(9, trace)
       if(hetero) then
         call resest(t,x,n,wn(1,2),snr,sig)
-        bres=max(bmin,.2*nn**(-.2)*(s(iu)-s(il-1)))
+        bres=max(bmin,.2*dble(nn)**(-.2)*(s(iu)-s(il-1)))
         do i=1,n
            wn(i,3)=t(i)
            wn(i,2)=wn(i,2)*wn(i,2)
@@ -190,7 +191,7 @@ c-------- 11. refinement of s-sequence for random design
         end do
         exs= -dble(3*kord+1) / dble(6*kord+3)
         exsvi=dble(kord)     / dble(6*kord+3)
-        bs=0.1*(vi/(sn-s0)**2)**exsvi * n**exs
+        bs=0.1*(vi/(sn-s0)**2)**exsvi * dble(n)**exs
         call kernel(wn(1,5),t,n,bs,0,2,nyg,wn(0,3),wn(0,2),n+1,s(0),
      .       trace)
         vi=0.0
@@ -214,7 +215,7 @@ c-------- 12. compute inflation constant and exponent and loop of iterations
       const=dble(2*nue+1)*fak2(kord)*vark(kk,nue)*vi
      .       /(dble(2*kord-2*nue)*bias(kk,nue)**2*dble(n))
       fac=1.1*(1.+(nue/10.)+0.05*(kord-nue-2.))
-     .       *n**(2./dble((2*kord+1)*(2*kord+3)))
+     .       *dble(n)**(2./dble((2*kord+1)*(2*kord+3)))
 
 c     itende=1+2*kord+kord*(2*kord+1)
       itende = (1 + 2*kord) * (1 + kord)
@@ -224,9 +225,7 @@ c     ^^^^^^  *fixed* number of iterations ( <== theory !)
 c-
 c-------- 13. estimate derivative of order kord in iterations
         if(trace .ge. 3) call monit1(13, trace)
-        b2=b*fac
-        b2=max(b2,bmin/dble(kord-1)*dble(kord+1))
-        b2=min(b2,bmax)
+        b2 = min(bmax, max(b*fac, bmin/dble(kord-1)*dble(kord+1)))
         call kernel(t,x,n,b2,kord,kord+2,nyg,s,w1(1,1),m1,w1(1,3),trace)
 c-
 c-------- 14. estimate integralfunctional in iterations
@@ -239,9 +238,7 @@ c-------- 14. estimate integralfunctional in iterations
 c-
 c-------- 15. finish of iterations
         if(trace .ge. 3) call monit1(15, trace)
-        b=(const/xmy2)**ex
-        b=max(bmin,b)
-        b=min(bmax,b)
+        b = min(bmax, max(bmin, (const/xmy2)**ex))
       end do
 
 c-------- 16  compute smoothed function with global plug-in bandwidth
@@ -257,7 +254,7 @@ c-------- 17. variance check
       j=2
       tll=max(tl,tt(1))
       tuu=min(tu,tt(m))
-      do 170 i=il,iu
+      do i=il,iu
          if(t(i).lt.tll.or.t(i).gt.tuu) goto 170
          ii=ii+1
          if(iil.eq.0) iil=i
@@ -266,6 +263,7 @@ c-------- 17. variance check
             if(j.le.m) goto 171
          end if
          wn(ii,3)=x(i)-y(j)+(y(j)-y(j-1))*(tt(j)-t(i))/(tt(j)-tt(j-1))
+      end do
  170  continue
       if(iil.eq.0.or.ii-iil.lt.10) then
          call resest(t(il),wn(1,3),nn,wn(1,4),snr,rvar)
@@ -279,6 +277,7 @@ c-------- 17. variance check
       end if
       if(q.gt.5. .and. r2.gt..95) rvar=rvar*.5
       sig=rvar
+      if(trace .ge. 2) call monit_s(r2, q, sig, trace)
       call constV(wn(1,4),n,sig)
       goto 100
 c     -------- end loop

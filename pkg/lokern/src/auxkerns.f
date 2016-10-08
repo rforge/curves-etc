@@ -455,6 +455,7 @@ c Var
       double precision a(7,7),a1(7),a2(7),a3(7,7),cm(7,6)
       double precision s0,sn,bmin,bmax,bb,wwl,wwr,wid,wr,wido
 c-
+      if(trace .gt. 0) call monitfp(n, b, nue, kord, ny, trace)
 c------ compute constants for later use
       s0=1.5*t(1)-0.5*t(2)
       sn=1.5*t(n)-0.5*t(n-1)
@@ -473,7 +474,7 @@ c-
       dold=0.d0
 c-
 c------ smoothing loop
-      do 100 i=1,m
+      do i=1,m
         bb=b
         if (ny .eq. 1) bb=y(i)
         if(bb.lt.bmin) bb=bmin
@@ -563,11 +564,11 @@ c-
 c------ updating of sw
           call lreg(sw,a3,iord,(tt(i)-tt(i-1))/wid,dold,wido/wid,cm)
           if(jnr.eq.jr) then
-            do 401 j=jr+1,n
+            do j=jr+1,n
               if(s(j).gt.wwr) goto 4011
               call dreg(sw,a1,a2,iord,x(j),s(j-1),s(j),tt(i),wid,1)
               jnr=j
-401           continue
+            end do
           end if
 4011      continue
           jr=jnr
@@ -624,8 +625,8 @@ c------ new initialisation ?
         if(jl.gt.jr .or. wwl.gt.wr .or. init.gt.100) init=0
         wido=wid
 c-
-100     continue
-c-
+      end do
+c-    ------ end{smoothing loop}
       return
       end ! kernfp
 
