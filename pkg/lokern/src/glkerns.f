@@ -24,8 +24,8 @@ c	 if TRUE, do not compute bandwidth, but *use* 'b' given as input
 c Var
       logical inputs, needsrt
       integer nyg, i,ii,iil,itt,il,iu,itende,it, j, kk,kk2, nn
-      double precision bias(2,0:2),vark(2,0:2),fak2(2:4),
-     1     rvar, s0,sn, b2,bmin,bmax,bres,bs,alpha,ex,exs,exsvi,
+      double precision bias(2,0:2), vark(2,0:2), fak2(2:4),
+     1     rvar, s0,sn, b2,bmin,bmax, bres,bs, alpha,ex,exs,exsvi,
      2     r2,snr,osig, vi,ssi,const,fac, q,tll,tuu, xi,xmy2
 c-
 c-------- 1. initialisations
@@ -54,14 +54,17 @@ c                                        reveals how much work would be needed t
       if(2*kk + nue .ne. kord)        kord=nue+2
       if(kord.gt.4 .and. .not.inputb) kord=nue+2
       if(kord.gt.6 .or. kord.le.nue)  kord=nue+2
-      if(inputb .and. b.le.0) inputb=.false.
+
       rvar=sig
+      itende = -1
+      il=1
+      iu=n
 c- -Wall (erronously warning if not)
       bmin=1
       bmax=1
       ex=1
-      itende= -1
 
+      if(inputb .and. b.le.0) inputb=.false.
 
       if(trace .gt. 0) call monit0(0, n, m, nue, kord,
      +     inputb, isrand, b, trace)
@@ -70,14 +73,14 @@ c-------- 2. computation of s-sequence
       if(trace .gt. 0) call monit1(2, trace)
       s0=1.5*t(1)-0.5*t(2)
       sn=1.5*t(n)-0.5*t(n-1)
-      if(s(n).le.s(0)) then
+      if(s(n).le.s(0)) then ! typically are all = 0., when called from R
          inputs= .true.
          do i=1,n-1
             s(i)=.5*(t(i)+t(i+1))
          end do
          s(0)=s0
          s(n)=sn
-         if(inputb.and. .not.isrand) goto 160
+         if(inputb .and. .not.isrand) goto 160
       else
          if(inputb) goto 160
       end if
@@ -100,8 +103,6 @@ c-------- 4. compute tl,tu
 c-
 c-------- 5. compute indices
       if(trace .gt. 0) call monit1(5, trace)
-      il=1
-      iu=n
       wn(1,1)=0.0
       wn(n,1)=0.0
       do i=1,n

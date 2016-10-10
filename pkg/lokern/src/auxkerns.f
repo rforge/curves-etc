@@ -258,6 +258,11 @@ c Var
       double precision a(7,7),a1(7),a2(7),a3(7,7),cm(7,6)
       double precision s0,sn,bmin,bmax,bb,wwl,wwr,wid,wr,wido
 c-
+c- Shut up over zealous compiler warnings from -Wmaybe-uninitialized :
+      wr = 0.
+      jl = -1
+      jr = -1
+
       if(trace .gt. 0) call monitfp(0, n, b, nue, kord, ny, m, trace)
 
 c------ compute constants for later use
@@ -393,7 +398,7 @@ c------ new initialisation of sw
 6666    continue
 c-
 c------ if bandwidth is too small no smoothing
-        if(wwl.ge.s(jr-1).and.wwr.le.s(jr)) then
+        if(s(jr-1).le.wwl .and. wwr.le.s(jr)) then
           y(i)=x(jr)
           if(nue.gt.0) y(i)=0.d0
         else
@@ -413,7 +418,7 @@ c------ now the sums are built that are needed to compute the estimate
         end if
 c-
 c------ new initialisation ?
-        if(jl.gt.jr.or.wwl.gt.wr.or.init.gt.100) init=0
+        if(jl.gt.jr .or. wwl.gt.wr .or. init.gt.100) init=0
         wido=wid
 c-
  100  continue
@@ -458,6 +463,10 @@ c Var
       double precision s0,sn,bmin,bmax,bb,wwl,wwr,wid,wr,wido
 c-
       if(trace .gt. 0) call monitfp(1, n, b, nue, kord, ny, m, trace)
+c- Shut up over zealous compiler warnings from -Wmaybe-uninitialized
+      jl = -1
+      jr = -1
+      wr = 0.
 
 c------ compute constants for later use
       s0=1.5*t(1)-0.5*t(2)
@@ -510,6 +519,7 @@ c------ no boundary
 c-
 c------ compute normalizing constant
         if(iboun.ne.0) then
+          q=0. ! -Wall
           if(iboun.eq.1) q=(tt(i)-s(0))/wid
           if(iboun.eq.-1) q=(s(n)-tt(i))/wid
           qq=q*q
@@ -604,7 +614,7 @@ c------ new initialisation of sw
 6666    continue
 c-
 c------ if bandwidth is too small no smoothing
-        if(wwl.ge.s(jr-1).and.wwr.le.s(jr)) then
+        if(s(jr-1).le.wwl .and. wwr.le.s(jr)) then
           y(i)=x(jr)
           if(nue.gt.0) y(i)=0.d0
         else
@@ -775,6 +785,7 @@ c------- built up matrix a3=p*q*p**-1
           a3(k+2,k)=(k+.5d0)*ww
         end do
 c-
+        qq=0. ! -Wall (stupid compiler)
         if(iord.ge.5) then
           qq=a3(2,2)
           a3(5,1)=q*(1.875d0+qq*(-5.25d0+qq*3.375d0))

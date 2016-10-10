@@ -98,4 +98,5 @@ p.3glks(tt, xSim, kord = 4)
 r <- p.3glks(tt, xSim, kord = 6,
              derivs = 0:4, useBand = 0.15)
 ## and inspect them
-str(r)
+if(interactive())  print(r)
+

@@ -27,12 +27,12 @@ c if TRUE, do not compute bandwidths but use ban(.)
       double precision wn(0:n,5), w1(m1,3), wm(m), ban(m)
 c Var
       logical inputs, needsrt
-      integer nyg, i,ii,iil,itt,il,iu,itende,it, j,
-     1     kk,kk2, kordv, nn, nuev,nyl
-      double precision bias(2,0:2),vark(2,0:2),fak2(2:4),
-     1     rvar, s0,sn, b,b2,bmin,bmax,bres,bvar,bs,alpha,ex,exs,exsvi,
-     2     r2,snr,vi,ssi,const,fac, g1,g2,dist, q,tll,tuu, wstep,
-     3     xi,xh,xxh,xmy2
+      integer nyg, i,ii,iil,itt,il,iu,itende,it, j, kk,kk2, nn
+     1     , kordv, nuev, nyl ! <- lokern extra
+      double precision bias(2,0:2), vark(2,0:2), fak2(2:4),
+     1     rvar, s0,sn, b2,bmin,bmax, bres,bs, alpha,ex,exs,exsvi,
+     2     r2,snr,osig, vi,ssi,const,fac, q,tll,tuu, xi,xmy2
+     3     , b, bvar, g1,g2,dist, wstep, xh,xxh ! <- lokern extra
 c-
 c-------- 1. initialisations
       data bias/.2, .04762, .4286, .1515, 1.33, .6293/
@@ -58,8 +58,11 @@ c     kord - nue must be even :
       if(2*kk + nue .ne. kord)        kord=nue+2
       if(kord.gt.4 .and. .not.inputb) kord=nue+2
       if(kord.gt.6 .or. kord.le.nue)  kord=nue+2
+
       rvar=sig
       itende = -1
+      il=1
+      iu=n
 
       if(trace .gt. 0) call monit0(1, n, m, nue, kord,
      +     inputb, isrand, ban, trace)
@@ -68,7 +71,7 @@ c-------- 2. computation of s-sequence
       if(trace .gt. 0) call monit1(2, trace)
       s0=1.5*t(1)-0.5*t(2)
       sn=1.5*t(n)-0.5*t(n-1)
-      if(s(n).le.s(0)) then
+      if(s(n).le.s(0)) then ! typically are all = 0., when called from R
          inputs= .true.
          do i=1,n-1
             s(i)=.5*(t(i)+t(i+1))
@@ -98,8 +101,6 @@ c-------- 4. compute tl,tu
 c-
 c-------- 5. compute indices
       if(trace .gt. 0) call monit1(5, trace)
-      il=1
-      iu=n
       wn(1,1)=0.0
       wn(n,1)=0.0
       do i=1,n
@@ -159,8 +160,7 @@ c-------- 8. compute constants for iteration
 c-
 c-------- 9. estimating variance and smoothed pseudoresiduals
       if(trace .gt. 0) call monit1(9, trace)
-c     rvar=sig ! to become old 'sig'
-c ?? FIXME: The line above is *active* in glkerns.f
+      rvar=sig ! to become old 'sig'
       if(hetero) then
         call resest(t,x,n,wn(1,2),snr,sig)
         bres=max(bmin,.2*dble(nn)**(-.2)*(s(iu)-s(il-1)))

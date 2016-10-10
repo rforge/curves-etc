@@ -6,21 +6,21 @@
 		     m1,xl,xu,s,sig,bandwidth, trace.lev)
 {
     ## calling fortran routine
-    r <- .Fortran(glkern_s,			 # Fortran arg.names :
-                  x = as.double(x),              # t
-                  y = as.double(y),              # x
-                  x.out = as.double(x.out),      # tt
-		  est	= double(n.out),	 # y
-		  nobs = as.integer(nobs),	 # n
-                  n.out= as.integer(n.out),      # m
-                  deriv = as.integer(deriv),     # nue
-                  korder = as.integer(korder),   # kord
-                  hetero = as.logical(hetero),   # hetero
-                  is.rand= as.logical(is.rand),  # isrand
-		  inputb = as.logical(inputb),	 # inputb
+    r <- .Fortran(glkern_s,			# Fortran arg.names :
+		  x = as.double(x),             # t
+		  y = as.double(y),             # x
+		  x.out = as.double(x.out),     # tt
+		  est	= double(n.out),	# y
+		  nobs = as.integer(nobs),	# n
+		  n.out= as.integer(n.out),     # m
+		  deriv = as.integer(deriv),    # nue
+		  korder = as.integer(korder),  # kord
+		  hetero = as.logical(hetero),  # hetero
+		  is.rand= as.logical(is.rand), # isrand
+		  inputb = as.logical(inputb),	# inputb
 		  iter = as.integer(m1),# number of plug-in iterations on output
-                  xl = as.double(xl),
-                  xu = as.double(xu),
+		  xl = as.double(xl),		# tl
+		  xu = as.double(xu),		# tu
                   s = as.double(s),
                   sig = as.double(sig),
                   work1 = double((nobs+1)*5),	# wn [0:n, 5]
@@ -129,7 +129,7 @@ glkerns.default <- function(x, y=NULL, deriv = 0,
     ##		variance estimation
     if (is.null(xl) || is.null(xu)) {
         xl <- 1
-        xu <- 0
+	xu <- 0 # so xl < xu -- and compiled code 'phase 4' computes (tl, tu)
     }
 
     ## s	mid-point grid :
