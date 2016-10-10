@@ -26,7 +26,7 @@ c Var
       integer nyg, i,ii,iil,itt,il,iu,itende,it, j, kk,kk2, nn
       double precision bias(2,0:2),vark(2,0:2),fak2(2:4),
      1     rvar, s0,sn, b2,bmin,bmax,bres,bs,alpha,ex,exs,exsvi,
-     2     r2,snr,vi,ssi,const,fac, q,tll,tuu, xi,xmy2
+     2     r2,snr,osig, vi,ssi,const,fac, q,tll,tuu, xi,xmy2
 c-
 c-------- 1. initialisations
       data bias/.2, .04762, .4286, .1515, 1.33, .6293/
@@ -34,6 +34,8 @@ c-------- 1. initialisations
       data fak2/4.,36.,576./
       nyg=0
       inputs = .false.
+c r2:  used in phase 17, but only defined in phase 9 if(hetero & sig <= 0)
+      r2=0.
 
 c Stop for invalid inputs (impossible when called from R's glkerns())
 
@@ -49,10 +51,10 @@ c     kord - nue must be even  <<--- MM: *UN*desirable (want to fix kord, vary '
 c                        ----  <<---     but a short glimpse at coff*() ./auxkerns.f
 c                                        reveals how much work would be needed to change this
       kk=(kord-nue)/2
-      if(2*kk + nue .ne. kord)       kord=nue+2
-      if(kord.gt.4 .and. .not.inputb)   kord=nue+2
-      if(kord.gt.6 .or. kord.le.nue) kord=nue+2
-      if(inputb.and.b.le.0) inputb=.false.
+      if(2*kk + nue .ne. kord)        kord=nue+2
+      if(kord.gt.4 .and. .not.inputb) kord=nue+2
+      if(kord.gt.6 .or. kord.le.nue)  kord=nue+2
+      if(inputb .and. b.le.0) inputb=.false.
       rvar=sig
 c- -Wall (erronously warning if not)
       bmin=1
@@ -60,8 +62,6 @@ c- -Wall (erronously warning if not)
       ex=1
       itende= -1
 
-      il=1
-      iu=n
 
       if(trace .gt. 0) call monit0(0, n, m, nue, kord,
      +     inputb, isrand, b, trace)
@@ -100,6 +100,8 @@ c-------- 4. compute tl,tu
 c-
 c-------- 5. compute indices
       if(trace .gt. 0) call monit1(5, trace)
+      il=1
+      iu=n
       wn(1,1)=0.0
       wn(n,1)=0.0
       do i=1,n
@@ -159,7 +161,7 @@ c-------- 8. compute constants for iteration
 c-
 c-------- 9. estimating variance and smoothed pseudoresiduals
       if(trace .gt. 0) call monit1(9, trace)
-      rvar=sig
+      rvar=sig ! to become old 'sig'
       if(hetero) then
          call resest(t,x,n,wn(1,2),snr,sig)
          bres=max(bmin, .2* dble(nn)**(-.2) * (s(iu)-s(il-1)))
@@ -167,8 +169,10 @@ c-------- 9. estimating variance and smoothed pseudoresiduals
             wn(i,3)=t(i)
             wn(i,2)=wn(i,2)*wn(i,2)
          end do
+c     smooth  (t[i], r[i]^2) , r[]= (leave-one-out interpol.) residual from reset
          call kernel(t,wn(1,2),n,bres,0,kk2,nyg,s,
      .        wn(il,3),nn,wn(il,4), trace)
+cc ?? FIXME      ^^          ^^  ./lokerns.f has '1' here instead of 'il'
       else !-- not hetero
          if(sig .le. 0.) then
             call resest(t(il),x(il),nn,wn(il,2),r2,sig)
@@ -246,12 +250,10 @@ c-------- 15. finish of iterations
 c-------- 16  compute smoothed function with global plug-in bandwidth
  160  if(trace .ge. 2) call monit1(16, trace)
       call kernel(t,x,n,b,nue,kord,nyg,s,tt,m,y, trace)
-c-  return #{iter} (iff aplicable)
-      m1=itende
 c-------- 17. variance check
       if(trace .ge. 2) call monit1(17, trace)
       if(hetero) sig=rvar
-      if(hetero.or. r2.lt.0.88 .or. nue.gt.0) return
+      if(sig.eq.rvar .or. r2.lt.0.88 .or. nue.gt.0) goto 222
       ii=0
       iil=0
       j=2
@@ -274,12 +276,16 @@ c-------- 17. variance check
          call resest(t(iil),wn(1,3), ii, wn(1,4),snr,rvar)
       end if
       q=sig/rvar
-      if(q.le.2.) return
+      if(q.le.2.) goto 222
       if(q.gt.5. .and. r2.gt..95) rvar=rvar*.5
+      osig=sig
       sig=rvar
-      if(trace .ge. 2) call monit_s(r2, q, sig, trace)
+      if(trace .ge. 2) call monit_s(r2, osig, q, sig)
       call constV(wn(1,4),n,sig)
       goto 100
 c     -------- end loop
+c     return #{iter} (iff aplicable)
+ 222  m1=itende
+      return
       end
 

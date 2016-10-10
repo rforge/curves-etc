@@ -40,6 +40,8 @@ c-------- 1. initialisations
       data fak2/4.,36.,576./
       nyg=0
       inputs = .false.
+c r2:  used in phase 17, but only defined in phase 9 if(hetero & sig <= 0)
+      r2=0.
       nyl=1
 c Stop for invalid inputs (impossible when called from R's lokerns())
 
@@ -157,6 +159,8 @@ c-------- 8. compute constants for iteration
 c-
 c-------- 9. estimating variance and smoothed pseudoresiduals
       if(trace .gt. 0) call monit1(9, trace)
+c     rvar=sig ! to become old 'sig'
+c ?? FIXME: The line above is *active* in glkerns.f
       if(hetero) then
         call resest(t,x,n,wn(1,2),snr,sig)
         bres=max(bmin,.2*dble(nn)**(-.2)*(s(iu)-s(il-1)))
@@ -167,16 +171,17 @@ c-------- 9. estimating variance and smoothed pseudoresiduals
 c     smooth  (t[i], r[i]^2) , r[]= (leave-one-out interpol.) residual from reset
         call kernel(t,wn(1,2),n,bres,0,kk2,nyg,s,
      .       wn(1,3),n,wn(1,4), trace)
+cc ?? FIXME     ^         ^  ./glkerns.f has 'il' here instead of '1'
       else !-- not hetero
-         if(sig .le. 0. .and. .not.hetero) then
+         if(sig .le. 0.) then
             call resest(t(il),x(il),nn,wn(il,2),r2,sig)
-         endif
+         end if
          call constV(wn(1,4),n,sig)
       end if
 c-
 c-------- 10. [LOOP:] estimate/compute integral constant
-      if(trace .gt. 0) call monit1(10, trace)
 100   vi=0.
+      if(trace .gt. 0) call monit1(10, trace)
       do i=il,iu
          vi=vi+ wn(i,1)*n*(s(i)-s(i-1))**2 * wn(i,4)
       end do
@@ -215,7 +220,7 @@ c-------- 12. compute inflation constant and exponent and loop of iterations
       const=dble(2*nue+1)*fak2(kord)*vark(kk,nue)*vi
      .       /(dble(2*kord-2*nue)*bias(kk,nue)**2*dble(n))
       fac=1.1*(1.+(nue/10.)+0.05*(kord-nue-2.))
-     .       *dble(n)**(2./dble((2*kord+1)*(2*kord+3)))
+     .       * dble(n)**(2./dble((2*kord+1)*(2*kord+3)))
 
 c     itende=1+2*kord+kord*(2*kord+1)
       itende = (1 + 2*kord) * (1 + kord)
@@ -248,14 +253,14 @@ c-
 c-------- 17. variance check
       if(trace .ge. 2) call monit1(17, trace)
       if(hetero) sig=rvar
-      if(hetero.or. r2.lt.0.88 .or. nue.gt.0) goto 180
+      if(sig.eq.rvar .or. r2.lt.0.88 .or. nue.gt.0) goto 180
       ii=0
       iil=0
       j=2
       tll=max(tl,tt(1))
       tuu=min(tu,tt(m))
       do i=il,iu
-         if(t(i).lt.tll.or.t(i).gt.tuu) goto 170
+         if(t(i).lt.tll .or. t(i).gt.tuu) goto 170 ! break
          ii=ii+1
          if(iil.eq.0) iil=i
  171     if(tt(j).lt.t(i)) then
@@ -265,10 +270,10 @@ c-------- 17. variance check
          wn(ii,3)=x(i)-y(j)+(y(j)-y(j-1))*(tt(j)-t(i))/(tt(j)-tt(j-1))
       end do
  170  continue
-      if(iil.eq.0.or.ii-iil.lt.10) then
-         call resest(t(il),wn(1,3),nn,wn(1,4),snr,rvar)
+      if(iil.eq.0 .or. ii-iil.lt.10) then
+         call resest(t(il), wn(1,3), nn, wn(1,4),snr,rvar)
       else
-         call resest(t(iil),wn(1,3),ii,wn(1,4),snr,rvar)
+         call resest(t(iil),wn(1,3), ii, wn(1,4),snr,rvar)
       end if
       q=sig/rvar
       if(q.le.2.) then
@@ -276,8 +281,9 @@ c-------- 17. variance check
          goto 180
       end if
       if(q.gt.5. .and. r2.gt..95) rvar=rvar*.5
+      osig=sig
       sig=rvar
-      if(trace .ge. 2) call monit_s(r2, q, sig, trace)
+      if(trace .ge. 2) call monit_s(r2, osig, q, sig)
       call constV(wn(1,4),n,sig)
       goto 100
 c     -------- end loop
