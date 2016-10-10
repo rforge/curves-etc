@@ -58,14 +58,16 @@ c       computes one-leave-out residuals for nonparametric estimation
 c       of residual variance (local linear approximation followed by
 c       reweighting)
 c
-c     parameters:
+c   Parameters:
 c
-c     input   t(n)      abscissae (ordered: t(i) <= t(i+1))
-c     input   x(n)      data
-c     input   n         length of data ( >2 )
-c     output  res(n)    residuals at t(1),...,t(n)
-c     output  snr       explained variance of the true curve
-c     output  sigma2    estimation of sigma^2 (residual variance)
+c   Input
+c       t(n)      abscissae (ordered: t(i) <= t(i+1))
+c       x(n)      data
+c       n         length of data ( >2 )
+c   Output
+c       res(n)    residuals at t(1),...,t(n)
+c       snr       explained variance "R^2" of the true curve
+c       sigma2    estimation of sigma^2 (residual variance)
 c
 c-----------------------------------------------------------------------
 c Arguments
@@ -112,7 +114,7 @@ c     last points
       res(n)=(x(n)-g1*x(n-2)-g2*x(n-1))/sqrt(1.+g1*g1+g2*g2)
 
       sigma2=(sigma2+ res(1)*res(1)+ res(n)*res(n))/n
-c- snr := explained variance
+c  snr := explained variance ( = R^2 )
       sx=x(n)*(t(n)-t(n-1))
       dn=2.*(t(n)-t(1))
       ex =(ex + sx    )/dn
