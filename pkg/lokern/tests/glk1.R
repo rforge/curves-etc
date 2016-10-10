@@ -32,10 +32,17 @@ p.3glks(tt, xSim, kord = 3)
 
 p.3glks(tt, xSim, kord = 4, useB = 0.15)
 
-print(
-    p.3glks(tt, xSim, kord = 5, useB = 0.12) # k.ord = (4,5,4) => less sensical?
-    )
+## Some summary output, but not to too high precision ( platform diffs ) :
 
-p.3glks(tt, xSim, kord = 6, useB = 0.2, derivs = 0:3) # k.ord = (6,5,6, 5)
+g3k5 <- p.3glks(tt, xSim, kord = 5, useB = 0.12) # k.ord = (4,5,4) => less sensical?
+stopifnot(lengths(gk5.est <- lapply(g3k5, `[[`, "est")) == 300)
+gk5.q <- sapply(gk5.est, quantile, prob = (1:9)/10)
+print(gk5.q, digits = 5)
+
+g3k6 <- p.3glks(tt, xSim, kord = 6, useB = 0.2, derivs = 0:3) # k.ord = (6,5,6, 5)
+stopifnot(lengths(gk6.est <- lapply(g3k6, `[[`, "est")) == 300)
+gk6.q <- sapply(gk6.est, quantile, prob = (1:9)/10)
+print(gk6.q, digits = 4)
+
 
 ## "FIXME" visually compare with numerical derivatives (e.g. from splines).

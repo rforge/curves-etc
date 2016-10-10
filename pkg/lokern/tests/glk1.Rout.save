@@ -1,5 +1,5 @@
 
-R version 3.2.5 (2016-04-14) -- "Very, Very Secure Dishes"
+R version 3.3.1 Patched (2016-10-04 r71447) -- "Bug in Your Hair"
 Copyright (C) 2016 The R Foundation for Statistical Computing
 Platform: x86_64-pc-linux-gnu (64-bit)
 
@@ -201,105 +201,45 @@ Warning messages:
 > p.3glks(tt, xSim, kord = 4, useB = 0.15)
 deriv = 1: modifying korder from 4 to 3
 > 
-> print(
-+     p.3glks(tt, xSim, kord = 5, useB = 0.12) # k.ord = (4,5,4) => less sensical?
-+     )
+> ## Some summary output, but not to too high precision ( platform diffs ) :
+> 
+> g3k5 <- p.3glks(tt, xSim, kord = 5, useB = 0.12) # k.ord = (4,5,4) => less sensical?
 deriv = 0: modifying korder from 5 to 4
 deriv = 2: modifying korder from 5 to 4
-$`nu=0`
-Call:
-glkerns.default(x = x.dat, y = y.dat, deriv = nu, korder = k0, 
-    is.rand = is.rand, bandwidth = bw)
-List of 23
- $ x         : num [1:75] 0.006666667 0.02 0.033333333 0.046666667 0.06 ...
- $ y         : num [1:75] 1.9666 1.9 1.6449 1.4275 2.4 1.8487 1.3383 1.9514 1.5722 1.1978 ...
- $ x.out     : num [1:300] 0.006666667 0.011032448 0.01539823 0.019764012 0.02 ...
- $ est       : num [1:300] 1.885277 1.881011 1.875988 1.870213 1.869879 ...
- $ nobs      : int 75
- $ n.out     : int 300
- $ deriv     : int 0
- $ korder    : int 4
- $ hetero    : logi FALSE
- $ is.rand   : logi FALSE
- $ inputb    : logi TRUE
- $ iter      : int NA
- $ xl        : num 1
- $ xu        : num 0
- $ s         : num [1:76] 0 0.01333333 0.02666667 0.04 0.05333333 ...
- $ sig       : num 0
- $ bandwidth : num 0.12
- $ ind.x     : int [1:75] 1 5 9 13 17 21 25 29 33 37 ...
- $ seqXmethod: chr "aim"
- $ m1        : int 400
- $ isOrd     : logi TRUE
- $ ord       : NULL
- $ x.inOut   : logi TRUE
-
-$`nu=1`
-Call:
-glkerns.default(x = x.dat, y = y.dat, deriv = nu, korder = k0, 
-    is.rand = is.rand, bandwidth = bw)
-List of 23
- $ x         : num [1:75] 0.006666667 0.02 0.033333333 0.046666667 0.06 ...
- $ y         : num [1:75] 1.9666 1.9 1.6449 1.4275 2.4 1.8487 1.3383 1.9514 1.5722 1.1978 ...
- $ x.out     : num [1:300] 0.006666667 0.011032448 0.01539823 0.019764012 0.02 ...
- $ est       : num [1:300] -5.251133 -4.498137 -3.84347 -3.282598 -3.254864 ...
- $ nobs      : int 75
- $ n.out     : int 300
- $ deriv     : int 1
- $ korder    : int 5
- $ hetero    : logi FALSE
- $ is.rand   : logi FALSE
- $ inputb    : logi TRUE
- $ iter      : int NA
- $ xl        : num 1
- $ xu        : num 0
- $ s         : num [1:76] 0 0.01333333 0.02666667 0.04 0.05333333 ...
- $ sig       : num 0
- $ bandwidth : num 0.12
- $ ind.x     : int [1:75] 1 5 9 13 17 21 25 29 33 37 ...
- $ seqXmethod: chr "aim"
- $ m1        : int 400
- $ isOrd     : logi TRUE
- $ ord       : NULL
- $ x.inOut   : logi TRUE
-
-$`nu=2`
-Call:
-glkerns.default(x = x.dat, y = y.dat, deriv = nu, korder = k0, 
-    is.rand = is.rand, bandwidth = bw)
-List of 23
- $ x         : num [1:75] 0.006666667 0.02 0.033333333 0.046666667 0.06 ...
- $ y         : num [1:75] 1.9666 1.9 1.6449 1.4275 2.4 1.8487 1.3383 1.9514 1.5722 1.1978 ...
- $ x.out     : num [1:300] 0.006666667 0.011032448 0.01539823 0.019764012 0.02 ...
- $ est       : num [1:300] -39.91204 -39.68558 -39.45924 -39.23299 -39.22077 ...
- $ nobs      : int 75
- $ n.out     : int 300
- $ deriv     : int 2
- $ korder    : int 4
- $ hetero    : logi FALSE
- $ is.rand   : logi FALSE
- $ inputb    : logi TRUE
- $ iter      : int NA
- $ xl        : num 1
- $ xu        : num 0
- $ s         : num [1:76] 0 0.01333333 0.02666667 0.04 0.05333333 ...
- $ sig       : num 0
- $ bandwidth : num 0.12
- $ ind.x     : int [1:75] 1 5 9 13 17 21 25 29 33 37 ...
- $ seqXmethod: chr "aim"
- $ m1        : int 400
- $ isOrd     : logi TRUE
- $ ord       : NULL
- $ x.inOut   : logi TRUE
-
+> stopifnot(lengths(gk5.est <- lapply(g3k5, `[[`, "est")) == 300)
+> gk5.q <- sapply(gk5.est, quantile, prob = (1:9)/10)
+> print(gk5.q, digits = 5)
+        nu=0     nu=1       nu=2
+10% -2.39274 -28.4630 -351.95788
+20% -1.89222 -10.4884  -38.50880
+30% -1.39110  -7.8650  -34.30356
+40%  0.40576  -6.2751  -19.39833
+50%  0.71256  -5.2738   -0.57926
+60%  1.16704  -4.0419   46.68432
+70%  1.61158  -3.1877   97.17764
+80%  1.86995  -1.2868  167.94221
+90%  3.34403  20.1072  242.05082
 > 
-> p.3glks(tt, xSim, kord = 6, useB = 0.2, derivs = 0:3) # k.ord = (6,5,6, 5)
+> g3k6 <- p.3glks(tt, xSim, kord = 6, useB = 0.2, derivs = 0:3) # k.ord = (6,5,6, 5)
 deriv = 1: modifying korder from 6 to 5
 deriv = 3: modifying korder from 6 to 5
+> stopifnot(lengths(gk6.est <- lapply(g3k6, `[[`, "est")) == 300)
+> gk6.q <- sapply(gk6.est, quantile, prob = (1:9)/10)
+> print(gk6.q, digits = 4)
+       nu=0     nu=1     nu=2    nu=3
+10% -2.3847 -27.9617 -386.195 -3421.7
+20% -1.9068 -11.0193  -54.248 -1595.0
+30% -1.4120  -7.6688  -43.218 -1118.2
+40%  0.3670  -6.8423  -24.507  -519.6
+50%  0.7081  -5.5052    1.395   129.7
+60%  1.1887  -4.1167   44.646   775.4
+70%  1.6358  -3.2823  114.243  1404.2
+80%  1.8669  -0.1737  200.441  1932.6
+90%  3.3561  19.7495  291.180  3116.0
+> 
 > 
 > ## "FIXME" visually compare with numerical derivatives (e.g. from splines).
 > 
 > proc.time()
    user  system elapsed 
-  0.306   0.047   0.466 
+  0.286   0.027   0.377 
