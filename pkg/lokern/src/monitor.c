@@ -34,19 +34,23 @@ void F77_SUB(monit_s)(double *r2, double *q, double *sig, int *trace) {
 
 
 // Called only from kernel() and kernp()  in auxkerns.f
-void F77_SUB(monitk0)(int *n, int *m, double *b, double *chan,
+void F77_SUB(monitk0)(int *caller, int *n, int *m, double *b, double *chan,
 		      double *chR, int *do_classic)
 {
-    Rprintf(" kernel(n=%3d,m=%3d; b=%12.7g) -> (chg.pt,cut_b)=(%4.1f,%5.2f) => '%s'\n",
+    Rprintf(" %s(n=%3d,m=%3d; b=%12.7g) -> (chg.pt,cut_b)=(%4.1f,%5.2f) => '%s'\n",
+	    // caller = 0 | 1  <==> from (kernel | kernp )
+	    (*caller) ? "kernp" : "kernel",
 	    *n, *m, *b, *chan, *chR, (*do_classic) ? "classic" : "fast O(n)");
 }
 
-// Called from kernfp() in auxkerns.f
-void F77_SUB(monitfp)(int *n, double *b, int *nue, int *kord, int *ny, int *trace)
+// Called from kernfa() and kernfp() in auxkerns.f
+void F77_SUB(monitfp)(int *caller, int *n, double *b, int *nue,
+		      int *kord, int *ny, int *m, int *trace)
 {
-    Rprintf(" kernfp(n=%3d, b=%12.7g, nue=%d, kord=%d, ny=%d):\n",
-	    *n, *b, *nue, *kord, *ny);
-    // TODO print more when (*trace >= 2) ...
+    Rprintf("  %s(n=%3d, b=%12.7g, nue=%d, kord=%d, ny=%d, m=%d):\n",
+	    // caller = 0 | 1  <==> from ( kernfa | kernfp )
+	    (*caller) ? "kernfp" : "kernfa",
+	    *n, *b, *nue, *kord, *ny, *m);
 }
 
 

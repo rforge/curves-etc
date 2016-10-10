@@ -161,7 +161,7 @@ c------  computing change point
 c------
       chR = chan * (t(n)-t(1)) / (n-1)
 
-      if(trace .gt. 0) call monitk0(n,m, b, chan, chR, (b .lt. chR))
+      if(trace .gt. 0) call monitk0(0, n, m, b, chan, chR, (b .lt. chR))
 
       if(b .lt. chR) then ! small bandwidth ==> classical kernel
          call kerncl(t,x,n,b,nue,kord,ny,s,tt,m,y, trace)
@@ -209,7 +209,7 @@ c------  computing change point
 c------
       chR = chan * (t(n)-t(1)) / (n-1)
 
-      if(trace .gt. 0) call monitk0(n,m, b, chan, chR, (b .lt. chR))
+      if(trace .gt. 0) call monitk0(1, n, m, b, chan, chR, (b .lt. chR))
 
       if(b .lt. chR) then
          call kerncp(t,x,n,b,nue,kord,ny,s,tt,m,y, trace)
@@ -256,7 +256,7 @@ c Var
       double precision a(7,7),a1(7),a2(7),a3(7,7),cm(7,6)
       double precision s0,sn,bmin,bmax,bb,wwl,wwr,wid,wr,wido
 c-
-      if(trace .gt. 0) call intpr('  kernfa()',-1, 0,0)
+      if(trace .gt. 0) call monitfp(0, n, b, nue, kord, ny, m, trace)
 
 c------ compute constants for later use
       s0=1.5*t(1)-0.5*t(2)
@@ -455,7 +455,8 @@ c Var
       double precision a(7,7),a1(7),a2(7),a3(7,7),cm(7,6)
       double precision s0,sn,bmin,bmax,bb,wwl,wwr,wid,wr,wido
 c-
-      if(trace .gt. 0) call monitfp(n, b, nue, kord, ny, trace)
+      if(trace .gt. 0) call monitfp(1, n, b, nue, kord, ny, m, trace)
+
 c------ compute constants for later use
       s0=1.5*t(1)-0.5*t(2)
       sn=1.5*t(n)-0.5*t(n-1)

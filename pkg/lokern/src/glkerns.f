@@ -1,5 +1,5 @@
       subroutine glkern_s(t,x, tt,y, n,m,nue,kord, hetero,isrand,
-     .     inputb,m1,tl,tu,s,sig,wn,w1,b, trace)
+     +     inputb,m1,tl,tu,s,sig,wn,w1,b, trace)
 c----------------------------------------------------------------------*
 c-----------------------------------------------------------------------
 c       Short-version: Oct 1996
@@ -193,7 +193,7 @@ c-------- 11. refinement of s-sequence for random design
         end do
         exs= -dble(3*kord+1) / dble(6*kord+3)
         exsvi=dble(kord)     / dble(6*kord+3)
-        bs=0.1*(vi/(sn-s0)**2)**exsvi * n**exs
+        bs=0.1*(vi/(sn-s0)**2)**exsvi * dble(n)**exs
         call kernel(wn(1,5),t,n,bs,0,2,nyg,wn(0,3),wn(0,2),n+1,s(0),
      .       trace)
         vi=0.0
@@ -258,7 +258,7 @@ c-------- 17. variance check
       tll=max(tl,tt(1))
       tuu=min(tu,tt(m))
       do i=il,iu
-         if(t(i).lt.tll .or. t(i).gt.tuu) goto 170
+         if(t(i).lt.tll .or. t(i).gt.tuu) goto 170 ! break
          ii=ii+1
          if(iil.eq.0) iil=i
  171     if(tt(j).lt.t(i)) then
@@ -268,10 +268,10 @@ c-------- 17. variance check
          wn(ii,3)=x(i)-y(j)+(y(j)-y(j-1))*(tt(j)-t(i))/(tt(j)-tt(j-1))
       end do
  170  continue
-      if(iil.eq.0.or.ii-iil.lt.10) then
-         call resest(t(il),wn(1,3),nn,wn(1,4),snr,rvar)
+      if(iil.eq.0 .or. ii-iil.lt.10) then
+         call resest(t(il), wn(1,3), nn, wn(1,4),snr,rvar)
       else
-         call resest(t(iil),wn(1,3),ii,wn(1,4),snr,rvar)
+         call resest(t(iil),wn(1,3), ii, wn(1,4),snr,rvar)
       end if
       q=sig/rvar
       if(q.le.2.) return
