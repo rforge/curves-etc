@@ -1,8 +1,7 @@
 
-R version 2.13.0 Patched (2011-04-24 r55634)
-Copyright (C) 2011 The R Foundation for Statistical Computing
-ISBN 3-900051-07-0
-Platform: x86_64-unknown-linux-gnu (64-bit)
+R Under development (unstable) (2017-01-29 r72049) -- "Unsuffered Consequences"
+Copyright (C) 2017 The R Foundation for Statistical Computing
+Platform: x86_64-pc-linux-gnu (64-bit)
 
 R is free software and comes with ABSOLUTELY NO WARRANTY.
 You are welcome to redistribute it under certain conditions.
@@ -246,6 +245,9 @@ R^2 = 8.22% ;  empirical tau (over all): 3287/6574 = 0.5 (target tau= 0.5)
        (b) Set lambda==0 to exclude the penalty term;
        (c) Use a coarser grid by reducing the argument
  	   'lambda.length' from the default value of 25.
+WARNING: Some lambdas had problems in rq.fit.sfnc():
+      lambda icyc ifl    fidel   sum|res|_s k
+[1,] 1482516   72 -16 6199.497 0.0002848763 4
 
    The algorithm has converged.  You might
    plot() the returned object (which plots 'sic' against 'lambda')
@@ -253,13 +255,15 @@ R^2 = 8.22% ;  empirical tau (over all): 3287/6574 = 0.5 (target tau= 0.5)
    so that you can determine if you need to adjust any or all of
    'lambda.lo', 'lambda.hi' and 'lambda.length' and refit the model.
 
-Warning in cobs(day, speed, knots.add = TRUE, constraint = "periodic", nknots = 10,  :
-  The algorithm has not converged after 100 iterations for at least one lambda
-Check to make sure that your constraint is feasible
+Warning message:
+In cobs(day, speed, knots.add = TRUE, constraint = "periodic", nknots = 10,  :
+  Check 'ifl'
 > summary(co.o9)
 COBS smoothing spline (degree = 2) from call:
 	 cobs(x = day, y = speed, constraint = "periodic", nknots = 10,     method = "uniform", tau = 0.9, lambda = -1, knots.add = TRUE)
-{tau=0.9}-quantile;  dimensionality of fit: 12 from {13,12,10,9,7,14}
+ * Warning in algorithm: some ifl != 1
+
+{tau=0.9}-quantile;  dimensionality of fit: 12 from {13,12,10,9,7,4,14}
 x$knots[1:10]:   0.999635,  41.555556,  82.111111, ... , 366.000365
 lambda = 917.6266, selected via SIC, out of 25 ones.
 coef[1:12]: 19.08631533, 19.27928101, 17.83662511, 18.71788096, 12.75341051, ... ,  0.00416216
@@ -508,3 +512,6 @@ empirical tau (over all): 657/6574 = 0.09993915 (target tau= 0.1)
 > abline(v = co.o50.$knots, lty = 3, col = "gray70")
 > ## rather rug(co.o5$knots, lty = 2)
 > 
+> proc.time()
+   user  system elapsed 
+  7.712   0.157   8.016 

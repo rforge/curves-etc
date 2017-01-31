@@ -1,6 +1,6 @@
 Package: cobs
-Version: 1.3-1
-Date: 2015-09-01
+Version: 1.3-2
+Date: 2017-01-19
 Title: COnstrained B-Splines (Sparse Matrix Based)
 Description: Qualitatively Constrained (Regression) Smoothing Splines via
         Linear Programming and Sparse Matrices.
