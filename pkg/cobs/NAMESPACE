@@ -1,8 +1,8 @@
-useDynLib(cobs, spline_basis, spline_value)
-##        ----  TODO: replace the above by calling into splines package!!
+useDynLib(cobs, .registration=TRUE)
 
-import("SparseM") # need at least as.matrix()
-## NB: Still need 'Depends: SparseM' in DESCRIPTION - as SparseM does not S3export() all
+importFrom("SparseM", as.matrix, as.matrix.csr, solve, t)
+##  notably the S4 generics
+
 importFrom("quantreg",
            rq.fit.sfn, rq.fit.sfnc)
 ## Import non-base functions we need explicitly,

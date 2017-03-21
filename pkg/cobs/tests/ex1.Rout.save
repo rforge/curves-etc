@@ -1,5 +1,5 @@
 
-R Under development (unstable) (2017-01-29 r72049) -- "Unsuffered Consequences"
+R version 3.3.3 Patched (2017-03-15 r72365) -- "Another Canoe"
 Copyright (C) 2017 The R Foundation for Statistical Computing
 Platform: x86_64-pc-linux-gnu (64-bit)
 
@@ -895,7 +895,7 @@ coef  :
 > dx <- diff(range(ux <- unique(x)))
 > rx <- range(xx <- seq(ux[1] - dx/20, ux[length(ux)] + dx/20, len = 201))
 > cpuTime(cxyI  <- cobs(x,y, "decrease", knots = ux, nknots = length(ux)))
-Time elapsed: 0.021 
+Time elapsed: 0.016 
 Warning message:
 In cobs(x, y, "decrease", knots = ux, nknots = length(ux)) :
   The number of knots can't be equal to the number of unique x for degree = 2.
@@ -917,7 +917,7 @@ R^2 = 95.93% ;  empirical tau (over all): 245/500 = 0.49 (target tau= 0.5)
 > 
 > ## Deg = 1
 > cpuTime(cI1 <- cobs(x,y, "decrease", knots= ux, nknots= length(ux), degree = 1))
-Time elapsed: 0.019 
+Time elapsed: 0.013 
 Warning message:
 In cobs(x, y, "decrease", knots = ux, nknots = length(ux), degree = 1) :
   Check 'ifl'
@@ -956,21 +956,21 @@ R^2 = 96.02% ;  empirical tau (over all): 250/500 = 0.5 (target tau= 0.5)
    so that you can determine if you need to adjust any or all of
    'lambda.lo', 'lambda.hi' and 'lambda.length' and refit the model.
 
-Time elapsed: 0.253 
+Time elapsed: 0.24 
 > ## somewhat <  2 sec. (Pent. III, 700 MHz)
 > pxx <- predict(cxyS, xx)
 > pxx[xx > max(x) , ]# those outside to the right -- currently all = Inf !
-            z fit
- [1,] 2.58988 Inf
- [2,] 2.62158 Inf
- [3,] 2.65329 Inf
- [4,] 2.68499 Inf
- [5,] 2.71669 Inf
- [6,] 2.74839 Inf
- [7,] 2.78009 Inf
- [8,] 2.81180 Inf
- [9,] 2.84350 Inf
-[10,] 2.87520 Inf
+            z          fit
+ [1,] 2.58988  0.015882677
+ [2,] 2.62158  0.010364641
+ [3,] 2.65329  0.004818668
+ [4,] 2.68499 -0.000755241
+ [5,] 2.71669 -0.006357087
+ [6,] 2.74839 -0.011986869
+ [7,] 2.78009 -0.017644587
+ [8,] 2.81180 -0.023330242
+ [9,] 2.84350 -0.029043833
+[10,] 2.87520 -0.034785361
 > summaryCobs(cxyS)
 List of 24
  $ call         : language cobs(x = x, y = y, constraint = "decrease", lambda = -1)
@@ -1321,4 +1321,4 @@ null device
 > 
 > proc.time()
    user  system elapsed 
-  4.218   0.189   4.544 
+  2.854   0.161   3.020 

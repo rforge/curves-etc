@@ -1,5 +1,5 @@
 
-R Under development (unstable) (2017-01-29 r72049) -- "Unsuffered Consequences"
+R version 3.3.3 Patched (2017-03-15 r72365) -- "Another Canoe"
 Copyright (C) 2017 The R Foundation for Statistical Computing
 Platform: x86_64-pc-linux-gnu (64-bit)
 
@@ -42,7 +42,7 @@ Type 'q()' to quit R.
 > ## lambda selection
 > co.o50 <-
 +  cobs(day, speed, knots.add = TRUE, constraint="periodic", nknots = nknots,
-+       tau = .5, lambda = -1, factor = 3, method = "uniform")
++       tau = .5, lambda = -1, method = "uniform")
 
  Searching for optimal lambda. This may take a while.
    While you are waiting, here is something you can consider
@@ -58,13 +58,9 @@ Type 'q()' to quit R.
    so that you can determine if you need to adjust any or all of
    'lambda.lo', 'lambda.hi' and 'lambda.length' and refit the model.
 
-Warning message:
-In cobs(day, speed, knots.add = TRUE, constraint = "periodic", nknots = nknots,  :
-  The use of argument 'factor' is deprecated.
-  It is now unused and will be removed in the future.
 > summary(co.o50)
 COBS smoothing spline (degree = 2) from call:
-	 cobs(x = day, y = speed, constraint = "periodic", nknots = nknots,     method = "uniform", tau = 0.5, lambda = -1, knots.add = TRUE,     factor = 3)
+	 cobs(x = day, y = speed, constraint = "periodic", nknots = nknots,     method = "uniform", tau = 0.5, lambda = -1, knots.add = TRUE)
 {tau=0.5}-quantile;  dimensionality of fit: 7 from {16,14,12,13,9,8,7,30}
 x$knots[1:13]:   0.999635,  31.416667,  61.833333, ... , 366.000365
 lambda = 386959.9, selected via SIC, out of 25 ones.
@@ -514,4 +510,4 @@ empirical tau (over all): 657/6574 = 0.09993915 (target tau= 0.1)
 > 
 > proc.time()
    user  system elapsed 
-  7.712   0.157   8.016 
+  5.680   0.114   5.811 

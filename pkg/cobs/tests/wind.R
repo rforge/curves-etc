@@ -25,7 +25,7 @@ nknots <- 13
 ## lambda selection
 co.o50 <-
  cobs(day, speed, knots.add = TRUE, constraint="periodic", nknots = nknots,
-      tau = .5, lambda = -1, factor = 3, method = "uniform")
+      tau = .5, lambda = -1, method = "uniform")
 summary(co.o50)
 
 op <- par(mfrow = c(3,1), mgp = c(1.5, 0.6,0), mar=.1 + c(3,3:1))
