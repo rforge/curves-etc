@@ -11,8 +11,8 @@ importFrom("grDevices", gray,xy.coords)
 importFrom("graphics", axis, legend, mtext, par, plot, points, lines)
 importFrom("methods", new)
 importFrom("stats",
-           approx, coef, knots, fitted, median, predict, resid, residuals, sd, dnorm,pnorm,
-           qnorm, qchisq, qt)
+	   approx, coef, knots, fitted, median, predict, resid, residuals, sd,
+	   dnorm, pnorm, qnorm, qchisq, qt)
 importFrom("utils",
            capture.output, str)
 
