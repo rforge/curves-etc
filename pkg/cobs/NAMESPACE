@@ -15,6 +15,7 @@ importFrom("stats",
 	   dnorm, pnorm, qnorm, qchisq, qt)
 importFrom("utils",
            capture.output, str)
+importFrom("splines", interpSpline)
 
 export(cobs,
        conreg,
@@ -25,7 +26,7 @@ export(cobs,
        l1.design2,
        loo.design2,
        shat,
-       ## SR ! -- not yet --> R/SR.R man/conreg.Rd
+       interpSplineCon, isIsplineCon,
 
        ## Don't hide the plot methods on purpose (many surprising args):
        plot.cobs,

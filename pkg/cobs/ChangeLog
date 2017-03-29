@@ -1,3 +1,10 @@
+2017-03-28  Martin Maechler  <maechler@stat.math.ethz.ch>
+
+	* R/concaveRegr.R (conreg): include the former unexported SR() as
+	conreg(*, method = "SR").  Add `verbose` option.
+
+	New utilities for cubic spline interpolation, `interpSplineCon()` etc.
+
 2017-03-21  Martin Maechler  <maechler@stat.math.ethz.ch>
 
 	* R/scobs.R (predict.cobs): fix the bug that "extrapolation to the
