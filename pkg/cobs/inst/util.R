@@ -32,3 +32,5 @@ doExtras <- function() {
         identical("true", unname(Sys.getenv("R_PKG_CHECKING_doExtras")))
 }
 
+##' We want to use  withAutoprint({...}) when available :
+if(!exists("withAutoprint", mode="function")) withAutoprint <- identity

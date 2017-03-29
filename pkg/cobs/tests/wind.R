@@ -20,18 +20,21 @@ co50.2 <- cobs(day, speed, constraint= "periodic", tau= .5, lambda= 2.2,
 
 showProc.time()
 
-plot(day,speed)
+plot(day,speed, pch = ".", col = "gray20")
 lines(day[iday], fitted(co50.1)[iday], col="orange", lwd = 2)
-lines(day[iday], fitted(co50.2)[iday], col="light blue", lwd = 2)
-rug(knots(co50.1), col=3)
+lines(day[iday], fitted(co50.2)[iday], col="sky blue", lwd = 2)
+rug(knots(co50.1), col=3, lwd=2)
 
 nknots <- 13
+
+
+if(doExtra) {
 ## Compute the quadratic median smoothing B-spline using SIC
 ## lambda selection
 co.o50 <-
  cobs(day, speed, knots.add = TRUE, constraint="periodic", nknots = nknots,
       tau = .5, lambda = -1, method = "uniform")
-summary(co.o50)
+summary(co.o50) # [does print]
 
 showProc.time()
 
@@ -45,6 +48,7 @@ with(co.o50, plot(pp.sic - of ~ pp.lambda, type ="o", ylim = c(6e-15, 8e-15),
                   ylab = paste("sic -",formatC(of, dig=14, small.m = "'")),
                   col=2, log = "x", main = "co.o50: periodic"))
 par(op)
+}
 
 showProc.time()
 
@@ -53,22 +57,26 @@ showProc.time()
 ## (lstart <- log(.Machine$double.xmax)^3) # 3.57 e9
 ##
 co.o50. <-
-    cobs(day,speed,knots.add = TRUE, constraint = "periodic", nknots = 10,
-         tau = .5,lambda = -1, method = "quantile")
+    cobs(day,speed, knots.add = TRUE, constraint = "periodic", nknots = 10,
+         tau = .5, lambda = -1, method = "quantile")
 summary(co.o50.)
-(pc.5 <- predict(co.o50., interval = "both"))
+summary(pc.5 <- predict(co.o50., interval = "both"))
 
 showProc.time()
 
+if(doExtra) { ## + repeat.delete.add
 co.o50.. <- cobs(day,speed, knots.add = TRUE, repeat.delete.add=TRUE,
                  constraint = "periodic", nknots = 10,
                  tau = .5, lambda = -1, method = "quantile")
+summary(co.o50..)
+showProc.time()
+}
 
 co.o9 <- ## Compute the .9 quantile smoothing B-spline
     cobs(day,speed,knots.add = TRUE, constraint = "periodic", nknots = 10,
          tau = .9,lambda = -1, method = "uniform")
 summary(co.o9)
-(pc.9 <- predict(co.o9,interval = "both"))
+summary(pc.9 <- predict(co.o9,interval = "both"))
 
 showProc.time()
 
@@ -76,11 +84,11 @@ co.o1 <- ## Compute the .1 quantile smoothing B-spline
     cobs(day,speed,knots.add = TRUE, constraint = "periodic",nknots = nknots,
          tau = .1,lambda = -1, method = "uniform")
 summary(co.o1)
-(pc.1 <- predict(co.o1, interval = "both"))
+summary(pc.1 <- predict(co.o1, interval = "both"))
 
 showProc.time()
 
-par(mfrow = c(1,2), mgp = c(1.5, .6,0), mar = .1 + c(3,3,1,1))
+op <- par(mfrow = c(1,2), mgp = c(1.5, .6,0), mar = .1 + c(3,3,1,1))
 plot(day,speed, pch = 3, cex=0.6,  xlab = "DAYS", ylab = "SPEED (knots)")
 lines(pc.5, lwd = 2.5, col = 2)
 lines(pc.9, lwd = 2., col = "blue")
@@ -91,5 +99,6 @@ lines(pc.9, col = 3)
 lines(pc.1, col = 3)
 abline(v = co.o50.$knots, lty = 3, col = "gray70")
 ## rather rug(co.o5$knots, lty = 2)
+par(op)
 
 showProc.time()
