@@ -1,7 +1,4 @@
 convexreg-PietGr
-src/nrutil.[ch]
-src/SR.c
-R/SR.R
 .----------------------
 .Rhistory
 .Data
