@@ -17,8 +17,8 @@
 
 2017-03-19  Martin Mächler  <maechler@stat.math.ethz.ch>
 
-	* R/scobs.R (predict.cobs): new 'deriv = 0' argument allowing to
-	compute s'() as well.
+	* R/scobs.R (predict.cobs): new 'deriv = 0' argument; allows
+	'deriv = 1' to compute first derivatives s'().
 	* R/scobs.R (cobs): remove deprecated arguments (of *long* ago).
 
 2017-01-31  Martin Maechler  <maechler@stat.math.ethz.ch>
