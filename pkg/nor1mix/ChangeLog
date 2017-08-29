@@ -1,6 +1,17 @@
+2017-08-29  Martin Maechler  <maechler@stat.math.ethz.ch>
+
+	* R/norMix.R (var.norMix): use `drop(.)` to get rid of (R-devel)
+	deprecation warning ("Recycling array of length 1").
+
+	* DESCRIPTION (Date): ready to release to CRAN.
+
+2015-08-30  Martin Maechler  <maechler@stat.math.ethz.ch>
+
+	* DESCRIPTION (Version): 1.2-3.
+
 2016-08-24  Martin Mächler  <maechler@stat.math.ethz.ch>
 
-	* DESCRIPTION (Date): ready to release
+	* DESCRIPTION (Date): ready to release to CRAN.
 
 	* R/norMix.R (plot.norMix): allow `ylim` to work in plot() method.
 

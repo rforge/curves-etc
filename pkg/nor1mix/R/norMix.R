@@ -105,7 +105,7 @@ var.norMix <- function(x, ...)
   x <- unclass(x)
   w <- x[,"w"]
   mj <- x[,"mu"]
-  mu <- w %*% mj
+  mu <- drop(w %*% mj)
   drop(w %*% (x[,"sigma"]^2 + (mj - mu)^2))
 }
 
@@ -374,7 +374,7 @@ qnorMix <-
                   qpp <- mySfun(ppi, qi)(pp.) ## is very fast
               else { ## "interpQspline"
                   ## logit() transform the P's --> interpolation is more linear
-                  muT <- c(obj[, "w"] %*% mu)
+                  muT <- drop(obj[, "w"] %*% mu)
                   qp. <- qlogis(pp., muT, log.p=log.p)
                   qpp <- mySfun(qlogis(ppi, muT, log.p=log.p), qi)(qp.)
               }
