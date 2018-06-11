@@ -1,7 +1,5 @@
 Makefile
-00-orig-src
 INDEX-
-README\..*
 Orig
 man/.*\.d
 \.log$
