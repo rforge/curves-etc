@@ -319,59 +319,64 @@ C
 C     CHOLESKY-DECOMPOSITION
 c
       NSIN=0
-      DO 130 II=1,NA
+      DO II=1,NA
          D(II)=A(II,II)
          NN1=II-1
-         IF (NN1) 100,100,30
- 30      DO JJ=1,NN1
+         IF (NN1 > 0) then
+            DO JJ=1,NN1
             XX=A(JJ,II)
             NN2=JJ-1
-            IF (NN2) 60,60,40
- 40         DO KK=1,NN2
-               XX=XX-A(II,KK)*A(JJ,KK)*D(KK)
-            end do
- 60         YY=0D0
-            IF (D(JJ)-ZER) 80,80,70
- 70         YY=XX/D(JJ)
- 80         D(II)=D(II)-XX*YY
+            IF (NN2 > 0) then
+               DO KK=1,NN2
+                  XX=XX-A(II,KK)*A(JJ,KK)*D(KK)
+               end do
+            end if
+            YY=0D0
+            IF (D(JJ)-ZER > 0) YY=XX/D(JJ)
+            D(II)=D(II)-XX*YY
             A(II,JJ)=YY
          end do
- 100     IF (D(II)-A(II,II)*SIN) 110,110,130
- 110     D(II)=0D0
+      end if
+      if (D(II)-A(II,II)*SIN <= 0) then
+         D(II)=0D0
          NSIN=NSIN+1
- 130  CONTINUE
+      endif
+      end do
       sinout=d(na)/a(na,na)
 C
 C     SOLUTION OF LINEAR EQUATION
 C
       NZER=0
-      IF (NA-1) 300,300,210
- 210  DO 230 II=2,NA
-         NN1=II-1
-         DO 220 KK=1,NN1
-            Y(II)=Y(II)-A(II,KK)*Y(KK)
- 220     CONTINUE
- 230  CONTINUE
+      IF (NA >= 2) then
+         DO II=2,NA
+            NN1=II-1
+            DO KK=1,NN1
+               Y(II)=Y(II)-A(II,KK)*Y(KK)
+            end do
+         end do
+      end if
+
 c     - compute only last dif elements
- 300  DO 390 II=1,dif
+      DO II=1,dif
          JJ=NA+1-II
          XX=0D0
-         IF (D(JJ)-ZER) 320,320,310
- 310     XX=Y(JJ)/D(JJ)
- 320     IF (D(JJ)-ZER) 330,330,350
- 330     IF (D(JJ)) 340,350,340
- 340     NZER=NZER+1
- 350     NN1=JJ+1
-         IF (NA-NN1) 380,360,360
- 360     DO 370 KK=NN1,NA
-            XX=XX-A(KK,JJ)*Y(KK)
- 370     CONTINUE
- 380     Y(JJ)=XX
- 390  CONTINUE
+         IF (D(JJ) > ZER) XX=Y(JJ)/D(JJ)
+         IF (D(JJ) <= ZER) then
+            IF (D(JJ) .ne. 0) NZER=NZER+1
+         end if
+         NN1=JJ+1
+         IF (NA >= NN1) then
+            DO KK=NN1,NA
+               XX=XX-A(KK,JJ)*Y(KK)
+            end do
+         end if
+         Y(JJ)=XX
+      end do
 C
       RETURN
       END
 C     ---
+
       subroutine lpsub(t,s,to,x,tbar,xbar,p,pmax,n,bin,iu,io)
 
 ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
@@ -465,26 +470,27 @@ ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 C
 C     SOLUTION OF LINEAR EQUATION
 C
-      IF (NA-1) 300,300,210
- 210  DO II=2,NA
-         NN1=II-1
-         DO KK=1,NN1
-            Y(II)=Y(II)-A(II,KK)*Y(KK)
+      IF (NA >= 2) then
+         DO II=2,NA
+            NN1=II-1
+            DO KK=1,NN1
+               Y(II)=Y(II)-A(II,KK)*Y(KK)
+            end do
          end do
-      end do
+      end if
 
 c     - compute only last dif elements
- 300  DO II=1,dif
+      DO II=1,dif
          JJ=NA+1-II
          XX=0D0
-         IF (D(JJ)-ZER) 350,350,310
- 310     XX=Y(JJ)/D(JJ)
- 350     NN1=JJ+1
-         IF (NA-NN1) 380,360,360
- 360     DO KK=NN1,NA
-            XX=XX-A(KK,JJ)*Y(KK)
-         end do
- 380     Y(JJ)=XX
+         IF (D(JJ) > ZER) XX=Y(JJ)/D(JJ)
+         NN1=JJ+1
+         IF (NA >= NN1) then
+            DO KK=NN1,NA
+               XX=XX-A(KK,JJ)*Y(KK)
+            end do
+         end if
+         Y(JJ)=XX
       end do
 C
       RETURN
