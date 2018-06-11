@@ -13,8 +13,6 @@ epa.5sV <- lpepa(x.s,y.d, bandw=5, mnew=1, var=TRUE)
 ## Running time
 cat('Time elapsed: ', (.pt <- proc.time()) - .prtime00,'\n')
 
-## FIXME: use 'deriv=1'
-
 if(FALSE) ## produced via
     dput(lapply(epa.5V[c("est","est.var")], signif, 7))
 epa5V.tr <- list(
@@ -107,7 +105,6 @@ lpr.5sV <- lpridge(x.s,y.d, bandw = 5, mnew=1, var=TRUE)
 ## Running time
 cat('Time elapsed: ', (.pt <- proc.time()) - .prtime00,'\n')
 
-## FIXME: use 'deriv=1' ...
 
 if(FALSE) ## produced via
     dput(lapply(lpr.5V[c("est","est.var")], function(x) signif(100 * x, 7)))

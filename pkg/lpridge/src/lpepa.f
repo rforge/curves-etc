@@ -114,14 +114,18 @@ c - nuefak = faktorial of nue
       do i=1,nue
          nuefak=nuefak*i
       end do
-c - binomial coefficients
-      do kk=0,powmax
+c - binomial coefficients (kk= 0,1, manually; then for(kk in 2:pm) ==> kk-1 >= 1)
+      bin(0,0)=1
+      bin(1,0)=1
+      bin(1,1)=1
+      do kk=2,powmax
          bin(kk,0)=1
          do k=1,kk-1
             bin(kk,k)=bin(kk-1,k-1)+bin(kk-1,k)
          enddo
          bin(kk,kk)=1
       enddo
+
 c**********************************************************************
 c Smoothing loop over outputgrid
 c

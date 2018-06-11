@@ -3,4 +3,3 @@
 2)  should return a simple S3 class with print(), residuals(), fitted(),
    etc.  Possibly use seqXtend() as now in  lokerns() in ../lokern/R/lokerns.R
 
-4) Don't have examples (nor tests, yet) using  'deriv > 0'

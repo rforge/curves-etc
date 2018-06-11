@@ -45,7 +45,7 @@ ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       implicit none
       integer n,nue,p,kord,m,mnew,imoms(*),leng,nmoms,nvar,nsins
       double precision t(*),x(*),b(*),wk(0:*),tt(*),moms(nmoms,2,0:*),
-     .   y(*),var(*),ridge
+     .     y(*),var(*),ridge
 
 ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 c
@@ -72,14 +72,14 @@ c
 ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
       double precision w(0:24,5),w1(121),bin(0:24,0:24),work(48),
-     .   bb(0:24),tti(0:24),wk2(0:24),sin(2),zer
+     .     bb(0:24),tti(0:24),wk2(0:24),sin(2),zer
       integer nmini,pmax
 
       logical again
       integer dif,i,iaux,io,ioold,irec,iu,iuold,iup,j,k,kk,l,m2,
-     .   na,nmin,nsin,nsub,nzer,pow,powmax
+     .     na,nmin,nsin,nsub,nzer,pow,powmax
       double precision chol(20,2),nuefak,sino,sins(2,2,2),
-     .   tbar,tk,tkt,tleft,tright,tttj,tttl,xbar,xsin,xx,ysin
+     .     tbar,tk,tkt,tleft,tright,tttj,tttl,xbar,xsin,xx,ysin
 c - ideal Cholesky-factors for uniform and Epanechnikov weights
       data chol /1.d0,          1.d0,  5.33333333d-01,2.28571429d-01,
      .   8.70748299d-02,3.07840308d-02,1.03331012d-02,3.33838656d-03,
@@ -125,14 +125,21 @@ c - nuefak = faktorial of nue
       do i=1,nue
          nuefak=nuefak*i
       end do
-c - binomial coefficients
-      do kk=0,powmax
+c - binomial coefficients (kk= 0,1, manually; then for(kk in 2:pm) ==> kk-1 >= 1)
+c$$$      call intpr("lpridge(): powmax =", -1, powmax, 1)
+      bin(0,0)=1
+      bin(1,0)=1
+      bin(1,1)=1
+      do kk=2,powmax
          bin(kk,0)=1
          do k=1,kk-1
             bin(kk,k)=bin(kk-1,k-1)+bin(kk-1,k)
          end do
          bin(kk,kk)=1
       end do
+c$$$      do kk=0,powmax
+c$$$         call dblepr("", 0, bin(kk,kk), powmax-kk)
+c$$$      enddo
 c - squared kernel weights
       if (nvar.gt.0) then
          do j=0,kord+kord
@@ -441,7 +448,7 @@ c     - w(,3) = u, u from y = u' * beta
          end do
 c    - w(,3) = (H + X'W X)**-1 * u
          call lpsv(w1,work,w(0,3),na, zer,na)
-         if (irec.ne.2) then ! --> weighted LSE :  w(,4) = X'W**2 X
+         if (irec .ne. 2) then ! --> weighted LSE :  w(,4) = X'W**2 X
             do j=0,2*p
                w(j,4)=wk2(0)*w(j,1)
                do kk=1,kord+kord
