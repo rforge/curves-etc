@@ -155,129 +155,144 @@ c     - store block i
                imoms(i)=1
                ii1=(i-1)*leng+1
                ii2=i*leng
-               do 210 j=1,ps
+               do j=1,ps
                   moms(i,1,j)=0d0
- 210              moms(i,2,j)=0d0
+                  moms(i,2,j)=0d0
+               end do
                tt=0d0
                xx=0d0
-               do 220 ii=ii1,ii2
+               do ii=ii1,ii2
                   tt=tt+to(ii)
- 220              xx=xx+x(ii)
+                  xx=xx+x(ii)
+               end do
                tt=tt/leng
                xx=xx/leng
                moms(i,1,0)=tt
                moms(i,2,0)=xx
-               do 240 ii=ii1,ii2
+               do ii=ii1,ii2
                   xy=x(ii)-xx
-                  do 230 j=1,p+2
+                  do j=1,p+2
                      xy=xy*(to(ii)-tt)
- 230                 moms(i,1,j)=moms(i,1,j)+xy
+                     moms(i,1,j)=moms(i,1,j)+xy
+                  end do
                   xy=to(ii)-tt
-                  do 240 j=2,ps
+                  do j=2,ps
                      xy=xy*(to(ii)-tt)
- 240                 moms(i,2,j)=moms(i,2,j)+xy
-               endif
-c
-               n1=n
-               n=n+leng
-               d=tbar
-               e=xbar
-               tbar=tbar+(moms(i,1,0)-tbar)*leng/n
-               xbar=xbar+(moms(i,2,0)-xbar)*leng/n
-               d=d-tbar
-               e=e-xbar
-               nn=-n1/leng
-               do 320 j=p+2,1,-1
-                  dp=1d0
-                  dnp=1d0
-                  tx=0d0
-                  do 310 k=j,1,-1
-                     tx=tx+bin(j,k)*(t(k)+e*s(k)
-     .                    +dnp*(moms(i,1,k)+nn*e*moms(i,2,k)))*dp
-                     dp=dp*d
- 310                 dnp=dnp*nn
- 320              t(j)=tx+e*dp*n1*(1d0-dnp)
-C
-               do 340 j=ps,2,-1
-                  dnp=1d0
-                  dp=1d0
-                  sx=0d0
-                  do 330 k=j,2,-1
-                     sx=sx+bin(j,k)*(s(k)+dnp*moms(i,2,k))*dp
-                     dp=dp*d
- 330                 dnp=dnp*nn
-                  dp=dp*d
- 340              s(j)=sx+dp*n1*(1d0-dnp)
- 480        continue
-         endif
-c
-c     compute last incomplete block without storing
-c
-         if(io.ge.i2) then
-            tt=0d0
-            xx=0d0
-            n2=io-i2+1
-            do 510 i=i2,io
-               tt=tt+to(i)
- 510           xx=xx+x(i)
-            tt=tt/n2
-            xx=xx/n2
-            do 520 j=1,ps
-               mom(1,j)=0d0
- 520           mom(2,j)=0d0
-            do 540 i=i2,io
-               xy=x(i)-xx
-               do 530 j=1,p+2
-                  xy=xy*(to(i)-tt)
- 530              mom(1,j)=mom(1,j)+xy
-               xy=to(i)-tt
-               do 540 j=2,ps
-                  xy=xy*(to(i)-tt)
- 540              mom(2,j)=mom(2,j)+xy
-c
-               n1=n
-               n=n+n2
-               d=tbar
-               e=xbar
-               tbar=tbar+(tt-tbar)*n2/n
-               xbar=xbar+(xx-xbar)*n2/n
-               d=d-tbar
-               e=e-xbar
-               nn=-n1/n2
-               do j=p+2,1,-1
-                  dp=1d0
-                  dnp=1d0
-                  tx=0d0
-                  do k=j,1,-1
-                     tx=tx+bin(j,k)*(t(k)+e*s(k)
-     .                    +dnp*(mom(1,k)+nn*e*mom(2,k)))*dp
-                     dp=dp*d
-                     dnp=dnp*nn
+                     moms(i,2,j)=moms(i,2,j)+xy
                   end do
-                  t(j)=tx+e*dp*n1*(1d0-dnp)
-               end do
-C
-               do j=ps,2,-1
-                  dnp=1d0
-                  dp=1d0
-                  sx=0d0
-                  do  k=j,2,-1
-                     sx=sx+bin(j,k)*(s(k)+dnp*mom(2,k))*dp
-                     dp=dp*d
-                     dnp=dnp*nn
-                  end do
-                  dp=dp*d
-                  s(j)=sx+dp*n1*(1d0-dnp)
                end do
             endif
 c
-            s(0)=dble(n)
+            n1=n
+            n=n+leng
+            d=tbar
+            e=xbar
+            tbar=tbar+(moms(i,1,0)-tbar)*leng/n
+            xbar=xbar+(moms(i,2,0)-xbar)*leng/n
+            d=d-tbar
+            e=e-xbar
+            nn=-n1/leng
+            do j=p+2,1,-1
+               dp=1d0
+               dnp=1d0
+               tx=0d0
+               do k=j,1,-1
+                  tx=tx+bin(j,k)*(t(k)+e*s(k)
+     .                 +dnp*(moms(i,1,k)+nn*e*moms(i,2,k)))*dp
+                  dp=dp*d
+                  dnp=dnp*nn
+               end do
+               t(j)=tx+e*dp*n1*(1d0-dnp)
+            end do
+C
+            do j=ps,2,-1
+               dnp=1d0
+               dp=1d0
+               sx=0d0
+               do k=j,2,-1
+                  sx=sx+bin(j,k)*(s(k)+dnp*moms(i,2,k))*dp
+                  dp=dp*d
+                  dnp=dnp*nn
+               end do
+               dp=dp*d
+               s(j)=sx+dp*n1*(1d0-dnp)
+            end do
+ 480     continue
+      endif
+c
+c     compute last incomplete block without storing
+c
+      if(io.ge.i2) then
+         tt=0d0
+         xx=0d0
+         n2=io-i2+1
+         do i=i2,io
+            tt=tt+to(i)
+            xx=xx+x(i)
+         end do
+         tt=tt/n2
+         xx=xx/n2
+         do j=1,ps
+            mom(1,j)=0d0
+            mom(2,j)=0d0
+         end do
+         do i=i2,io
+            xy=x(i)-xx
+            do j=1,p+2
+               xy=xy*(to(i)-tt)
+               mom(1,j)=mom(1,j)+xy
+            end do
+            xy=to(i)-tt
+            do j=2,ps
+               xy=xy*(to(i)-tt)
+               mom(2,j)=mom(2,j)+xy
+            end do
+         end do
+c
+         n1=n
+         n=n+n2
+         d=tbar
+         e=xbar
+         tbar=tbar+(tt-tbar)*n2/n
+         xbar=xbar+(xx-xbar)*n2/n
+         d=d-tbar
+         e=e-xbar
+         nn=-n1/n2
+         do j=p+2,1,-1
+            dp=1d0
+            dnp=1d0
+            tx=0d0
+            do k=j,1,-1
+               tx=tx+bin(j,k)*(t(k)+e*s(k)
+     .              +dnp*(mom(1,k)+nn*e*mom(2,k)))*dp
+               dp=dp*d
+               dnp=dnp*nn
+            end do
+            t(j)=tx+e*dp*n1*(1d0-dnp)
+         end do
+C
+         do j=ps,2,-1
+            dnp=1d0
+            dp=1d0
+            sx=0d0
+            do  k=j,2,-1
+               sx=sx+bin(j,k)*(s(k)+dnp*mom(2,k))*dp
+               dp=dp*d
+               dnp=dnp*nn
+            end do
+            dp=dp*d
+            s(j)=sx+dp*n1*(1d0-dnp)
+         end do
+      endif
+c
+      s(0)=dble(n)
 c     write(*,'(5g12.4)')(t(i),i=0,ps)
 c     write(*,'(5g12.4)')(s(i),i=0,ps)
 c
-            return
-            end
+      return
+      end
 C     ---
+
       SUBROUTINE lpslv(A,D,y,NA,NSIN,nzer,SINout,sin,ZER,dif)
 
 ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc

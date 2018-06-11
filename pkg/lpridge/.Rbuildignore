@@ -1,4 +1,7 @@
 Makefile
 00-orig-src
+INDEX-
 Orig
 man/.*\.d
+\.log$
+src/.*\+brk

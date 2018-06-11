@@ -98,21 +98,23 @@ c - internal and parameters for numerical stability and speed
 c
 ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
-       tk= 0. ! -Wall
-       nmini=1
-       pmax=24
-       sin(1)=.99d0
-       sin(2)=1d-2
-       zer=1d-10
-       if (p.gt.0) zer=1d-10*dble(n)*(dble(p+1)/dble(n+n))**(p+p-1)
+      tk= 0. ! -Wall
+      nmini=1
+      pmax=24
+      sin(1)=.99d0
+      sin(2)=1d-2
+      zer=1d-10
+      if (p.gt.0) zer=1d-10*dble(n)*(dble(p+1)/dble(n+n))**(p+p-1)
 
 c - limits for singularity: sins(i,*,*)=lower and upper,
 c      (*,i,*)=update and restart, (*,*,i)=weighted and unweighted
-       do 10 j=1,2
-          sins(2,1,j)=chol(p+1,j)/sin(1)
-          sins(2,2,j)=chol(p+1,j)/zer
-          do 10 i=1,2
-10           sins(1,i,j)=chol(p+1,j)*sin(i)
+      do j=1,2
+         sins(2,1,j)=chol(p+1,j)/sin(1)
+         sins(2,2,j)=chol(p+1,j)/zer
+         do i=1,2
+            sins(1,i,j)=chol(p+1,j)*sin(i)
+         end do
+      end do
 c - maximum order of moments
       pow=p+max(kord-2,0)
       if(nvar.gt.0) pow=pow+1
@@ -120,29 +122,36 @@ c - maximum order of moments
       na=p+1
 c - nuefak = faktorial of nue
       nuefak=1d0
-      do 20 i=1,nue
-20       nuefak=nuefak*i
+      do i=1,nue
+         nuefak=nuefak*i
+      end do
 c - binomial coefficients
-      do 40 kk=0,powmax
+      do kk=0,powmax
          bin(kk,0)=1
-         do 30 k=1,kk-1
-30          bin(kk,k)=bin(kk-1,k-1)+bin(kk-1,k)
-40       bin(kk,kk)=1
+         do k=1,kk-1
+            bin(kk,k)=bin(kk-1,k-1)+bin(kk-1,k)
+         end do
+         bin(kk,kk)=1
+      end do
 c - squared kernel weights
-      if (nvar.le.0) goto 100
-      do 50 j=0,kord+kord
-50       wk2(j)=0d0
-      do 60 k=0,kord
-         wk2(k+k)=wk2(k+k)-wk(k)*wk(k)
-         do 60 l=0,k
-60          wk2(k+l)=wk2(k+l)+2d0*wk(k)*wk(l)
+      if (nvar.gt.0) then
+         do j=0,kord+kord
+            wk2(j)=0d0
+         end do
+         do k=0,kord
+            wk2(k+k)=wk2(k+k)-wk(k)*wk(k)
+            do l=0,k
+               wk2(k+l)=wk2(k+l)+2d0*wk(k)*wk(l)
+            end do
+         end do
+      end if
 c**********************************************************************
 c Smoothing loop over outputgrid
 c
 c - loop-variables: i - index of output grid
 c                   k - number of points in smoothing interval
 c**********************************************************************
-100   nsins=0
+      nsins=0
       iup=mnew
       nsub=1
       iuold=0
@@ -152,26 +161,25 @@ c**********************************************************************
       m2=(m+1)/2
       do 990 iaux=1,m
          if (iaux.lt.m2) then
-c - left half of smoothing interval is done from the left to the right
+c     - left half of smoothing interval is done from the left to the right
             i=iaux
+         else if (iaux.gt.m2) then
+c     - right half of smoothing interval is done from the right to the left
+            i=m+m2-iaux
          else
-            if (iaux.gt.m2) then
-c - right half of smoothing interval is done from the right to the left
-               i=m+m2-iaux
-            else
-c - if center of smoothing interval is reached,
-c      switch to the right boundary and restart
-               i=m
-               iup=mnew
-               iu=n
-               io=n+1
-            endif
+c     - if center of smoothing interval is reached;
+c       switch to the right boundary and restart
+            i=m
+            iup=mnew
+            iu=n
+            io=n+1
          endif
 c - minimal number of points in the smoothing interval
          nmin=max(nmini,p+1)
 c
 c - determine smoothing interval
 c
+c --------------------------- Repeat -------------------------------
 110      tleft=tt(i)-b(i)
          tright=tt(i)+b(i)
 c - determine indices corresponding to the smoothing interval
@@ -241,8 +249,10 @@ c - check if there are enough points in smoothing interval
             else
                b(i)=(abs(tt(i)-tk)+abs(tt(i)-tkt))/2
                goto 110
+c              ---- === "continue"
             endif
          endif
+c
 c - Now we have enough points
 c
 c - compute sums
@@ -297,60 +307,76 @@ c
 c - calculate powers of b and (tbar-tt(i))
          bb(0)=1d0
          tti(0)=1d0
-         do 310 kk=1,powmax
+         do kk=1,powmax
             bb(kk)=bb(kk-1)/b(i)
-310         tti(kk)=tti(kk-1)*(tbar-tt(i))
+            tti(kk)=tti(kk-1)*(tbar-tt(i))
+         end do
 c - for p+1 points or kord=0 use unweighted LSE
          if (io-iu.le.p+1) iup=mnew
          if (io-iu.le.p+1.or.kord.eq.0) goto 400
 c - weighted LSE
 c    - calculate Sn,j
-         do 330 j=0,2*p
+         do j=0,2*p
             w(j,4)=wk(0)*w(j,1)
-            do 330 kk=1,kord
+            do kk=1,kord
                xx=tti(kk)*w(j,1)
-               do 320 l=1,kk
-320               xx=xx+bin(kk,l)*tti(kk-l)*w(j+l,1)
-330         w(j,4)=w(j,4)+bb(kk)*wk(kk)*xx
+               do l=1,kk
+                  xx=xx+bin(kk,l)*tti(kk-l)*w(j+l,1)
+               end do
+               w(j,4)=w(j,4)+bb(kk)*wk(kk)*xx
+            end do
+         end do
 c    - calculate Tn,j
-         do 350 j=0,p
+         do j=0,p
             w(j,5)=wk(0)*w(j,2)+w(j,4)*xbar
-            do 350 kk=1,kord
+            do kk=1,kord
                xx=tti(kk)*w(j,2)
-               do 340 l=1,kk
-340               xx=xx+bin(kk,l)*tti(kk-l)*w(j+l,2)
-350            w(j,5)=w(j,5)+bb(kk)*wk(kk)*xx
+               do l=1,kk
+                  xx=xx+bin(kk,l)*tti(kk-l)*w(j+l,2)
+               end do
+               w(j,5)=w(j,5)+bb(kk)*wk(kk)*xx
+            end do
+         end do
 c    - construct matrix
-         do 370 j=0,p
-            do 370 l=1,j+1
-370            w1(j*na+l)=w(l+j-1,4)
+         do j=0,p
+            do l=1,j+1
+               w1(j*na+l)=w(l+j-1,4)
+            end do
+         end do
          irec=1
          goto 500
 c - unweighted LSE
 c    - store Sn,j for ridging
-400      do 410 j=0,1
-410         w(j,4)=w(j,1)
+400      do j=0,1
+            w(j,4)=w(j,1)
+         end do
 c    - store T_n,l
-         do 420 l=0,p
-420         w(l,5)=w(l,2)+w(l,1)*xbar
+         do l=0,p
+            w(l,5)=w(l,2)+w(l,1)*xbar
+         end do
 c    - construct matrix
-         do 430 j=0,p
-            do 430 l=1,j+1
-430            w1(j*na+l)=w(l+j-1,1)
+         do j=0,p
+            do l=1,j+1
+               w1(j*na+l)=w(l+j-1,1)
+            end do
+         end do
          irec=2
 c - add ridge-matrix
-500      if (ridge.le.0d0) goto 550
-         xx=tt(i)-tbar-w(1,4)/w(0,4)
-         tttj=xx
-         do 540 j=nue+1,p
-            tttl=xx
-            do 530 l=nue+1,j
-               w1(j*na+l+1)=w1(j*na+l+1)
-     .            +ridge*bin(j,nue)*tttj*bin(l,nue)*tttl
-530            tttl=tttl*xx
-540         tttj=tttj*xx
+ 500     if (ridge.gt.0d0) then
+            xx=tt(i)-tbar-w(1,4)/w(0,4)
+            tttj=xx
+            do j=nue+1,p
+               tttl=xx
+               do l=nue+1,j
+                  w1(j*na+l+1)=w1(j*na+l+1)
+     .                 +ridge*bin(j,nue)*tttj*bin(l,nue)*tttl
+                  tttl=tttl*xx
+               end do
+               tttj=tttj*xx
+            end do
+         end if
 c    - solve linear equations
-550      if (nsub.eq.0) then
+         if (nsub.eq.0) then
             xsin=sins(1,2,irec)
             ysin=sins(2,2,irec)
          else
@@ -391,9 +417,10 @@ c      (*,i,*)=update and restart, (*,*,i)=weighted and unweighted
 c - compute estimate y(i)
          y(i)=0d0
          kk=1
-         do 640 j=nue,p
+         do j=nue,p
             y(i)=y(i)+kk*bin(j,nue)*tti(j-nue)*w(j,5)
-640         kk=-kk
+            kk=-kk
+         end do
          y(i)=y(i)*nuefak
 c - store old values
          ioold=io
@@ -404,35 +431,41 @@ c - compute variance
 c
          if (nvar.le.0) goto 990
 c     - w(,3) = u, u from y = u' * beta
-         do 710 j=0,nue
-710         w(j,3)=0d0
+         do j=0,nue
+            w(j,3)=0d0
+         end do
          kk=1
-         do 740 j=nue,p
+         do j=nue,p
             w(j,3)=kk*bin(j,nue)*tti(j-nue)*nuefak
-740         kk=-kk
+            kk=-kk
+         end do
 c    - w(,3) = (H + X'W X)**-1 * u
          call lpsv(w1,work,w(0,3),na, zer,na)
-         if (irec.eq.2) goto 850
-c    - w(,4) = X'W**2 X
-c    - weighted LSE
-         do 830 j=0,2*p
-            w(j,4)=wk2(0)*w(j,1)
-            do 830 kk=1,kord+kord
-               xx=tti(kk)*w(j,1)
-               do 820 l=1,kk
-820               xx=xx+bin(kk,l)*tti(kk-l)*w(j+l,1)
-830            w(j,4)=w(j,4)+bb(kk)*wk2(kk)*xx
-         goto 880
-c    - unweighted LSE
-850      do 860 l=0,2*p
-860         w(l,4)=w(l,1)
+         if (irec.ne.2) then ! --> weighted LSE :  w(,4) = X'W**2 X
+            do j=0,2*p
+               w(j,4)=wk2(0)*w(j,1)
+               do kk=1,kord+kord
+                  xx=tti(kk)*w(j,1)
+                  do l=1,kk
+                     xx=xx+bin(kk,l)*tti(kk-l)*w(j+l,1)
+                  end do
+                  w(j,4)=w(j,4)+bb(kk)*wk2(kk)*xx
+               end do
+            end do
+         else ! ireq == 2  --- unweighted LSE
+            do l=0,2*p
+               w(l,4)=w(l,1)
+            end do
+         end if
 c    - variance (sigma = 1)
 c    - var = u'* (H + X'W X)**-1 X'W**2 X (H + X'W X)**-1 * u
-880      var(i)=0d0
-         do 890 j=0,p
+         var(i)=0d0
+         do j=0,p
             var(i)=var(i)-w(j+j,4)*w(j,3)*w(j,3)
-            do 890 l=0,j
-890            var(i)=var(i)+2d0*w(l+j,4)*w(j,3)*w(l,3)
+            do l=0,j
+               var(i)=var(i)+2d0*w(l+j,4)*w(j,3)*w(l,3)
+            end do
+         end do
 
 c**********************************************************************
 c - end of smoothing loop over outputgrid
