@@ -131,6 +131,34 @@ sort.norMix <- function(x, decreasing = FALSE, ...) {
     x
 }
 
+##' Return a call, e.g., something deriv() can use
+norMix2call <- function(obj, oneArg = TRUE) {
+  w <- obj[,"w"]; mu <- obj[,"mu"]; sd <- obj[,"sigma"]
+  m <- length(w) #-- number of components
+  if(oneArg) {
+      ex <- substitute(W * dnorm((x - M)/S),
+                       list(W = unname(w[1]), M = unname(mu[1]), S = unname(sd[1])))
+      for(j in seq_len(m)[-1L]) # j in 2:m,  but empty if(m == 1)
+          ex <- substitute(EX + W * dnorm((x - M)/S),
+                           list(EX = ex, W = w[j], M = mu[j], S = sd[j]))
+  } else {
+      ## the first term
+      ex <- substitute(W * dnorm(x, mean = M, sd = S),
+                       list(W = unname(w[1]), M = unname(mu[1]), S = unname(sd[1])))
+      for(j in seq_len(m)[-1L]) # j in 2:m,  but empty if(m == 1)
+          ex <- substitute(EX + W * dnorm(x, mean = M, sd = S),
+                           list(EX = ex, W = w[j], M = mu[j], S = sd[j]))
+  }
+  ## return
+  ex
+}
+
+as.expression.norMix <- function(x, oneArg = TRUE, ...) as.expression(norMix2call(x, oneArg), ...)
+
+as.function.norMix <- function(x, oneArg = TRUE, envir = parent.frame(), ...)
+    `body<-`(function(x) {}, envir=envir, value = norMix2call(x, oneArg))
+
+
 dnorMix <- function(x, obj, log = FALSE)
 {
   ## Purpose: density evaluation for "norMix" objects (normal mixtures)

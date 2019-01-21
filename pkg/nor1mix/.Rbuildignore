@@ -1,4 +1,5 @@
 Marron_.*\.pdf
+.dir-locals.el
 normix-HK\.
 .*-post\.R.*
 .*-log

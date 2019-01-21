@@ -49,7 +49,9 @@
 \source{
   They have been translated from Steve Marron's Matlab code,
   % till 2009 or so: \url{http://www.stat.unc.edu/postscript/papers/marron/parameters/nmpar.m},
-  now at \url{http://www.unc.edu/depts/stat-or/miscellaneous/marron/parameters/nmpar.m},
+  now at
+  % \url{http://www.unc.edu/depts/stat-or/miscellaneous/marron/parameters/nmpar.m},
+  \url{https://marronwebfiles.sites.oasis.unc.edu/OldResearch/parameters/nmpar.m},
   however for number 2, the Matlab code had \code{MW.nm2.old}; and I've
   defined \code{MW.nm2} as from the Annals paper; see also the last
   example below.
@@ -61,7 +63,10 @@
   \emph{Annals of Statistcs} \bold{20}, 712--736.
 
   For number 16,\cr% in the book Wand & Marron(1995) has
-  Janssen, Marron, Verb..., Sarle (1995) .... %% FIXME
+  P. Janssen, J. S. Marron, N. Veraverbeke and W. Sarle (1995)
+  Scale measures for bandwidth selection;
+  \emph{Journal of Nonparametric Statistics} \bold{5}, 359--380.
+  \doi{10.1080/10485259508832654}
 }
 \examples{
 MW.nm10

@@ -25,6 +25,7 @@ export(
        "MW.nm12", "MW.nm13", "MW.nm14", "MW.nm15", "MW.nm16",
        "clus2norMix", "nM2par", "par2norMix",
        "r.norMix"
+  , norMix2call
     , "norMixEM"
     , "norMixMLE"
     , "estep.nm", "mstep.nm", "emstep.nm"
@@ -32,6 +33,8 @@ export(
 
 S3method(`[`, norMix)
 S3method(sort, norMix)
+S3method(as.expression, norMix)
+S3method(as.function, norMix)
 
 S3method(mean, norMix)
 ##N Rather not: var() is not generic!
