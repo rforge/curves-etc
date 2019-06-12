@@ -2,13 +2,13 @@
 
 ## These are defined as norMix() calls in  ../R/zMarrWand-dens.R
 library("nor1mix")
-ppos <- which("package:nor1mix" == search())
-nms <- ls(pat="^MW.nm", pos = ppos)
+n1Env <- as.environment("package:nor1mix")
+nms <- ls(pat="^MW.nm", envir = n1Env)
 nms <- nms[order(as.numeric(substring(nms,6)))] # warning <== "MW.nm2.old"
 
 set.seed(123)
 for(n in nms) {
-    o <- get(n, pos = ppos)
+    o <- n1Env[[n]]
     cat("\n",n,":\n"); print(o)
     cat("4 random X from", n,":")
     print(rnorMix(4, o))

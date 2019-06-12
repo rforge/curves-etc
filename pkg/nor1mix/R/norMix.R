@@ -27,9 +27,8 @@ norMix <- function(mu, sig2 = rep(1, m), sigma = rep(1, m), w = NULL,
         if(!missing(sigma))
             stop("you must not specify both 'sig2' and 'sigma'; the latter is preferred now")
         sigma <- sqrt(sig2)
-        message("Using 'sigma' instead 'sig2' (= sigma^2) is preferred now")
-        ##----- to become warning, ~ end of 2014:
-        ## warning("The use of 'sig2' is deprecated; do specify 'sigma' (= sqrt(sig2)) instead")
+        .Deprecated(msg =
+	 "The use of 'sig2' is deprecated; do specify 'sigma' (= sqrt(sig2)) instead")
     }
     if(length(sigma) == 1) sigma <- rep.int(sigma, m)
     if(length(sigma) != m || !is.numeric(sigma)|| any(sigma <=0))
@@ -59,8 +58,8 @@ norMix <- function(mu, sig2 = rep(1, m), sigma = rep(1, m), w = NULL,
 
 `[.norMix` <- function (x, i, j, drop = TRUE) {
     if(!missing(j) && "sig2" %in% j) { ## back-compatibility hack
-	message("Using 'sigma' instead 'sig2' (= sigma^2) is preferred now")
-	##----- TODO become warning, ~ end of 2014
+        .Deprecated(msg =
+	 "The use of 'sig2' is deprecated; do specify 'sigma' (= sqrt(sig2)) instead")
 	if(length(j) == 1L) ## return sig2 = sigma^2:
 	    if(missing(i)) x[,"sigma", drop=drop]^2 else x[i, "sigma", drop=drop]^2
 	else
@@ -170,7 +169,7 @@ dnorMix <- function(x, obj, log = FALSE)
       ## Old version had (obj, x, ..):
       if(is.norMix(x)) { ## swap the first two arguments
           tmp <- x ; x <- obj; obj <- tmp
-          warning("Deprecated use of dnorMix(obj, x, ..);
+          .Deprecated(msg = "Deprecated use of dnorMix(obj, x, ..);
   Either use dnorMixL(), or the new argument order (x, obj, ...) and
   note that dnorMix() returns a numeric vector (not a list).")
       }
@@ -236,7 +235,8 @@ pnorMix <- function(q, obj, lower.tail = TRUE, log.p = FALSE)
         ## Old version had (obj, q):
         if(is.norMix(q)) { ## swap the first two arguments
             tmp <- q ; q <- obj; obj <- tmp
-            warning("Deprecated use of pnorMix(obj, q, ..); NEW argument order is (q, obj, ...)")
+            .Deprecated(msg =
+	    "Deprecated use of pnorMix(obj, q, ..); NEW argument order is (q, obj, ...)")
         }
         else stop("'obj' must be a 'Normal Mixture' object!")
     }
@@ -296,7 +296,8 @@ qnorMix <-
     ## Old version had (obj, p):
     if(is.norMix(p)) { ## swap the first two arguments
       tmp <- p ; p <- obj; obj <- tmp
-      warning("Deprecated use of qnorMix(obj, p, ..); NEW argument order is (p, obj, ...)")
+      .Deprecated(msg =
+	"Deprecated use of qnorMix(obj, p, ..); NEW argument order is (p, obj, ...)")
     }
     else stop("'obj' must be a 'Normal Mixture' object!")
   }

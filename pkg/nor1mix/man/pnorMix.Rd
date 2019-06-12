@@ -58,7 +58,7 @@ qnorMix(p, obj, lower.tail = TRUE, log.p = FALSE,
   \code{p. <- \link{pnorMix}(q., obj)} for values \code{q.} which are a grid
   of length \code{l.interp} in each interval \eqn{[q_j,q_{j+1}]}, where
   \eqn{q_j} are the \dQuote{X-extremes} plus (a sub sequence of length
-  \code{n.mu.interp} of) theordered \code{mu[j]}'s.
+  \code{n.mu.interp} of) the ordered \code{mu[j]}'s.
   Then, we use \emph{montone} inverse interpolation
   (\code{\link{splinefun}(q., p., method="monoH.FC")}) plus
   a few (maximally \code{maxiter}, typically one!) Newton steps.
