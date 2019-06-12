@@ -16,6 +16,10 @@ rnorMix(n, obj)
   For a mixture of \eqn{m}, i.e., \code{m.norMix(obj)}, components,
   generate the number in each component as multinomial, and then use
   \code{\link{rnorm}} for each.
+
+  Note that the these integer (multinomial) numbers are generated via \code{\link{sample}()},
+  which is by \code{\link{.Random.seed}}, notably from
+  \code{\link{RNGkind}(sample.kind = ..)} which changed with \R version 3.6.0.
 }
 \value{
   numeric vector of length \code{n}.
