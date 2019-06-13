@@ -554,29 +554,41 @@ r.norMix <- function(obj, x = NULL, xlim = NULL, n = 511, xy.return = TRUE)
 }
 
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+## --> ../man/llnorMix.Rd  for more documentation
+##            ~~~~~~~~~~~
 
-
-nM2par <- function(obj)
+nM2par <- function(obj, trafo = c("clr1", "logit"))
 {
     ## Purpose: translate norMix object into our parametrization par.vector
     ## ----------------------------------------------------------------------
-    ## Author: Martin Maechler, Date: 17 Dec 2007
+    ## Author: Martin Maechler, Date: 17 Dec 2007; "clr1": June 2019
     stopifnot(is.norMix(obj))
-    ## logit() == qlogis(); log(sqrt(.)) = log(.)/2
-    c(qlogis(obj[-1,"w"]), obj[,"mu"], log(obj[,"sigma"]))
+    trafo <- match.arg(trafo)
+    w <- switch(trafo,
+                "logit" = qlogis(obj[-1L, "w"]),
+                ## clr := centered log ratio, by Aitchison (1986), see compositions :: clr
+                ## clr1 : *omitting* the first entry
+                "clr1"  = { ln <- log(obj[,"w"]); ln[-1L] - mean(ln) },
+                stop("invalid 'trafo': ", trafo))
+    ## log(sqrt(.)) = log(.)/2
+    c(w, obj[,"mu"], log(obj[,"sigma"]))
 }
 
-.nM2par <- function(mu, sigma, w, check=TRUE)
+.nM2par <- function(mu, sigma, trafo, w, check=TRUE)
 {
     ## Purpose: Fast version of nM2par()
     ## -------------------------------------------------
     ## Author: Martin Maechler, Date: 18 Dec 2007
     if(check) stopifnot(length(w) == (p <- length(mu)), length(sigma) == p)
-    c(qlogis(w[-1]), mu, log(sigma))
+    c(switch(trafo,
+             "logit" = qlogis(w[-1L]),
+             "clr1"  =  { ln <- log(w); ln[-1L] - mean(ln) },
+             stop("invalid 'trafo': ", trafo)),
+      mu, log(sigma))
 }
 
 
-.par2nM <- function(p)
+.par2nM <- function(p, trafo)
 {
     ## Purpose: get (mu, sd, w)  from our parametrization par.vector
     ## ----------------------------------------------------------------------
@@ -590,33 +602,58 @@ nM2par <- function(obj)
     if(m == 1)
         list(mu=mu, sd=sd, w=1)
     else { ## -- m >= 2
-        pi. <- plogis(p[1:m1]) ## \pi_j = inv_logit(\lambda_j)
-        if((sp <- sum(pi.)) > 1)
-            stop(sprintf("weights sum up to %.3g > 1 !", sp))
+        w <- switch(trafo,
+                    "logit" = {
+                        pi. <- plogis(p[1:m1]) ## \pi_j = inv_logit(\lambda_j)
+                        if((sp <- sum(pi.)) > 1)
+                            stop(sprintf("weights sum up to %.3g > 1 !", sp))
+                        c(1 - sp, pi.)
+                    },
+                    "clr1"  = {
+                        ## clr := centered log ratio, by Aitchison (1986), see compositions :: clr
+                        ## clr1 : *omitting* the first entry
+                        ## ln <- log(obj[,"w"]); ln[-1L] - mean(ln)
+                        pM <- log(2) * .Machine$double.max.exp # = 709.7827, exp(pM) = double.xmax
+                        p <- p[1:m1]
+                        p <- c(-sum(p), p) # = (p_1,..., p_m)
+                        if((mp <- max(p)) < pM) { ## normal case
+                            sp <- sum(pi. <- exp(p)) # {TODO: exponential sum stable formula}
+                            pi./sp
+                        } else { ## extreme case, where exp(.) would overflow
+                            kM <- which(p == mp)
+                            p <- numeric(m) # all 0, apart from the max. value(s)
+                            p[kM] <- 1/length(kM)
+                            p
+                        }
+                    },
+                    stop("invalid 'trafo': ", trafo))
 
-        list(mu=mu, sd=sd, w = c(1 - sp, pi.))
+        list(mu=mu, sd=sd, w=w)
     }
 }
 
-par2norMix <- function(p, name = sprintf("{from %s}",
-			  deparse(substitute(p))[1]))
+par2norMix <- function(p, trafo = c("clr1", "logit"),
+		       name = sprintf("%s {from %s}",
+				      trafo, deparse(substitute(p))[1]))
 {
     ## Purpose: build norMix object from our parametrization par.vector
     ## ----------------------------------------------------------------------
     ## Author: Martin Maechler, Date: 17 Dec 2007
+    trafo <- match.arg(trafo)
     force(name) # substitute(..)
-    with(.par2nM(p),
+    nm <- .par2nM(p, trafo)
+    with(nm,
 	 norMix(mu=mu, sigma = sd, w=w, name = name))
 }
 
 
-if(FALSE) ## this is not needed -- but mention it on ?llnorMix
+if(FALSE) ## this is not needed and mentioned in help(llnorMix) -- kept here as reminder
 logLiknorMix <- function(obj, x) {
     ## Purpose: log-likelihood for 'norMix'
     sum(dnorMix(x, obj, log=TRUE))
 }
 
-llnorMix <- function(p, x, m = (length(p)+1)/3)
+llnorMix <- function(p, x, m = (length(p)+1)/3, trafo = c("clr1", "logit"))
 {
     ## Purpose: log-likelihood
     ## ----------------------------------------------------------------------
@@ -624,12 +661,17 @@ llnorMix <- function(p, x, m = (length(p)+1)/3)
     ##            x : data vector
     ##            m : number of mixture components
     ##
-    ##  'p' is particularly parametrized:
-    ##		  p = c( lambda_j, mu_j, tau_j)	 where
+    ##  'p' is particularly parametrized,
+    ##	  p = c( lambda_j, mu_j, tau_j)	 where
+    ##        depending on 'trafo' (before 2019: only "logit")
+    ##        trafo = "clr1" :
+    ##		\lambda_j = log(\pi_j) - mean_j'(log(\pi_j')), j=2,..,m
+    ##        trafo = "logit" [*the* only option before 2019-06]:
     ##		\lambda_j = logit(\pi_j), j=2,..,m; and \pi_1 := 1- sum_j\pi_j
+    ##
     ##	    and \tau_j = log(\sigma_j)	such that parameters are unconstrained
     ## ----------------------------------------------------------------------
-    ## Author: Martin Maechler, Date: 17 Dec 2007, 17:41
+    ## Author: Martin Maechler, Date: 17 Dec 2007 (for hardwired "logit"); 2019-06
     stopifnot(is.numeric(x), is.numeric(p), !is.matrix(p), 3*m == length(p)+1,
               m == (m. <- as.integer(m)), (m <- m.) >= 1)
     m1 <- m - 1L
@@ -639,13 +681,37 @@ llnorMix <- function(p, x, m = (length(p)+1)/3)
 	return( sum(dnorm(x, mean = mu[1], sd = sigma[1], log = TRUE)) )
 
     ## else -- m >= 2
-    pi. <- plogis(p[1:m1]) ## \pi_j = inv_logit(\lambda_j)
-    if((sp <- sum(pi.)) > 1) ## sum{1..K-1} pi[j] > 1
-        return(-Inf) # worst possible value
-    ## pi. <- c(pi., 1 - sp) # as  \pi_1 := 1 - sum_{j=2}^{m} \pi_j
-    y <- (1 - sp) * dnorm(x, mean = mu[1], sd = sigma[1])
-    for(j in 2:m)
-	y <- y + pi.[j- 1] * dnorm(x, mean = mu[j], sd = sigma[j])
+    trafo <- match.arg(trafo)
+    w <- switch(trafo,
+                "logit" = {
+                    pi. <- plogis(p[1:m1]) ## \pi_j = inv_logit(\lambda_j)
+                    if((sp <- sum(pi.)) > 1) ## sum{1..K-1} pi[j] > 1
+                        return(-Inf) # worst possible value
+                    ## as  \pi_1 := 1 - sum_{j=2}^{m} \pi_j :
+                    c(1 - sp, pi.)
+                },
+                "clr1"  = {
+                ## clr := centered log ratio, by Aitchison (1986), see compositions :: clr
+                ## clr1 : *omitting* the first entry
+                    ## ln <- log(obj[,"w"]); ln[-1L] - mean(ln)
+                    pM <- log(2) * .Machine$double.max.exp # = 709.7827, exp(pM) = double.xmax
+                    p <- p[1:m1]
+                    p <- c(-sum(p), p) # = (p_1,..., p_m)
+                    if((mp <- max(p)) < pM) { ## normal case
+                        sp <- sum(pi. <- exp(p)) # {TODO: exponential sum stable formula}
+                        pi./sp
+                    } else { ## extreme case, where exp(.) would overflow
+                        kM <- which(p == mp)
+                        p <- numeric(m) # all 0, apart from the max. value(s)
+                        p[kM] <- 1/length(kM)
+                        p
+                    }
+                },
+                stop("invalid 'trafo': ", trafo))
+
+    y <- 0
+    for(j in 1:m)
+	y <- y + w[j] * dnorm(x, mean = mu[j], sd = sigma[j])
     ## return
     sum(log(y))
 }

@@ -8,10 +8,12 @@
   \code{\link{optim}(.., method = "BFGS")}.
 }
 \usage{
-norMixEM(x, m, name = NULL, sd.min =  1e-07* diff(range(x))/m,
+norMixEM(x, m, name = NULL, sd.min = 1e-07* diff(range(x))/m,
+         trafo = c("clr1", "logit"),
          maxiter = 100, tol = sqrt(.Machine$double.eps), trace = 1)
 
 norMixMLE(x, m, name = NULL, %% sd.min = 1e-7 * diff(range(x))/m,
+          trafo = c("clr1", "logit"),
           maxiter = 100, tol = sqrt(.Machine$double.eps), trace = 2)
 }
 \arguments{
@@ -24,6 +26,11 @@ norMixMLE(x, m, name = NULL, %% sd.min = 1e-7 * diff(range(x))/m,
   \item{sd.min}{number: the minimal value that the normal components'
     standard deviations (\code{sd}) are allowed to take.  A warning is
     printed if some of the final \code{sd}'s are this boundary.}
+  \item{trafo}{\code{\link{character}} string specifying the transformation
+    of the component weight \code{w} \eqn{m}-vector (mathematical notation
+    in \code{\link{norMix}}: \eqn{\pi_j, j=1,\dots,m}) to an
+    \eqn{(m-1)}-dimensional unconstrained parameter vector in our
+    parametrization.  See \code{\link{nM2par}} for details.}
   \item{maxiter}{integer: maximum number of EM iterations.}
   \item{tol}{numeric: EM iterations stop if relative changes of the
     log-likelihood are smaller than \code{tol}.}

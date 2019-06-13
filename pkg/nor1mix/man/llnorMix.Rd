@@ -39,10 +39,11 @@
   mixture model.
 }
 \usage{
-llnorMix(p, x, m = (length(p) + 1)/3)
+llnorMix(p, x, m = (length(p) + 1)/3, trafo = c("clr1", "logit"))
 
-par2norMix(p, name = sprintf("{from \%s}", deparse(substitute(p))[1]))
-nM2par(obj)
+par2norMix(p, trafo = c("clr1", "logit"), name = )
+
+nM2par(obj, trafo = c("clr1", "logit"))
 
  estep.nm(x, obj, par)
  mstep.nm(x, z)
@@ -54,8 +55,17 @@ emstep.nm(x, obj)
   \item{x}{numeric: the data for which the likelihood is to be computed.}
   \item{m}{integer number of mixture components; this is not to be
     changed for a given \code{p}.}
+  \item{trafo}{\code{\link{character}} string specifying the transformation
+    of the component weight \code{w} \eqn{m}-vector (mathematical notation
+    in \code{\link{norMix}}: \eqn{\pi_j, j=1,\dots,m}) to an
+    \eqn{m-1}-dimensional unconstrained parameter vector in our
+    parametrization.  \code{"logit"} has been hard-wired upto \pkg{nor1mix}
+    version 1.2-3, and has been replaced \emph{as default} in 2019 for \pkg{nor1mix}
+    version 1.2-4 by \code{"clr1"} which is more symmetric and basically
+    Aitchinson's \bold{c}entered \bold{l}og \bold{r}atio, see also CRAN package
+    \CRANpkg{compositions}' \code{clr()}.}
   \item{name}{(for \code{par2norMix()}:) a name for the \code{"norMix"}
-    object that is returned.}
+    object that is returned, uses a smart default.}
   \item{obj}{a \code{"norMix"} object, see \code{\link{norMix}}.}
   \item{z}{a \eqn{n \times m}{n * m} \code{\link{matrix}} of (posterior)
     conditional probabilities,
@@ -63,28 +73,40 @@ emstep.nm(x, obj)
     where \eqn{C_j} denotes the \eqn{j}-th group (\dQuote{cluster}).}
 }
 \details{
-  We use a parametrization of a (finite) univariate normal mixture which
+  We use a parametrization of a (finite) \eqn{m}-component univariate normal mixture which
   is particularly apt for likelihood maximization, namely, one whose
-  parameter space is \emph{almost} a full \eqn{\mathbf{I\hskip-0.22em R}^m}{R^m},
-  \eqn{m = 3k-1}.
+  parameter space is \emph{almost} a full \eqn{\mathbf{I\hskip-0.22em R}^M}{R^M},
+  \eqn{M = 3m-1}.
 
-  For a \eqn{k}-component mixture,
+  For an \eqn{m}-component mixture,
   we map to and from a parameter vector \eqn{\theta} (\code{== p} as \R-vector)
-  of length \eqn{3k-1}. For mixture density
-  \deqn{\sum_{j=1}^k \pi_j \phi((t - \mu_j)/\sigma_j)/\sigma_j,}{
-    sum[j=1..k]  pi[j] phi((t - mu[j])/s[j])/s[j],}
-  we logit-transform the \eqn{\pi_j}{pi[j]} (for \eqn{j \ge 2}{j >= 2})
-  and log-transform the \eqn{\sigma_j}{s[j]}, such that \eqn{\theta} is
+  of length \eqn{3m-1}.  For mixture density
+  \deqn{\sum_{j=1}^m \pi_j \phi((t - \mu_j)/\sigma_j)/\sigma_j,}{
+    sum[j=1..m]  pi[j] phi((t - mu[j])/s[j])/s[j],}
+  we transform the \eqn{\pi_j}{pi[j]} (for \eqn{j \in 1,\dots,m}{j =
+  1,\dots,m}) via the transform specified by \code{trafo} (see below),
+  and log-transform the \eqn{\sigma_j}{s[j]}.  Consequently, \eqn{\theta} is
   partitioned into
   \describe{
-    \item{\code{p[ 1:(k-1)]}: }{\code{p[j]}\eqn{=
-	\mbox{logit}(\pi_{j+1})}{= logit(pi[j+1])} and
-      \eqn{\pi_1}{pi[1]} is given implicitly as
-      \eqn{\pi_1 = 1-\sum_{j=2}^k \pi_j}{pi[1] = 1 - sum[j=2..k] pi[j]}.}
+    \item{\code{p[ 1:(m-1)]}: }{For
+      \describe{
+	\item{\code{trafo = "logit"}:}{
+	  \code{p[j]}\eqn{=
+	    \mbox{logit}(\pi_{j+1})}{= logit(pi[j+1])} and
+	  \eqn{\pi_1}{pi[1]} is given implicitly as
+	  \eqn{\pi_1 = 1-\sum_{j=2}^m \pi_j}{pi[1] = 1 - sum[j=2..m] pi[j]}.}
 
-    \item{\code{p[ k:(2k-1)]}: }{\code{p[k-1+ j]}\eqn{= \mu_j}, for j=1:k.}
+	\item{\code{trafo = "clr1"}:}{(\bold{c}entered \bold{l}og
+	  \bold{r}atio, omitting 1st element):
+	  Set \eqn{\ell_j := \ln(\pi_j)}{l_j := ln(pi[j])} for \eqn{j = 1, \dots, m}, and
+	  \code{p[j]}\eqn{= \ell_{j+1} - 1/m\sum_{j'=1}^m \ell_{j'}}{= l_{j+1} - mean_j' l_j'}
+	  for \eqn{j = 1, \dots, m-1}.}
+      }
+    }
 
-    \item{\code{p[2k:(3k-1)]}: }{\code{p[2*k-1+ j]}%
+    \item{\code{p[ m:(2m-1)]}: }{\code{p[m-1+ j]}\eqn{= \mu_j}, for j=1:m.}
+
+    \item{\code{p[2m:(3m-1)]}: }{\code{p[2*m-1+ j]}%
       \eqn{= \log(\sigma_j)}{= log(s[j])}, i.e.,
       \eqn{\sigma_j^2 = exp(2*p[.+j])}.}
   }
@@ -94,8 +116,7 @@ emstep.nm(x, obj)
 
   \code{par2norMix()} returns \code{"norMix"} object, see \code{\link{norMix}}.
 
-  \code{nM2par()} returns the parameter vector \eqn{\theta} of length
-  \eqn{3k-1}.
+  \code{nM2par()} returns the parameter vector \eqn{\theta} of length \eqn{3m-1}.
 
   \code{estep.nm()} returns \code{z}, the matrix of (conditional) probabilities.
 

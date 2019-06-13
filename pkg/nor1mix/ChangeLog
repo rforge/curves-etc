@@ -1,3 +1,10 @@
+2019-06-13  Martin Maechler  <maechler@stat.math.ethz.ch>
+
+	* R/norMix.R (par2norMix, .par2nM, ...): Introduce 'trafo = "clr1"'
+	as new default transformation (for \pi_j to unconstrained parameter
+	space), because it is nicely symmetrical (and does not need to
+	artificially set 'LL = -Inf' if constrained is not satisfyable).
+
 2019-06-12  Martin Maechler  <maechler@stat.math.ethz.ch>
 
 	* tests/qnorMix-ex.R: renamed from tests/ex.R

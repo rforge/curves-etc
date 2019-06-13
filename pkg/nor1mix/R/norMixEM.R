@@ -80,6 +80,7 @@ emstep.nm <- function(x, obj)
 ##--end---------------------------- [em]step.nm() ---------------------------
 
 norMixEM <- function(x, m, name = NULL, sd.min = 1e-7 * diff(range(x))/m,
+                     trafo = c("clr1", "logit"),
                      maxiter = 100, tol = sqrt(.Machine$double.eps), trace = 1)
 {
     call. <- match.call()
@@ -151,7 +152,8 @@ norMixEM <- function(x, m, name = NULL, sd.min = 1e-7 * diff(range(x))/m,
 
 
 norMixMLE <- function(x, m, name = NULL, ## sd.min = 1e-7 * diff(range(x))/m,
-                     maxiter = 100, tol = sqrt(.Machine$double.eps), trace = 2)
+                      trafo = c("clr1", "logit"),
+                      maxiter = 100, tol = sqrt(.Machine$double.eps), trace = 2)
 {
     call. <- match.call()
     if(is.null(name))
@@ -161,6 +163,7 @@ norMixMLE <- function(x, m, name = NULL, ## sd.min = 1e-7 * diff(range(x))/m,
               (maxiter <- as.integer(maxiter)[1]) >= 1)
     m <- as.integer(m)
     stopifnot((mm <- max(m)) >= 1)
+    trafo <- match.arg(trafo)
     if(length(m) > 1) { ## initial clustering
 	init <- rep(m, length = n)
 	m <- mm
@@ -179,9 +182,9 @@ norMixMLE <- function(x, m, name = NULL, ## sd.min = 1e-7 * diff(range(x))/m,
     n.j <- colSums(z)
     mu   <- colSums(z * x) / n.j
     sig2 <- colSums(z* outer(x, mu, "-")^2) / n.j
-    par <- .nM2par(mu = mu, sigma = sqrt(sig2), w = n.j / n)
+    par <- .nM2par(mu = mu, sigma = sqrt(sig2), w = n.j / n, trafo=trafo)
 
-    neglogl <- function(par) -llnorMix(par, x=x)
+    neglogl <- function(par) -llnorMix(par, x=x, trafo=trafo)
 
 ## FIXME ??  Use  mle() and stats4 --> many methods !!
 
@@ -190,7 +193,7 @@ norMixMLE <- function(x, m, name = NULL, ## sd.min = 1e-7 * diff(range(x))/m,
                      trace=(trace > 0), REPORT= pmax(1, 10 %/% trace)))
     conv <- optr$convergence == 0
     it <- optr$counts[2:1] ## "gradient" (= high-level it.) first
-    m.s.w <- .par2nM(optr $ par)
+    m.s.w <- .par2nM(optr $ par, trafo)
 
     if(!conv)
 	warning(gettextf("MLE did not converge in %d iterations (with 'tol'=%g)",

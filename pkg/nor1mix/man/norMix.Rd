@@ -17,7 +17,7 @@ norMix(mu, sig2 = rep(1,m), sigma = rep(1,m),
        w = NULL, name = NULL, long.name = FALSE)
 
 is.norMix(obj)
-m.norMix(obj)
+ m.norMix(obj)
 var.norMix(x, \dots)
 \method{mean}{norMix}(x, \dots)
 \method{print}{norMix}(x, \dots)
