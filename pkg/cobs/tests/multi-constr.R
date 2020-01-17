@@ -75,7 +75,7 @@ cp2   <- cobs(x,y,                          pointwise = con, trace = 3)
 ## Here, warning ".. 'ifl'.. " on *some* platforms (e.g. Windows 32bit) :
 r2i <- tryCatch.W.E( cobs(x,y, constraint = "increase", pointwise = con) )
 cp2i <- r2i$value
-if(doExtras) print(r2i$warning) # not by default as long as have multi-constr.Rout.save
+if(doExtras()) print(r2i$warning) # not by default as long as have multi-constr.Rout.save
 ## when plotting it, we see that it gave a trivial constant!!
 cp2c  <- cobs(x,y, constraint = "concave",  pointwise = con, trace = 3)
 
