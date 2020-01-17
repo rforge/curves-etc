@@ -16,6 +16,7 @@ tests/ex1.Rout.save
 tests/ex2-long.Rout.save
 tests/wind.Rout.save
 tests/.*.Rout.save-[3264].*
+tests/.*-N-
 tests/swaplink-.*
 SAFE
 paper
