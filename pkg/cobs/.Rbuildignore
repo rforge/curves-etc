@@ -11,7 +11,7 @@ NAMESPACE\+.*
 no-NAME.*
 scobs_.*\.txt
 src/Notes_SR
-src/SR\.
+src/SR.*\.rds$
 tests/ex1.Rout-dbg
 tests/ex1.Rout.save
 tests/ex2-long.Rout.save
