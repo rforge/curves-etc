@@ -1,6 +1,6 @@
 
-R version 3.3.3 Patched (2017-03-15 r72365) -- "Another Canoe"
-Copyright (C) 2017 The R Foundation for Statistical Computing
+R Under development (unstable) (2020-01-16 r77667) -- "Unsuffered Consequences"
+Copyright (C) 2020 The R Foundation for Statistical Computing
 Platform: x86_64-pc-linux-gnu (64-bit)
 
 R is free software and comes with ABSOLUTELY NO WARRANTY.
@@ -421,7 +421,7 @@ qbsks2():
  	   'lambda.length' from the default value of 25.
 WARNING: Some lambdas had problems in rq.fit.sfnc():
       lambda icyc ifl fidel sum|res|_s  k
-[1,] 2.30776   16 -16 250.3     7.5999 11
+[1,] 2.30776   16  18 250.3     7.5999 11
 
    The algorithm has converged.  You might
    plot() the returned object (which plots 'sic' against 'lambda')
@@ -430,7 +430,8 @@ WARNING: Some lambdas had problems in rq.fit.sfnc():
    'lambda.lo', 'lambda.hi' and 'lambda.length' and refit the model.
 
 Warning message:
-In cobs(speed, dist, "increase", lambda = -1) : Check 'ifl'
+In cobs(speed, dist, "increase", lambda = -1) :
+  drqssbc2(): Not all flags are normal (== 1), ifl : 11111111111811111111111111
 > summaryCobs(co2)
 List of 24
  $ call         : language cobs(x = speed, y = dist, constraint = "increase", lambda = -1)
@@ -581,8 +582,8 @@ coef  :
  	   'lambda.length' from the default value of 25.
 WARNING: Some lambdas had problems in rq.fit.sfnc():
         lambda icyc ifl fidel sum|res|_s  k
-[1,] 0.0107117   16 -16 263.5          4 18
-[2,] 0.3077451   12 -16 263.5          4 18
+[1,] 0.0107117   16  18 263.5          4 18
+[2,] 0.3077451   12  18 263.5          4 18
 
  WARNING!  Since the optimal lambda chosen by SIC 
    corresponds to the roughest possible fit, you should
@@ -592,7 +593,8 @@ WARNING: Some lambdas had problems in rq.fit.sfnc():
    (2) modify the number of knots.
 
 Warning message:
-In cobs(speed, dist, "convex", lambda = -1) : Check 'ifl'
+In cobs(speed, dist, "convex", lambda = -1) :
+  drqssbc2(): Not all flags are normal (== 1), ifl : 111811111811111111111111111
 > summaryCobs(co3)
 List of 24
  $ call         : language cobs(x = speed, y = dist, constraint = "convex", lambda = -1)
@@ -616,7 +618,7 @@ List of 24
  $ lambda       : Named num 66.3
   ..- attr(*, "names")= chr "lambda"
  $ icyc         : int [1:25] 15 15 16 13 13 12 12 12 14 15 ...
- $ ifl          : int [1:25] 1 1 -16 1 1 1 1 -16 1 1 ...
+ $ ifl          : int [1:25] 1 1 18 1 1 1 1 18 1 1 ...
  $ pp.lambda    : num [1:25] 0 0.01 0.01 0.02 0.04 0.08 0.16 0.31 0.6 1.18 ...
  $ pp.sic       : num [1:25] 2.37 2.37 2.37 2.37 2.37 ...
  $ i.mask       : logi [1:25] TRUE TRUE TRUE TRUE TRUE TRUE ...
@@ -920,12 +922,12 @@ R^2 = 95.93% ;  empirical tau (over all): 245/500 = 0.49 (target tau= 0.5)
 Time elapsed: 0.013 
 Warning message:
 In cobs(x, y, "decrease", knots = ux, nknots = length(ux), degree = 1) :
-  Check 'ifl'
+  drqssbc2(): Not all flags are normal (== 1), ifl : 18
 > summary(cI1)
 COBS regression spline (degree = 1) from call:
 	 cobs(x = x, y = y, constraint = "decrease", knots = ux, nknots = length(ux),     degree = 1)
 
- **** ERROR in algorithm: ifl = -16
+ **** ERROR in algorithm: ifl = 18
 
 
 {tau=0.5}-quantile;  dimensionality of fit: 465 from {465}
@@ -956,7 +958,7 @@ R^2 = 96.02% ;  empirical tau (over all): 250/500 = 0.5 (target tau= 0.5)
    so that you can determine if you need to adjust any or all of
    'lambda.lo', 'lambda.hi' and 'lambda.length' and refit the model.
 
-Time elapsed: 0.24 
+Time elapsed: 0.198 
 > ## somewhat <  2 sec. (Pent. III, 700 MHz)
 > pxx <- predict(cxyS, xx)
 > pxx[xx > max(x) , ]# those outside to the right -- currently all = Inf !
@@ -1321,4 +1323,4 @@ null device
 > 
 > proc.time()
    user  system elapsed 
-  2.854   0.161   3.020 
+  2.595   0.139   2.867 

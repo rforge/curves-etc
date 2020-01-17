@@ -1,6 +1,6 @@
 
-R version 3.3.2 Patched (2017-01-30 r72057) -- "Sincere Pumpkin Patch"
-Copyright (C) 2017 The R Foundation for Statistical Computing
+R Under development (unstable) (2020-01-16 r77667) -- "Unsuffered Consequences"
+Copyright (C) 2020 The R Foundation for Statistical Computing
 Platform: x86_64-pc-linux-gnu (64-bit)
 
 R is free software and comes with ABSOLUTELY NO WARRANTY.
@@ -308,7 +308,7 @@ loo.design2(): ->  Xeq   50 x 3 (nz = 150 =^=     1%)
                   Xieq    5 x 3 (nz = 15 =^=     1%) 
 Warning message:
 In cobs(x, y, constraint = c("inc", "concave"), pointwise = con,  :
-  Check 'ifl'
+  drqssbc2(): Not all flags are normal (== 1), ifl : 18
 > 
 > cp1   <- cobs(x,y, degree = 1,                            pointwise = con, trace = 3)
 qbsks2():
@@ -440,4 +440,4 @@ Warning messages:
 > 
 > proc.time()
    user  system elapsed 
-  1.592   0.160   1.852 
+  1.343   0.119   1.571 
