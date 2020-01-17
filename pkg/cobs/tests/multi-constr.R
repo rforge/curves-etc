@@ -2,10 +2,21 @@
 
 suppressMessages(library(cobs))
 
+str(.M <- .Machine, digits = 8)
+capabilities()
+str(.M[grep("^sizeof", names(.M))]) ## also differentiate long-double..
+(b64 <- .M$sizeof.pointer == 8)
+(arch <- Sys.info()[["machine"]])
+(onWindows <- .Platform$OS.type == "windows")
+(win32 <- onWindows && !b64)
+
 options(digits = 6)
+
 if(!dev.interactive(orNone=TRUE)) pdf("multi-constr.pdf")
 
 source(system.file("util.R", package = "cobs"))
+source(system.file(package="Matrix", "test-tools-1.R", mustWork=TRUE))
+##--> tryCatch.W.E(), showProc.time(), assertError(), relErrV(), ...
 
 op <- options(warn = 2) ## << all warnings to errors!
 
@@ -60,7 +71,11 @@ all.equal(fitted(c1), fitted(c1i), tol = 1e-9)# but not 1e-10
 c1IC <- cobs(x,y, degree = 1, constraint = c("inc", "concave"), trace = 3)
 
 cp2   <- cobs(x,y,                          pointwise = con, trace = 3)
-cp2i  <- cobs(x,y, constraint = "increase", pointwise = con)# warn: check 'ifl'
+
+## Here, warning ".. 'ifl'.. " on *some* platforms (e.g. Windows 32bit) :
+r2i <- tryCatch.W.E( cobs(x,y, constraint = "increase", pointwise = con) )
+cp2i <- r2i$value
+if(doExtras) print(r2i$warning) # not by default as long as have multi-constr.Rout.save
 ## when plotting it, we see that it gave a trivial constant!!
 cp2c  <- cobs(x,y, constraint = "concave",  pointwise = con, trace = 3)
 
