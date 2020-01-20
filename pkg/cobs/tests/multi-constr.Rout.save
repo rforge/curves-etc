@@ -19,10 +19,56 @@ Type 'q()' to quit R.
 > 
 > suppressMessages(library(cobs))
 > 
+> str(.M <- .Machine, digits = 8)
+List of 18
+ $ double.eps           : num 2.220446e-16
+ $ double.neg.eps       : num 1.110223e-16
+ $ double.xmin          : num 2.2250739e-308
+ $ double.xmax          : num 1.7976931e+308
+ $ double.base          : int 2
+ $ double.digits        : int 53
+ $ double.rounding      : int 5
+ $ double.guard         : int 0
+ $ double.ulp.digits    : int -52
+ $ double.neg.ulp.digits: int -53
+ $ double.exponent      : int 11
+ $ double.min.exp       : int -1022
+ $ double.max.exp       : int 1024
+ $ integer.max          : int 2147483647
+ $ sizeof.long          : int 8
+ $ sizeof.longlong      : int 8
+ $ sizeof.longdouble    : int 16
+ $ sizeof.pointer       : int 8
+> capabilities()
+       jpeg         png        tiff       tcltk         X11        aqua 
+       TRUE        TRUE        TRUE        TRUE        TRUE       FALSE 
+   http/ftp     sockets      libxml        fifo      cledit       iconv 
+       TRUE        TRUE        TRUE        TRUE       FALSE        TRUE 
+        NLS     profmem       cairo         ICU long.double     libcurl 
+       TRUE       FALSE        TRUE        TRUE        TRUE        TRUE 
+> str(.M[grep("^sizeof", names(.M))]) ## also differentiate long-double..
+List of 4
+ $ sizeof.long      : int 8
+ $ sizeof.longlong  : int 8
+ $ sizeof.longdouble: int 16
+ $ sizeof.pointer   : int 8
+> (b64 <- .M$sizeof.pointer == 8)
+[1] TRUE
+> (arch <- Sys.info()[["machine"]])
+[1] "x86_64"
+> (onWindows <- .Platform$OS.type == "windows")
+[1] FALSE
+> (win32 <- onWindows && !b64)
+[1] FALSE
+> 
 > options(digits = 6)
+> 
 > if(!dev.interactive(orNone=TRUE)) pdf("multi-constr.pdf")
 > 
 > source(system.file("util.R", package = "cobs"))
+> source(system.file(package="Matrix", "test-tools-1.R", mustWork=TRUE))
+Loading required package: tools
+> ##--> tryCatch.W.E(), showProc.time(), assertError(), relErrV(), ...
 > 
 > op <- options(warn = 2) ## << all warnings to errors!
 > 
@@ -264,11 +310,16 @@ loo.design2(): ->  Xeq   50 x 4 (nz = 150 =^=  0.75%)
                   Xieq    2 x 4 (nz = 6 =^=  0.75%) 
 loo.design2(): ->  Xeq   50 x 5 (nz = 150 =^=   0.6%) 
                   Xieq    2 x 5 (nz = 6 =^=   0.6%) 
-> cp2i  <- cobs(x,y, constraint = "increase", pointwise = con)# warn: check 'ifl'
+> 
+> ## Here, warning ".. 'ifl'.. " on *some* platforms (e.g. Windows 32bit) :
+> r2i <- tryCatch.W.E( cobs(x,y, constraint = "increase", pointwise = con) )
 qbsks2():
  Performing general knot selection ...
 
  Deleting unnecessary knots ...
+> cp2i <- r2i$value
+> if(doExtras()) print(r2i$warning) # not by default as long as have multi-constr.Rout.save
+NULL
 > ## when plotting it, we see that it gave a trivial constant!!
 > cp2c  <- cobs(x,y, constraint = "concave",  pointwise = con, trace = 3)
 qbsks2():
@@ -440,4 +491,4 @@ Warning messages:
 > 
 > proc.time()
    user  system elapsed 
-  1.343   0.119   1.571 
+  1.448   0.131   1.773 
