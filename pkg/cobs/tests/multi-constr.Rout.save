@@ -19,48 +19,7 @@ Type 'q()' to quit R.
 > 
 > suppressMessages(library(cobs))
 > 
-> str(.M <- .Machine, digits = 8)
-List of 18
- $ double.eps           : num 2.220446e-16
- $ double.neg.eps       : num 1.110223e-16
- $ double.xmin          : num 2.2250739e-308
- $ double.xmax          : num 1.7976931e+308
- $ double.base          : int 2
- $ double.digits        : int 53
- $ double.rounding      : int 5
- $ double.guard         : int 0
- $ double.ulp.digits    : int -52
- $ double.neg.ulp.digits: int -53
- $ double.exponent      : int 11
- $ double.min.exp       : int -1022
- $ double.max.exp       : int 1024
- $ integer.max          : int 2147483647
- $ sizeof.long          : int 8
- $ sizeof.longlong      : int 8
- $ sizeof.longdouble    : int 16
- $ sizeof.pointer       : int 8
-> capabilities()
-       jpeg         png        tiff       tcltk         X11        aqua 
-       TRUE        TRUE        TRUE        TRUE        TRUE       FALSE 
-   http/ftp     sockets      libxml        fifo      cledit       iconv 
-       TRUE        TRUE        TRUE        TRUE       FALSE        TRUE 
-        NLS     profmem       cairo         ICU long.double     libcurl 
-       TRUE       FALSE        TRUE        TRUE        TRUE        TRUE 
-> str(.M[grep("^sizeof", names(.M))]) ## also differentiate long-double..
-List of 4
- $ sizeof.long      : int 8
- $ sizeof.longlong  : int 8
- $ sizeof.longdouble: int 16
- $ sizeof.pointer   : int 8
-> (b64 <- .M$sizeof.pointer == 8)
-[1] TRUE
-> (arch <- Sys.info()[["machine"]])
-[1] "x86_64"
-> (onWindows <- .Platform$OS.type == "windows")
-[1] FALSE
-> (win32 <- onWindows && !b64)
-[1] FALSE
-> 
+> ## do *not* show platform info here (as have *.Rout.save), but in 0_pt-ex.R
 > options(digits = 6)
 > 
 > if(!dev.interactive(orNone=TRUE)) pdf("multi-constr.pdf")
@@ -69,34 +28,6 @@ List of 4
 > source(system.file(package="Matrix", "test-tools-1.R", mustWork=TRUE))
 Loading required package: tools
 > ##--> tryCatch.W.E(), showProc.time(), assertError(), relErrV(), ...
-> 
-> op <- options(warn = 2) ## << all warnings to errors!
-> 
-> set.seed(101)
-> x <- seq(-2,2, length = 100)
-> y <- x^2 + 0.5*rnorm(100)
-> ## Constraints -- choosing ones that are true for  f(x) = x^2
-> PW  <- rbind(
-+              c(0, -3,9), # f(-3) = 9
-+              c(0,  3,9), # f(3 ) = 9
-+              c(2,  0,0)) # f'(0) = 0
-> 
-> mod <- cobs (x,y,constraint = "convex", pointwise = PW)
-qbsks2():
- Performing general knot selection ...
-
- Deleting unnecessary knots ...
-> mod
-COBS regression spline (degree = 2) from call:
-	 cobs(x = x, y = y, constraint = "convex", pointwise = PW)
-{tau=0.5}-quantile;  dimensionality of fit: 3 from {3}
-x$knots[1:2]: -2,  2
-> stopifnot(all.equal(predict(mod, c(-3, 3))[,"fit"], c(9,9), tol = 1e-12))
-> 
-> ## derivative 0 at 0 -- we miss a 'deriv = 1' argument [-> see ../TODO]
-> eps <- 1e-6
-> stopifnot(abs(diff(predict(mod, c(-eps, eps))[,"fit"])/(2*eps)) < .001 * eps)
-> options(op)# allow warnings
 > 
 > 
 > set.seed(908)
