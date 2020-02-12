@@ -1,6 +1,6 @@
 ##
-##  Copyright (C) 2010 Friedrich Leisch
-##  Copyright (C) 2013 Martin Maechler
+##  Copyright (C) 2013-2019 Martin Maechler  (ML + many other tweaks)
+##  Copyright (C) 2010      Friedrich Leisch {norMixEM()}
 ##
 ##  This program is free software; you can redistribute it and/or modify
 ##  it under the terms of the GNU General Public License as published by
@@ -159,8 +159,9 @@ norMixMLE <- function(x, m, name = NULL, ## sd.min = 1e-7 * diff(range(x))/m,
     if(is.null(name))
 	name <- sub("\\(x = ","(",
 		    sub(", trace = [^,)]+", '', deparse(call.)))
-    stopifnot(is.numeric(x), (n <- length(x)) >= 1,
-              (maxiter <- as.integer(maxiter)[1]) >= 1)
+    n <- length(x)
+    stopifnot(is.numeric(x), n >= 1,
+              (maxiter <- as.integer(maxiter)[1L]) >= 1)
     m <- as.integer(m)
     stopifnot((mm <- max(m)) >= 1)
     trafo <- match.arg(trafo)
@@ -174,6 +175,9 @@ norMixMLE <- function(x, m, name = NULL, ## sd.min = 1e-7 * diff(range(x))/m,
     }
     ## stopifnot(is.numeric(sd.min), length(sd.min) == 1, sd.min >= 0)
 
+### FIXME: allow to provide  n x m matrix 'z' *instead* of m, as start
+### -----  <==> z  containing probabilities instead of just {0,1}
+
     ## z := the "posterior" probabilities, here 0/1 from the grouping
     z <- matrix(0, nrow = n, ncol = m)
     z[cbind(1:n, init)] <- 1
@@ -182,13 +186,13 @@ norMixMLE <- function(x, m, name = NULL, ## sd.min = 1e-7 * diff(range(x))/m,
     n.j <- colSums(z)
     mu   <- colSums(z * x) / n.j
     sig2 <- colSums(z* outer(x, mu, "-")^2) / n.j
-    par <- .nM2par(mu = mu, sigma = sqrt(sig2), w = n.j / n, trafo=trafo)
+    par0 <- .nM2par(mu = mu, sigma = sqrt(sig2), w = n.j / n, trafo=trafo)
 
     neglogl <- function(par) -llnorMix(par, x=x, trafo=trafo)
 
-## FIXME ??  Use  mle() and stats4 --> many methods !!
+## FIXME ??  Use  mle() from base R package 'stats4' --> many methods !!
 
-    optr <- optim(par, neglogl, method = "BFGS", control =
+    optr <- optim(par0, neglogl, method = "BFGS", control =
                 list(maxit=maxiter, reltol = tol,
                      trace=(trace > 0), REPORT= pmax(1, 10 %/% trace)))
     conv <- optr$convergence == 0

@@ -1,4 +1,13 @@
-####-*- mode: R; kept-old-versions: 12;  kept-new-versions: 30; -*-
+##
+##  Copyright (C) 1997-2020 Martin Maechler
+##
+##  This program is free software; you can redistribute it and/or modify
+##  it under the terms of the GNU General Public License as published by
+##  the Free Software Foundation; either version 2 of the License, or
+##  (at your option) any later version.
+##
+##  A copy of the GNU General Public License is available at
+##  http://www.r-project.org/Licenses/
 
 ####---- Normal Mixtures  "norMix" -------
 ####---- ~~~~~~~~~~~~~~~   ######  -------
@@ -613,7 +622,7 @@ nM2par <- function(obj, trafo = c("clr1", "logit"))
                         ## clr := centered log ratio, by Aitchison (1986), see compositions :: clr
                         ## clr1 : *omitting* the first entry
                         ## ln <- log(obj[,"w"]); ln[-1L] - mean(ln)
-                        pM <- log(2) * .Machine$double.max.exp # = 709.7827, exp(pM) = double.xmax
+                        pM <- log(2) * .Machine$double.max.exp # = 709.7827 = log(.Machine$double.xmax)
                         p <- p[1:m1]
                         p <- c(-sum(p), p) # = (p_1,..., p_m)
                         if((mp <- max(p)) < pM) { ## normal case
@@ -697,15 +706,11 @@ llnorMix <- function(p, x, m = (length(p)+1)/3, trafo = c("clr1", "logit"))
                     pM <- log(2) * .Machine$double.max.exp # = 709.7827, exp(pM) = double.xmax
                     p <- p[1:m1]
                     p <- c(-sum(p), p) # = (p_1,..., p_m)
-                    if((mp <- max(p)) < pM) { ## normal case
-                        sp <- sum(pi. <- exp(p)) # {TODO: exponential sum stable formula}
-                        pi./sp
-                    } else { ## extreme case, where exp(.) would overflow
-                        kM <- which(p == mp)
-                        p <- numeric(m) # all 0, apart from the max. value(s)
-                        p[kM] <- 1/length(kM)
-                        p
-                    }
+                    pi. <- exp(if((mp <- max(p)) < pM)  ## normal case
+                                   p
+                               else ## extreme case, where exp(.) would overflow
+                                   p - mp)
+                    pi. / sum(pi.)
                 },
                 stop("invalid 'trafo': ", trafo))
 

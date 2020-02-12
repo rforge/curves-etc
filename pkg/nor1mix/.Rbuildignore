@@ -1,6 +1,5 @@
-Marron_.*\.pdf
-.dir-locals.el
-normix-HK\.
-.*-post\.R.*
+DESCRIPTION_Author
+DESCRIPTION\+R
+^do-.*
 .*-log
-tests/MW.Rout.save
+

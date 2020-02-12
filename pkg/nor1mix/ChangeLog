@@ -1,11 +1,18 @@
+2020-02-12  Martin Mächler  <maechler@stat.math.ethz.ch>
+
+	* DESCRIPTION (Version): 1.3-1
+
+	* R/norMix.R (llnorMix): improve "clr1" trafo for the case of
+	large p, i.e., max(p) > 709.78.
+
 2019-06-13  Martin Maechler  <maechler@stat.math.ethz.ch>
 
-	* DESCRIPTION (Version): 1.3-0 (because chaning default trafo API change)
+	* DESCRIPTION (Version): 1.3-0 (because changing default trafo is API change)
 
 	* R/norMix.R (par2norMix, .par2nM, ...): Introduce 'trafo = "clr1"'
 	as new default transformation (for \pi_j to unconstrained parameter
 	space), because it is nicely symmetrical (and does not need to
-	artificially set 'LL = -Inf' if constrained is not satisfyable).
+	artificially set 'LL = -Inf' if constraint is not satisfiable).
 
 2019-06-12  Martin Maechler  <maechler@stat.math.ethz.ch>
 

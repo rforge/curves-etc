@@ -1,6 +1,6 @@
 o  qnorMix(*, log.p=TRUE) --- Newton iteration part is not yet implemented
 
 o  MLE (and EM): provide  "inference", i.e. vcov() methods, confint(),
-   AIC(), ..
+   logLik() ==> AIC(), BIC()
 
 o  Produce a *.Rmd vignette out of  ~/R/MM/Pkg-ex/nor1mix/mix_est_1d.R
