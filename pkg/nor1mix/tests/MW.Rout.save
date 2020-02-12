@@ -1,7 +1,7 @@
 
-R version 3.1.1 Patched (2014-08-31 r66504) -- "Sock it to Me"
-Copyright (C) 2014 The R Foundation for Statistical Computing
-Platform: x86_64-unknown-linux-gnu (64-bit)
+R version 3.6.2 Patched (2020-02-08 r77782) -- "Dark and Stormy Night"
+Copyright (C) 2020 The R Foundation for Statistical Computing
+Platform: x86_64-pc-linux-gnu (64-bit)
 
 R is free software and comes with ABSOLUTELY NO WARRANTY.
 You are welcome to redistribute it under certain conditions.
@@ -19,15 +19,15 @@ Type 'q()' to quit R.
 > 
 > ## These are defined as norMix() calls in  ../R/zMarrWand-dens.R
 > library("nor1mix")
-> ppos <- which("package:nor1mix" == search())
-> nms <- ls(pat="^MW.nm", pos = ppos)
+> n1Env <- as.environment("package:nor1mix")
+> nms <- ls(pat="^MW.nm", envir = n1Env)
 > nms <- nms[order(as.numeric(substring(nms,6)))] # warning <== "MW.nm2.old"
 Warning message:
 In order(as.numeric(substring(nms, 6))) : NAs introduced by coercion
 > 
 > set.seed(123)
 > for(n in nms) {
-+     o <- get(n, pos = ppos)
++     o <- n1Env[[n]]
 +     cat("\n",n,":\n"); print(o)
 +     cat("4 random X from", n,":")
 +     print(rnorMix(4, o))
@@ -45,7 +45,7 @@ In order(as.numeric(substring(nms, 6))) : NAs introduced by coercion
 'Normal Mixture' object 	 ``#1 Gaussian'' 
      mu sigma w
 [1,]  0     1 1
-4 random X from MW.nm1 :[1]  1.55870831 -0.23017749  0.07050839 -0.56047565
+4 random X from MW.nm1 :[1]  1.55870831 -0.56047565 -0.23017749  0.07050839
 
  MW.nm2 :
 'Normal Mixture' object 	 ``#2 Skewed'' 
@@ -53,7 +53,7 @@ In order(as.numeric(substring(nms, 6))) : NAs introduced by coercion
 [1,] 0.000000 1.0000000 0.2
 [2,] 0.500000 0.6666667 0.2
 [3,] 1.083333 0.5555556 0.6
-4 random X from MW.nm2 :[1]  0.8357433  1.7633788  0.0420981 -1.2650612
+4 random X from MW.nm2 :[1] -1.2650612  1.7633788  0.8357433  0.0420981
 
  MW.nm3 :
 'Normal Mixture' object 	 ``#3 Str Skew'' 
@@ -66,42 +66,42 @@ In order(as.numeric(substring(nms, 6))) : NAs introduced by coercion
 [6,] -2.604938 0.13168724 0.125
 [7,] -2.736626 0.08779150 0.125
 [8,] -2.824417 0.05852766 0.125
-4 random X from MW.nm3 :[1] -0.6680997 -2.7958750 -2.6671989 -2.2688680
+4 random X from MW.nm3 :[1] -2.2688680 -2.7958750 -0.6680997 -2.6671989
 
  MW.nm4 :
 'Normal Mixture' object 	 ``#4 Kurtotic'' 
      mu sigma         w
 [1,]  0   1.0 0.6666667
 [2,]  0   0.1 0.3333333
-4 random X from MW.nm4 :[1] -1.08569914 -0.08542326 -0.14539355  1.07061054
+4 random X from MW.nm4 :[1] -1.6866933 -0.6250393 -0.7288912  0.8377870
 
  MW.nm5 :
 'Normal Mixture' object 	 ``#5 Outlier'' 
      mu sigma   w
 [1,]  0   1.0 0.1
 [2,]  0   0.1 0.9
-4 random X from MW.nm5 :[1]  0.08951257 -0.02950715  0.04264642  1.25381492
+4 random X from MW.nm5 :[1]  0.08951257  0.04264642 -0.02950715  0.08781335
 
  MW.nm6 :
 'Normal Mixture' object 	 ``#6 Bimodal'' 
      mu     sigma   w
 [1,] -1 0.6666667 0.5
 [2,]  1 0.6666667 0.5
-4 random X from MW.nm6 :[1] -0.7801392  1.1910324 -3.1515486 -1.5145278
+4 random X from MW.nm6 :[1] -1.5145278 -0.8089676  0.1863253 -3.1515486
 
  MW.nm7 :
 'Normal Mixture' object 	 ``#7 Separated'' 
        mu sigma   w
 [1,] -1.5   0.5 0.5
 [2,]  1.5   0.5 0.5
-4 random X from MW.nm7 :[1] -0.4155220  0.9384457 -2.1326982 -0.8960190
+4 random X from MW.nm7 :[1]  1.2985576 -0.4155220  0.9384457 -0.8960190
 
  MW.nm8 :
 'Normal Mixture' object 	 ``#8 Asym Bim'' 
       mu     sigma    w
 [1,] 0.0 1.0000000 0.75
 [2,] 1.5 0.3333333 0.25
-4 random X from MW.nm8 :[1]  2.06329084  1.35595674  0.02884391 -1.31893760
+4 random X from MW.nm8 :[1]  1.68987252  1.90946426 -0.43212979  0.02884391
 
  MW.nm9 :
 'Normal Mixture' object 	 ``#9 Trimodal'' 
@@ -109,7 +109,7 @@ In order(as.numeric(substring(nms, 6))) : NAs introduced by coercion
 [1,] -1.2  0.60 0.45
 [2,]  1.2  0.60 0.45
 [3,]  0.0  0.25 0.10
-4 random X from MW.nm9 :[1]  2.1739215  0.4214718 -1.5125216 -0.2675171
+4 random X from MW.nm9 :[1]  1.0549861  2.2115323 -0.2260785  0.5579591
 
  MW.nm10 :
 'Normal Mixture' object 	 ``#10 Claw'' 
@@ -120,7 +120,7 @@ In order(as.numeric(substring(nms, 6))) : NAs introduced by coercion
 [4,]  0.0   0.1 0.1
 [5,]  0.5   0.1 0.1
 [6,]  1.0   0.1 0.1
-4 random X from MW.nm10 :[1]  1.0053004 -0.4551790 -0.4696471 -1.0717912
+4 random X from MW.nm10 :[1] -1.0717912  0.4482098  0.3035286 -1.0185754
 
  MW.nm11 :
 'Normal Mixture' object 	 ``#11 Doub Claw'' 
@@ -134,7 +134,7 @@ In order(as.numeric(substring(nms, 6))) : NAs introduced by coercion
  [7,]  0.5 0.0100000 0.002857143
  [8,]  1.0 0.0100000 0.002857143
  [9,]  1.5 0.0100000 0.002857143
-4 random X from MW.nm11 :[1]  0.5413276  1.6704923 -2.5394459  0.5271995
+4 random X from MW.nm11 :[1] -1.60052783  0.50998256  0.04820948 -1.15259721
 
  MW.nm12 :
 'Normal Mixture' object 	 ``#12 Asym Claw'' 
@@ -145,7 +145,7 @@ In order(as.numeric(substring(nms, 6))) : NAs introduced by coercion
 [4,]  0.5 0.100 0.06451613
 [5,]  1.5 0.050 0.03225806
 [6,]  2.5 0.025 0.01612903
-4 random X from MW.nm12 :[1] -1.3458878 -0.1388914  0.4629340 -1.4976943
+4 random X from MW.nm12 :[1] -1.8130921 -1.8115989 -1.6499200 -0.2793335
 
  MW.nm13 :
 'Normal Mixture' object 	 ``#13 As Do Claw'' 
@@ -158,7 +158,7 @@ In order(as.numeric(substring(nms, 6))) : NAs introduced by coercion
 [6,]  0.5 0.0700000 0.023333333
 [7,]  1.0 0.0700000 0.023333333
 [8,]  1.5 0.0700000 0.023333333
-4 random X from MW.nm13 :[1]  1.7658717 -0.2687740 -0.7098790  0.7827123
+4 random X from MW.nm13 :[1]  1.2001861  0.3994194  1.4424858 -1.4172739
 
  MW.nm14 :
 'Normal Mixture' object 	 ``#14 Smoo Comb'' 
@@ -169,7 +169,7 @@ In order(as.numeric(substring(nms, 6))) : NAs introduced by coercion
 [4,]  2.5238095 0.06349206 0.06349206
 [5,]  2.8095238 0.03174603 0.03174603
 [6,]  2.9523810 0.01587302 0.01587302
-4 random X from MW.nm14 :[1] -0.8197811  1.9911699  0.6917952 -1.3935908
+4 random X from MW.nm14 :[1]  2.6626878  0.6570769 -1.7951269  1.1550863
 
  MW.nm15 :
 'Normal Mixture' object 	 ``#15 Disc Comb'' 
@@ -180,14 +180,14 @@ In order(as.numeric(substring(nms, 6))) : NAs introduced by coercion
 [4,]  2.2857143 0.04761905 0.04761905
 [5,]  2.5714286 0.04761905 0.04761905
 [6,]  2.8571429 0.04761905 0.04761905
-4 random X from MW.nm15 :[1] -2.2133405  2.2403991  2.5692844 -0.5278693
+4 random X from MW.nm15 :[1]  1.12613263  1.62177718  0.07964046 -0.41780490
 
  MW.nm16 :
 'Normal Mixture' object 	 ``#16 Dist Bim'' 
        mu     sigma   w
 [1,] -2.5 0.1666667 0.5
 [2,]  2.5 0.1666667 0.5
-4 random X from MW.nm16 :[1] -2.267096  2.580934  2.793942 -2.538377
+4 random X from MW.nm16 :[1] 2.732904 2.461623 2.587809 2.793942
 
  MW.nm2.old :
 'Normal Mixture' object 	 ``#2 Skewed (old)'' 
@@ -195,8 +195,8 @@ In order(as.numeric(substring(nms, 6))) : NAs introduced by coercion
 [1,] -0.3 1.2000000 0.2
 [2,]  0.3 0.8000000 0.2
 [3,]  1.0 0.6666667 0.6
-4 random X from MW.nm2.old :[1]  1.64120690 -2.18121016  0.09141929 -0.51647318
+4 random X from MW.nm2.old :[1]  0.43353044  0.06138403 -0.21256481  0.38454096
 > 
 > proc.time()
    user  system elapsed 
-  0.359   0.048   0.456 
+  0.157   0.042   0.187 
