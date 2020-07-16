@@ -1,6 +1,6 @@
 
-R version 3.3.1 Patched (2016-10-04 r71447) -- "Bug in Your Hair"
-Copyright (C) 2016 The R Foundation for Statistical Computing
+R Under development (unstable) (2020-07-14 r78856) -- "Unsuffered Consequences"
+Copyright (C) 2020 The R Foundation for Statistical Computing
 Platform: x86_64-pc-linux-gnu (64-bit)
 
 R is free software and comes with ABSOLUTELY NO WARRANTY.
@@ -51,7 +51,7 @@ List of 23
  $ x.inOut   : logi TRUE
 > summary(gk$est)
    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
--3.0680 -1.6680  0.7053  0.4094  1.7820  4.2130 
+-3.0683 -1.6676  0.7053  0.4094  1.7819  4.2125 
 > gk$bandwidth
 [1] 0.04845241
 > glkerns(tt,xSim, deriv = 1)$bandwidth

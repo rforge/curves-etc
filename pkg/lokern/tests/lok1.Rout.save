@@ -1,6 +1,6 @@
 
-R version 3.3.1 Patched (2016-10-04 r71447) -- "Bug in Your Hair"
-Copyright (C) 2016 The R Foundation for Statistical Computing
+R Under development (unstable) (2020-07-14 r78856) -- "Unsuffered Consequences"
+Copyright (C) 2020 The R Foundation for Statistical Computing
 Platform: x86_64-pc-linux-gnu (64-bit)
 
 R is free software and comes with ABSOLUTELY NO WARRANTY.
@@ -22,7 +22,7 @@ Loading required package: lokern
 [1] 75
 > summary(xSim)
    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
--3.1320 -1.6150  0.7583  0.3969  1.7710  4.4500 
+-3.1323 -1.6148  0.7583  0.3969  1.7713  4.4505 
 > tt <- ((1:n) - 1/2)/n # equidistant x
 > 
 > str(lk <- lokerns(tt, xSim, trace=TRUE))
@@ -36,34 +36,34 @@ lokerns (n=75,m=300; nue=0, isrand=1, inputp=0) -> kord=2
  phase  8
  phase  9
  phase 10
- kernel(n= 75,m= 76; b=  0.01000531) -> (chg.pt,cut_b)=( 7.0, 0.09) => 'classic'
- kernel(n= 75,m=400; b=       0.024) -> (chg.pt,cut_b)=( 9.0, 0.12) => 'classic'
- kernel(n= 75,m=400; b=  0.03375978) -> (chg.pt,cut_b)=( 9.0, 0.12) => 'classic'
- kernel(n= 75,m=400; b=   0.0479116) -> (chg.pt,cut_b)=( 9.0, 0.12) => 'classic'
- kernel(n= 75,m=400; b=  0.05951944) -> (chg.pt,cut_b)=( 9.0, 0.12) => 'classic'
- kernel(n= 75,m=400; b=  0.06496717) -> (chg.pt,cut_b)=( 9.0, 0.12) => 'classic'
- kernel(n= 75,m=400; b=  0.06707809) -> (chg.pt,cut_b)=( 9.0, 0.12) => 'classic'
- kernel(n= 75,m=400; b=  0.06782741) -> (chg.pt,cut_b)=( 9.0, 0.12) => 'classic'
- kernel(n= 75,m=400; b=  0.06808279) -> (chg.pt,cut_b)=( 9.0, 0.12) => 'classic'
- kernel(n= 75,m=400; b=  0.06816836) -> (chg.pt,cut_b)=( 9.0, 0.12) => 'classic'
- kernel(n= 75,m=400; b=  0.06819685) -> (chg.pt,cut_b)=( 9.0, 0.12) => 'classic'
- kernel(n= 75,m=400; b=  0.06820632) -> (chg.pt,cut_b)=( 9.0, 0.12) => 'classic'
- kernel(n= 75,m=400; b=  0.06820946) -> (chg.pt,cut_b)=( 9.0, 0.12) => 'classic'
- kernel(n= 75,m=400; b=   0.0682105) -> (chg.pt,cut_b)=( 9.0, 0.12) => 'classic'
- kernel(n= 75,m=400; b=  0.06821085) -> (chg.pt,cut_b)=( 9.0, 0.12) => 'classic'
- kernel(n= 75,m=400; b=  0.06821097) -> (chg.pt,cut_b)=( 9.0, 0.12) => 'classic'
- kernel(n= 75,m=300; b=  0.04845241) -> (chg.pt,cut_b)=( 7.0, 0.09) => 'classic'
+ kernp(n= 75,m= 76; b=0.01000531) -> (chg.pt,cut_b)=( 7.0, 0.09) => 'classic'
+ kernp(n= 75,m=400; b=     0.024) -> (chg.pt,cut_b)=( 9.0, 0.12) => 'classic'
+ kernp(n= 75,m=400; b=0.03375978) -> (chg.pt,cut_b)=( 9.0, 0.12) => 'classic'
+ kernp(n= 75,m=400; b= 0.0479116) -> (chg.pt,cut_b)=( 9.0, 0.12) => 'classic'
+ kernp(n= 75,m=400; b=0.05951944) -> (chg.pt,cut_b)=( 9.0, 0.12) => 'classic'
+ kernp(n= 75,m=400; b=0.06496717) -> (chg.pt,cut_b)=( 9.0, 0.12) => 'classic'
+ kernp(n= 75,m=400; b=0.06707809) -> (chg.pt,cut_b)=( 9.0, 0.12) => 'classic'
+ kernp(n= 75,m=400; b=0.06782741) -> (chg.pt,cut_b)=( 9.0, 0.12) => 'classic'
+ kernp(n= 75,m=400; b=0.06808279) -> (chg.pt,cut_b)=( 9.0, 0.12) => 'classic'
+ kernp(n= 75,m=400; b=0.06816836) -> (chg.pt,cut_b)=( 9.0, 0.12) => 'classic'
+ kernp(n= 75,m=400; b=0.06819685) -> (chg.pt,cut_b)=( 9.0, 0.12) => 'classic'
+ kernp(n= 75,m=400; b=0.06820632) -> (chg.pt,cut_b)=( 9.0, 0.12) => 'classic'
+ kernp(n= 75,m=400; b=0.06820946) -> (chg.pt,cut_b)=( 9.0, 0.12) => 'classic'
+ kernp(n= 75,m=400; b= 0.0682105) -> (chg.pt,cut_b)=( 9.0, 0.12) => 'classic'
+ kernp(n= 75,m=400; b=0.06821085) -> (chg.pt,cut_b)=( 9.0, 0.12) => 'classic'
+ kernp(n= 75,m=400; b=0.06821097) -> (chg.pt,cut_b)=( 9.0, 0.12) => 'classic'
+ kernp(n= 75,m=300; b=0.04845241) -> (chg.pt,cut_b)=( 7.0, 0.09) => 'classic'
  phase 18
  phase 19
  phase 20
- kernel(n= 75,m=300; b=  0.04845241) -> (chg.pt,cut_b)=( 7.0, 0.09) => 'classic'
+ kernp(n= 75,m=300; b=0.04845241) -> (chg.pt,cut_b)=( 7.0, 0.09) => 'classic'
  phase 21
- kernel(n= 75,m=399; b=   0.0611626) -> (chg.pt,cut_b)=( 9.0, 0.12) => 'classic'
- kernp(n=399,m=300; b=    0.086814) -> (chg.pt,cut_b)=( 8.1, 0.02) => 'fast O(n)'
-  kernfp(n=399, b=    0.086814, nue=0, kord=2, ny=1, m=300):
+ kernp(n= 75,m=399; b= 0.0611626) -> (chg.pt,cut_b)=( 9.0, 0.12) => 'classic'
+ kernp(n=399,m=300; b=  0.086814) -> (chg.pt,cut_b)=( 8.1, 0.02) => 'fast O(n)'
+  kernfp(n=399, b=  0.086814, nue=0, kord=2, ny=1, m=300):
  phase 22
  phase 23
- kernel(n= 75,m=300; b=  0.04845241) -> (chg.pt,cut_b)=( 7.0, 0.09) => 'classic'
+ kernp(n= 75,m=300; b=0.04845241) -> (chg.pt,cut_b)=( 7.0, 0.09) => 'classic'
 List of 24
  $ x         : num [1:75] 0.00667 0.02 0.03333 0.04667 0.06 ...
  $ y         : num [1:75] 1.97 1.9 1.64 1.43 2.4 ...
@@ -92,10 +92,10 @@ List of 24
  - attr(*, "class")= chr [1:2] "lokerns" "KernS"
 > summary(lk$est)
    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
--3.0720 -1.6670  0.7102  0.4164  1.7830  4.2940 
+-3.0721 -1.6666  0.7102  0.4164  1.7826  4.2935 
 > summary((lk1 <- lokerns(tt,xSim, deriv = 1))$est)
    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
--41.230  -8.198  -5.577  -4.945  -1.786  35.280 
+-41.231  -8.198  -5.577  -4.945  -1.786  35.279 
 > summary((lk2 <- lokerns(tt,xSim, deriv = 2, trace=TRUE))$est)
 lokerns (n=75,m=300; nue=2, isrand=1, inputp=0) -> kord=4
  phase  2
@@ -107,108 +107,108 @@ lokerns (n=75,m=300; nue=2, isrand=1, inputp=0) -> kord=4
  phase  8
  phase  9
  phase 10
- kernel(n= 75,m= 76; b=  0.00909058) -> (chg.pt,cut_b)=( 7.0, 0.09) => 'classic'
- kernel(n= 75,m=400; b=  0.06913456) -> (chg.pt,cut_b)=(11.0, 0.15) => 'classic'
- kernel(n= 75,m=400; b=  0.09087056) -> (chg.pt,cut_b)=(11.0, 0.15) => 'classic'
- kernel(n= 75,m=400; b=   0.1116875) -> (chg.pt,cut_b)=(11.0, 0.15) => 'classic'
- kernel(n= 75,m=400; b=   0.1331001) -> (chg.pt,cut_b)=(11.0, 0.15) => 'classic'
- kernel(n= 75,m=400; b=   0.1559109) -> (chg.pt,cut_b)=(11.0, 0.15) => 'fast O(n)'
-  kernfa(n= 75, b=   0.1559109, nue=4, kord=6, ny=0, m=400):
- kernel(n= 75,m=400; b=   0.1663355) -> (chg.pt,cut_b)=(11.0, 0.15) => 'fast O(n)'
-  kernfa(n= 75, b=   0.1663355, nue=4, kord=6, ny=0, m=400):
- kernel(n= 75,m=400; b=   0.1698105) -> (chg.pt,cut_b)=(11.0, 0.15) => 'fast O(n)'
-  kernfa(n= 75, b=   0.1698105, nue=4, kord=6, ny=0, m=400):
- kernel(n= 75,m=400; b=   0.1709302) -> (chg.pt,cut_b)=(11.0, 0.15) => 'fast O(n)'
-  kernfa(n= 75, b=   0.1709302, nue=4, kord=6, ny=0, m=400):
- kernel(n= 75,m=400; b=   0.1712874) -> (chg.pt,cut_b)=(11.0, 0.15) => 'fast O(n)'
-  kernfa(n= 75, b=   0.1712874, nue=4, kord=6, ny=0, m=400):
- kernel(n= 75,m=400; b=   0.1714011) -> (chg.pt,cut_b)=(11.0, 0.15) => 'fast O(n)'
-  kernfa(n= 75, b=   0.1714011, nue=4, kord=6, ny=0, m=400):
- kernel(n= 75,m=400; b=   0.1714373) -> (chg.pt,cut_b)=(11.0, 0.15) => 'fast O(n)'
-  kernfa(n= 75, b=   0.1714373, nue=4, kord=6, ny=0, m=400):
- kernel(n= 75,m=400; b=   0.1714489) -> (chg.pt,cut_b)=(11.0, 0.15) => 'fast O(n)'
-  kernfa(n= 75, b=   0.1714489, nue=4, kord=6, ny=0, m=400):
- kernel(n= 75,m=400; b=   0.1714526) -> (chg.pt,cut_b)=(11.0, 0.15) => 'fast O(n)'
-  kernfa(n= 75, b=   0.1714526, nue=4, kord=6, ny=0, m=400):
- kernel(n= 75,m=400; b=   0.1714538) -> (chg.pt,cut_b)=(11.0, 0.15) => 'fast O(n)'
-  kernfa(n= 75, b=   0.1714538, nue=4, kord=6, ny=0, m=400):
- kernel(n= 75,m=400; b=   0.1714541) -> (chg.pt,cut_b)=(11.0, 0.15) => 'fast O(n)'
-  kernfa(n= 75, b=   0.1714541, nue=4, kord=6, ny=0, m=400):
- kernel(n= 75,m=400; b=   0.1714542) -> (chg.pt,cut_b)=(11.0, 0.15) => 'fast O(n)'
-  kernfa(n= 75, b=   0.1714542, nue=4, kord=6, ny=0, m=400):
- kernel(n= 75,m=400; b=   0.1714543) -> (chg.pt,cut_b)=(11.0, 0.15) => 'fast O(n)'
-  kernfa(n= 75, b=   0.1714543, nue=4, kord=6, ny=0, m=400):
- kernel(n= 75,m=400; b=   0.1714543) -> (chg.pt,cut_b)=(11.0, 0.15) => 'fast O(n)'
-  kernfa(n= 75, b=   0.1714543, nue=4, kord=6, ny=0, m=400):
- kernel(n= 75,m=400; b=   0.1714543) -> (chg.pt,cut_b)=(11.0, 0.15) => 'fast O(n)'
-  kernfa(n= 75, b=   0.1714543, nue=4, kord=6, ny=0, m=400):
- kernel(n= 75,m=400; b=   0.1714543) -> (chg.pt,cut_b)=(11.0, 0.15) => 'fast O(n)'
-  kernfa(n= 75, b=   0.1714543, nue=4, kord=6, ny=0, m=400):
- kernel(n= 75,m=400; b=   0.1714543) -> (chg.pt,cut_b)=(11.0, 0.15) => 'fast O(n)'
-  kernfa(n= 75, b=   0.1714543, nue=4, kord=6, ny=0, m=400):
- kernel(n= 75,m=400; b=   0.1714543) -> (chg.pt,cut_b)=(11.0, 0.15) => 'fast O(n)'
-  kernfa(n= 75, b=   0.1714543, nue=4, kord=6, ny=0, m=400):
- kernel(n= 75,m=400; b=   0.1714543) -> (chg.pt,cut_b)=(11.0, 0.15) => 'fast O(n)'
-  kernfa(n= 75, b=   0.1714543, nue=4, kord=6, ny=0, m=400):
- kernel(n= 75,m=400; b=   0.1714543) -> (chg.pt,cut_b)=(11.0, 0.15) => 'fast O(n)'
-  kernfa(n= 75, b=   0.1714543, nue=4, kord=6, ny=0, m=400):
- kernel(n= 75,m=400; b=   0.1714543) -> (chg.pt,cut_b)=(11.0, 0.15) => 'fast O(n)'
-  kernfa(n= 75, b=   0.1714543, nue=4, kord=6, ny=0, m=400):
- kernel(n= 75,m=400; b=   0.1714543) -> (chg.pt,cut_b)=(11.0, 0.15) => 'fast O(n)'
-  kernfa(n= 75, b=   0.1714543, nue=4, kord=6, ny=0, m=400):
- kernel(n= 75,m=400; b=   0.1714543) -> (chg.pt,cut_b)=(11.0, 0.15) => 'fast O(n)'
-  kernfa(n= 75, b=   0.1714543, nue=4, kord=6, ny=0, m=400):
- kernel(n= 75,m=400; b=   0.1714543) -> (chg.pt,cut_b)=(11.0, 0.15) => 'fast O(n)'
-  kernfa(n= 75, b=   0.1714543, nue=4, kord=6, ny=0, m=400):
- kernel(n= 75,m=400; b=   0.1714543) -> (chg.pt,cut_b)=(11.0, 0.15) => 'fast O(n)'
-  kernfa(n= 75, b=   0.1714543, nue=4, kord=6, ny=0, m=400):
- kernel(n= 75,m=400; b=   0.1714543) -> (chg.pt,cut_b)=(11.0, 0.15) => 'fast O(n)'
-  kernfa(n= 75, b=   0.1714543, nue=4, kord=6, ny=0, m=400):
- kernel(n= 75,m=400; b=   0.1714543) -> (chg.pt,cut_b)=(11.0, 0.15) => 'fast O(n)'
-  kernfa(n= 75, b=   0.1714543, nue=4, kord=6, ny=0, m=400):
- kernel(n= 75,m=400; b=   0.1714543) -> (chg.pt,cut_b)=(11.0, 0.15) => 'fast O(n)'
-  kernfa(n= 75, b=   0.1714543, nue=4, kord=6, ny=0, m=400):
- kernel(n= 75,m=400; b=   0.1714543) -> (chg.pt,cut_b)=(11.0, 0.15) => 'fast O(n)'
-  kernfa(n= 75, b=   0.1714543, nue=4, kord=6, ny=0, m=400):
- kernel(n= 75,m=400; b=   0.1714543) -> (chg.pt,cut_b)=(11.0, 0.15) => 'fast O(n)'
-  kernfa(n= 75, b=   0.1714543, nue=4, kord=6, ny=0, m=400):
- kernel(n= 75,m=400; b=   0.1714543) -> (chg.pt,cut_b)=(11.0, 0.15) => 'fast O(n)'
-  kernfa(n= 75, b=   0.1714543, nue=4, kord=6, ny=0, m=400):
- kernel(n= 75,m=400; b=   0.1714543) -> (chg.pt,cut_b)=(11.0, 0.15) => 'fast O(n)'
-  kernfa(n= 75, b=   0.1714543, nue=4, kord=6, ny=0, m=400):
- kernel(n= 75,m=400; b=   0.1714543) -> (chg.pt,cut_b)=(11.0, 0.15) => 'fast O(n)'
-  kernfa(n= 75, b=   0.1714543, nue=4, kord=6, ny=0, m=400):
- kernel(n= 75,m=400; b=   0.1714543) -> (chg.pt,cut_b)=(11.0, 0.15) => 'fast O(n)'
-  kernfa(n= 75, b=   0.1714543, nue=4, kord=6, ny=0, m=400):
- kernel(n= 75,m=400; b=   0.1714543) -> (chg.pt,cut_b)=(11.0, 0.15) => 'fast O(n)'
-  kernfa(n= 75, b=   0.1714543, nue=4, kord=6, ny=0, m=400):
- kernel(n= 75,m=400; b=   0.1714543) -> (chg.pt,cut_b)=(11.0, 0.15) => 'fast O(n)'
-  kernfa(n= 75, b=   0.1714543, nue=4, kord=6, ny=0, m=400):
- kernel(n= 75,m=400; b=   0.1714543) -> (chg.pt,cut_b)=(11.0, 0.15) => 'fast O(n)'
-  kernfa(n= 75, b=   0.1714543, nue=4, kord=6, ny=0, m=400):
- kernel(n= 75,m=400; b=   0.1714543) -> (chg.pt,cut_b)=(11.0, 0.15) => 'fast O(n)'
-  kernfa(n= 75, b=   0.1714543, nue=4, kord=6, ny=0, m=400):
- kernel(n= 75,m=400; b=   0.1714543) -> (chg.pt,cut_b)=(11.0, 0.15) => 'fast O(n)'
-  kernfa(n= 75, b=   0.1714543, nue=4, kord=6, ny=0, m=400):
- kernel(n= 75,m=400; b=   0.1714543) -> (chg.pt,cut_b)=(11.0, 0.15) => 'fast O(n)'
-  kernfa(n= 75, b=   0.1714543, nue=4, kord=6, ny=0, m=400):
- kernel(n= 75,m=400; b=   0.1714543) -> (chg.pt,cut_b)=(11.0, 0.15) => 'fast O(n)'
-  kernfa(n= 75, b=   0.1714543, nue=4, kord=6, ny=0, m=400):
- kernel(n= 75,m=300; b=   0.1190404) -> (chg.pt,cut_b)=( 9.0, 0.12) => 'classic'
+ kernp(n= 75,m= 76; b=0.00909058) -> (chg.pt,cut_b)=( 7.0, 0.09) => 'classic'
+ kernp(n= 75,m=400; b=0.06913456) -> (chg.pt,cut_b)=(11.0, 0.15) => 'classic'
+ kernp(n= 75,m=400; b=0.09087056) -> (chg.pt,cut_b)=(11.0, 0.15) => 'classic'
+ kernp(n= 75,m=400; b= 0.1116875) -> (chg.pt,cut_b)=(11.0, 0.15) => 'classic'
+ kernp(n= 75,m=400; b= 0.1331001) -> (chg.pt,cut_b)=(11.0, 0.15) => 'classic'
+ kernp(n= 75,m=400; b= 0.1559109) -> (chg.pt,cut_b)=(11.0, 0.15) => 'fast O(n)'
+  kernfa(n= 75, b= 0.1559109, nue=4, kord=6, ny=0, m=400):
+ kernp(n= 75,m=400; b= 0.1663355) -> (chg.pt,cut_b)=(11.0, 0.15) => 'fast O(n)'
+  kernfa(n= 75, b= 0.1663355, nue=4, kord=6, ny=0, m=400):
+ kernp(n= 75,m=400; b= 0.1698105) -> (chg.pt,cut_b)=(11.0, 0.15) => 'fast O(n)'
+  kernfa(n= 75, b= 0.1698105, nue=4, kord=6, ny=0, m=400):
+ kernp(n= 75,m=400; b= 0.1709302) -> (chg.pt,cut_b)=(11.0, 0.15) => 'fast O(n)'
+  kernfa(n= 75, b= 0.1709302, nue=4, kord=6, ny=0, m=400):
+ kernp(n= 75,m=400; b= 0.1712874) -> (chg.pt,cut_b)=(11.0, 0.15) => 'fast O(n)'
+  kernfa(n= 75, b= 0.1712874, nue=4, kord=6, ny=0, m=400):
+ kernp(n= 75,m=400; b= 0.1714011) -> (chg.pt,cut_b)=(11.0, 0.15) => 'fast O(n)'
+  kernfa(n= 75, b= 0.1714011, nue=4, kord=6, ny=0, m=400):
+ kernp(n= 75,m=400; b= 0.1714373) -> (chg.pt,cut_b)=(11.0, 0.15) => 'fast O(n)'
+  kernfa(n= 75, b= 0.1714373, nue=4, kord=6, ny=0, m=400):
+ kernp(n= 75,m=400; b= 0.1714489) -> (chg.pt,cut_b)=(11.0, 0.15) => 'fast O(n)'
+  kernfa(n= 75, b= 0.1714489, nue=4, kord=6, ny=0, m=400):
+ kernp(n= 75,m=400; b= 0.1714526) -> (chg.pt,cut_b)=(11.0, 0.15) => 'fast O(n)'
+  kernfa(n= 75, b= 0.1714526, nue=4, kord=6, ny=0, m=400):
+ kernp(n= 75,m=400; b= 0.1714538) -> (chg.pt,cut_b)=(11.0, 0.15) => 'fast O(n)'
+  kernfa(n= 75, b= 0.1714538, nue=4, kord=6, ny=0, m=400):
+ kernp(n= 75,m=400; b= 0.1714541) -> (chg.pt,cut_b)=(11.0, 0.15) => 'fast O(n)'
+  kernfa(n= 75, b= 0.1714541, nue=4, kord=6, ny=0, m=400):
+ kernp(n= 75,m=400; b= 0.1714542) -> (chg.pt,cut_b)=(11.0, 0.15) => 'fast O(n)'
+  kernfa(n= 75, b= 0.1714542, nue=4, kord=6, ny=0, m=400):
+ kernp(n= 75,m=400; b= 0.1714543) -> (chg.pt,cut_b)=(11.0, 0.15) => 'fast O(n)'
+  kernfa(n= 75, b= 0.1714543, nue=4, kord=6, ny=0, m=400):
+ kernp(n= 75,m=400; b= 0.1714543) -> (chg.pt,cut_b)=(11.0, 0.15) => 'fast O(n)'
+  kernfa(n= 75, b= 0.1714543, nue=4, kord=6, ny=0, m=400):
+ kernp(n= 75,m=400; b= 0.1714543) -> (chg.pt,cut_b)=(11.0, 0.15) => 'fast O(n)'
+  kernfa(n= 75, b= 0.1714543, nue=4, kord=6, ny=0, m=400):
+ kernp(n= 75,m=400; b= 0.1714543) -> (chg.pt,cut_b)=(11.0, 0.15) => 'fast O(n)'
+  kernfa(n= 75, b= 0.1714543, nue=4, kord=6, ny=0, m=400):
+ kernp(n= 75,m=400; b= 0.1714543) -> (chg.pt,cut_b)=(11.0, 0.15) => 'fast O(n)'
+  kernfa(n= 75, b= 0.1714543, nue=4, kord=6, ny=0, m=400):
+ kernp(n= 75,m=400; b= 0.1714543) -> (chg.pt,cut_b)=(11.0, 0.15) => 'fast O(n)'
+  kernfa(n= 75, b= 0.1714543, nue=4, kord=6, ny=0, m=400):
+ kernp(n= 75,m=400; b= 0.1714543) -> (chg.pt,cut_b)=(11.0, 0.15) => 'fast O(n)'
+  kernfa(n= 75, b= 0.1714543, nue=4, kord=6, ny=0, m=400):
+ kernp(n= 75,m=400; b= 0.1714543) -> (chg.pt,cut_b)=(11.0, 0.15) => 'fast O(n)'
+  kernfa(n= 75, b= 0.1714543, nue=4, kord=6, ny=0, m=400):
+ kernp(n= 75,m=400; b= 0.1714543) -> (chg.pt,cut_b)=(11.0, 0.15) => 'fast O(n)'
+  kernfa(n= 75, b= 0.1714543, nue=4, kord=6, ny=0, m=400):
+ kernp(n= 75,m=400; b= 0.1714543) -> (chg.pt,cut_b)=(11.0, 0.15) => 'fast O(n)'
+  kernfa(n= 75, b= 0.1714543, nue=4, kord=6, ny=0, m=400):
+ kernp(n= 75,m=400; b= 0.1714543) -> (chg.pt,cut_b)=(11.0, 0.15) => 'fast O(n)'
+  kernfa(n= 75, b= 0.1714543, nue=4, kord=6, ny=0, m=400):
+ kernp(n= 75,m=400; b= 0.1714543) -> (chg.pt,cut_b)=(11.0, 0.15) => 'fast O(n)'
+  kernfa(n= 75, b= 0.1714543, nue=4, kord=6, ny=0, m=400):
+ kernp(n= 75,m=400; b= 0.1714543) -> (chg.pt,cut_b)=(11.0, 0.15) => 'fast O(n)'
+  kernfa(n= 75, b= 0.1714543, nue=4, kord=6, ny=0, m=400):
+ kernp(n= 75,m=400; b= 0.1714543) -> (chg.pt,cut_b)=(11.0, 0.15) => 'fast O(n)'
+  kernfa(n= 75, b= 0.1714543, nue=4, kord=6, ny=0, m=400):
+ kernp(n= 75,m=400; b= 0.1714543) -> (chg.pt,cut_b)=(11.0, 0.15) => 'fast O(n)'
+  kernfa(n= 75, b= 0.1714543, nue=4, kord=6, ny=0, m=400):
+ kernp(n= 75,m=400; b= 0.1714543) -> (chg.pt,cut_b)=(11.0, 0.15) => 'fast O(n)'
+  kernfa(n= 75, b= 0.1714543, nue=4, kord=6, ny=0, m=400):
+ kernp(n= 75,m=400; b= 0.1714543) -> (chg.pt,cut_b)=(11.0, 0.15) => 'fast O(n)'
+  kernfa(n= 75, b= 0.1714543, nue=4, kord=6, ny=0, m=400):
+ kernp(n= 75,m=400; b= 0.1714543) -> (chg.pt,cut_b)=(11.0, 0.15) => 'fast O(n)'
+  kernfa(n= 75, b= 0.1714543, nue=4, kord=6, ny=0, m=400):
+ kernp(n= 75,m=400; b= 0.1714543) -> (chg.pt,cut_b)=(11.0, 0.15) => 'fast O(n)'
+  kernfa(n= 75, b= 0.1714543, nue=4, kord=6, ny=0, m=400):
+ kernp(n= 75,m=400; b= 0.1714543) -> (chg.pt,cut_b)=(11.0, 0.15) => 'fast O(n)'
+  kernfa(n= 75, b= 0.1714543, nue=4, kord=6, ny=0, m=400):
+ kernp(n= 75,m=400; b= 0.1714543) -> (chg.pt,cut_b)=(11.0, 0.15) => 'fast O(n)'
+  kernfa(n= 75, b= 0.1714543, nue=4, kord=6, ny=0, m=400):
+ kernp(n= 75,m=400; b= 0.1714543) -> (chg.pt,cut_b)=(11.0, 0.15) => 'fast O(n)'
+  kernfa(n= 75, b= 0.1714543, nue=4, kord=6, ny=0, m=400):
+ kernp(n= 75,m=400; b= 0.1714543) -> (chg.pt,cut_b)=(11.0, 0.15) => 'fast O(n)'
+  kernfa(n= 75, b= 0.1714543, nue=4, kord=6, ny=0, m=400):
+ kernp(n= 75,m=400; b= 0.1714543) -> (chg.pt,cut_b)=(11.0, 0.15) => 'fast O(n)'
+  kernfa(n= 75, b= 0.1714543, nue=4, kord=6, ny=0, m=400):
+ kernp(n= 75,m=400; b= 0.1714543) -> (chg.pt,cut_b)=(11.0, 0.15) => 'fast O(n)'
+  kernfa(n= 75, b= 0.1714543, nue=4, kord=6, ny=0, m=400):
+ kernp(n= 75,m=400; b= 0.1714543) -> (chg.pt,cut_b)=(11.0, 0.15) => 'fast O(n)'
+  kernfa(n= 75, b= 0.1714543, nue=4, kord=6, ny=0, m=400):
+ kernp(n= 75,m=400; b= 0.1714543) -> (chg.pt,cut_b)=(11.0, 0.15) => 'fast O(n)'
+  kernfa(n= 75, b= 0.1714543, nue=4, kord=6, ny=0, m=400):
+ kernp(n= 75,m=400; b= 0.1714543) -> (chg.pt,cut_b)=(11.0, 0.15) => 'fast O(n)'
+  kernfa(n= 75, b= 0.1714543, nue=4, kord=6, ny=0, m=400):
+ kernp(n= 75,m=400; b= 0.1714543) -> (chg.pt,cut_b)=(11.0, 0.15) => 'fast O(n)'
+  kernfa(n= 75, b= 0.1714543, nue=4, kord=6, ny=0, m=400):
+ kernp(n= 75,m=300; b= 0.1190404) -> (chg.pt,cut_b)=( 9.0, 0.12) => 'classic'
  phase 18
  phase 19
  phase 20
- kernel(n= 75,m=300; b=   0.1190404) -> (chg.pt,cut_b)=( 7.0, 0.09) => 'fast O(n)'
-  kernfa(n= 75, b=   0.1190404, nue=0, kord=2, ny=1, m=300):
+ kernp(n= 75,m=300; b= 0.1190404) -> (chg.pt,cut_b)=( 7.0, 0.09) => 'fast O(n)'
+  kernfa(n= 75, b= 0.1190404, nue=0, kord=2, ny=1, m=300):
  phase 21
- kernel(n= 75,m=399; b=   0.1186581) -> (chg.pt,cut_b)=(11.0, 0.15) => 'classic'
- kernp(n=399,m=300; b=   0.1818455) -> (chg.pt,cut_b)=( 8.1, 0.02) => 'fast O(n)'
-  kernfp(n=399, b=   0.1818455, nue=0, kord=2, ny=1, m=300):
+ kernp(n= 75,m=399; b= 0.1186581) -> (chg.pt,cut_b)=(11.0, 0.15) => 'classic'
+ kernp(n=399,m=300; b= 0.1818455) -> (chg.pt,cut_b)=( 8.1, 0.02) => 'fast O(n)'
+  kernfp(n=399, b= 0.1818455, nue=0, kord=2, ny=1, m=300):
  phase 22
  phase 23
- kernel(n= 75,m=300; b=   0.1190404) -> (chg.pt,cut_b)=( 9.0, 0.12) => 'classic'
+ kernp(n= 75,m=300; b= 0.1190404) -> (chg.pt,cut_b)=( 9.0, 0.12) => 'classic'
     Min.  1st Qu.   Median     Mean  3rd Qu.     Max. 
--688.700  -74.740   26.410   -4.829  169.500  352.600 
+-688.691  -74.741   26.413   -4.829  169.492  352.630 
 > 
 > summary(lk  $bandwidth)
    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
@@ -218,7 +218,7 @@ lokerns (n=75,m=300; nue=2, isrand=1, inputp=0) -> kord=4
 0.05854 0.06545 0.06669 0.06977 0.06927 0.09286 
 > summary(lk2 $bandwidth)
    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
-0.07662 0.07995 0.09398 0.09034 0.09501 0.10940 
+0.07662 0.07995 0.09398 0.09034 0.09501 0.10938 
 > 
 > str(lkH <- lokerns(tt, xSim, hetero=TRUE))
 List of 24
@@ -250,4 +250,4 @@ List of 24
 > 
 > proc.time()
    user  system elapsed 
-  0.167   0.035   0.266 
+  0.174   0.048   0.305 

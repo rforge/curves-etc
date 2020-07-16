@@ -1,5 +1,5 @@
-      subroutine lokern_s(t,x, tt,y, n,m,nue,kord, hetero,isrand,
-     .     inputb,m1,tl,tu,s,sig,wn,w1, wm,ban, trace)
+      subroutine lokern_s(t,x, tt,y, n,m,nue,kord, hetero,
+     .     israndI,inputbI, m1,tl,tu,s,sig, wn,w1, wm,ban, trace)
 c----------------------------------------------------------------------*
 c-----------------------------------------------------------------------
 c       Short-version: January 1997
@@ -13,6 +13,8 @@ c       (nue,kord) = (0,2), (0,4), (1,3) or (2,4).
 c-----------------------------------------------------------------------
 c  used subroutines: constV, resest, kernel with further subroutines
 c-----------------------------------------------------------------------
+      implicit none
+c
 c Args
       integer n, m, nue,kord
       double precision t(n), x(n),
@@ -20,21 +22,26 @@ c Args
      +     tl, tu,
      +     s(0:n), ! mid point values for convolution kernel
      +     sig
-      logical hetero, isrand, inputb
-c			      inputb (was "smo", now same as in R):
-c if TRUE, do not compute bandwidths but use ban(.)
-      integer m1, trace
+      integer hetero, israndI, inputbI, m1
       double precision wn(0:n,5), w1(m1,3), wm(m), ban(m)
+      integer trace
+
 c Var
+c if TRUE, do not compute bandwidths but use ban(.)
       logical inputs, needsrt
       integer nyg, i,ii,iil,itt,il,iu,itende,it, j, kk,kk2, nn
      1     , kordv, nuev, nyl ! <- lokern extra
       double precision bias(2,0:2), vark(2,0:2), fak2(2:4),
      1     rvar, s0,sn, b2,bmin,bmax, bres,bs, alpha,ex,exs,exsvi,
      2     r2,snr,osig, vi,ssi,const,fac, q,tll,tuu, xi,xmy2
-     3     , b, bvar, g1,g2,dist, wstep, xh,xxh ! <- lokern extra
-c-
+     3   , b, bvar, g1,g2,dist, wstep, xh,xxh ! <- lokern extra
+      logical isrand, inputb
+c		      inputb (was "smo", now same as in R):
+
 c-------- 1. initialisations
+      isrand = (israndI .ne. 0)
+      inputb = (inputbI .ne. 0)
+
       data bias/.2, .04762, .4286, .1515, 1.33, .6293/
       data vark/.6,  1.250, 2.143, 11.93, 35.0, 381.6/
       data fak2/4.,36.,576./
@@ -64,8 +71,10 @@ c     kord - nue must be even :
       il=1
       iu=n
 
-      if(trace .gt. 0) call monit0(1, n, m, nue, kord,
-     +     inputb, isrand, ban, trace)
+      if(trace .gt. 0) then
+         call monit0(1, n, m, nue, kord, inputbI, israndI, ban, trace)
+      end if
+
 
 c-------- 2. computation of s-sequence
       if(trace .gt. 0) call monit1(2, trace)
@@ -161,7 +170,7 @@ c-
 c-------- 9. estimating variance and smoothed pseudoresiduals
       if(trace .gt. 0) call monit1(9, trace)
       rvar=sig ! to become old 'sig'
-      if(hetero) then
+      if(hetero .eq. 1) then
         call resest(t,x,n,wn(1,2),snr,sig)
         bres=max(bmin,.2*dble(nn)**(-.2)*(s(iu)-s(il-1)))
         do i=1,n
@@ -252,7 +261,7 @@ c-------- 16  compute smoothed function with global plug-in bandwidth
 c-
 c-------- 17. variance check
       if(trace .ge. 2) call monit1(17, trace)
-      if(hetero) sig=rvar
+      if(hetero .eq. 1) sig=rvar
       if(sig.eq.rvar .or. r2.lt.0.88 .or. nue.gt.0) goto 180
       ii=0
       iil=0

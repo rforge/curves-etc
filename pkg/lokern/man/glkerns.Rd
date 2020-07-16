@@ -163,10 +163,11 @@ glkerns(x, \dots)
   efficient estimator for fixed and random design.  Polynomial kernels
   and boundary kernels are used with a fast and stable updating
   algorithm for kernel regression estimation.  More details can be found
-  in the references and on
-  \url{http://www.biostat.uzh.ch/en/research/software/kernel.html}
-  or (equivalently)
-  \url{https://www.uzh.ch/cmsssl/biostat/en/research/software/kernel.html}
+  in the references and previously at
+  Biostats, University of Zurich under \file{software/kernel.html}, but no longer.
+  %% \url{http://www.biostat.uzh.ch/en/research/software/kernel.html}
+  %% or (equivalently)
+  %% \url{https://www.uzh.ch/cmsssl/biostat/en/research/software/kernel.html}
   %was http://www.biostat.uzh.ch/research/software/kernel.html
   %was http://www.unizh.ch/biostat/Software/kernsplus.html}.
 }

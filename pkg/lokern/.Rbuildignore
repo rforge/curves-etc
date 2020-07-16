@@ -1,5 +1,9 @@
 TODO-MM
 svn-.*
+\.out$
+LTO
+valgrind
+note$
 misc
 misc/
 src/.*,v

@@ -1,5 +1,5 @@
-      subroutine glkern_s(t,x, tt,y, n,m,nue,kord, hetero,isrand,
-     +     inputb,m1,tl,tu,s,sig,wn,w1,b, trace)
+      subroutine glkern_s(t,x, tt,y, n,m,nue,kord, hetero,
+     .     israndI,inputbI, m1,tl,tu,s,sig, wn,w1, b, trace)
 c----------------------------------------------------------------------*
 c-----------------------------------------------------------------------
 c       Short-version: Oct 1996
@@ -13,27 +13,34 @@ c       (nue,kord) = (0,2), (0,4), (1,3) or (2,4).
 c-----------------------------------------------------------------------
 c  used subroutines: constV, resest, kernel with further subroutines
 c-----------------------------------------------------------------------
+      implicit none
+c
 c Args
       integer n, m, nue,kord
-      double precision t(n),x(n), tt(m), tl,tu, s(0:n), sig
-      logical hetero, isrand, inputb
-c			      inputb (was "smo", now same as in R):
-c	 if TRUE, do not compute bandwidth, but *use* 'b' given as input
-      integer m1, trace
-      double precision wn(0:n,5),w1(m1,3), b, y(m)
+      double precision t(n),x(n), tt(m),y(m)
+      integer hetero, israndI, inputbI, m1
+      double precision tl,tu, s(0:n), sig, wn(0:n,5), w1(m1,3), b
+      integer trace
+
 c Var
       logical inputs, needsrt
       integer nyg, i,ii,iil,itt,il,iu,itende,it, j, kk,kk2, nn
       double precision bias(2,0:2), vark(2,0:2), fak2(2:4),
      1     rvar, s0,sn, b2,bmin,bmax, bres,bs, alpha,ex,exs,exsvi,
      2     r2,snr,osig, vi,ssi,const,fac, q,tll,tuu, xi,xmy2
-c-
-c-------- 1. initialisations
+      logical isrand, inputb
+c		      inputb (was "smo", now same as in R):
+c if TRUE, do not compute bandwidths but use ban(.)
+
+c--------1. initialisations ('data' *first*)
+
       data bias/.2, .04762, .4286, .1515, 1.33, .6293/
       data vark/.6,  1.250, 2.143, 11.93, 35.0, 381.6/
       data fak2/4.,36.,576./
       nyg=0
       inputs = .false.
+      isrand = (israndI .ne. 0)
+      inputb = (inputbI .ne. 0)
 c r2:  used in phase 17, but only defined in phase 9 if(hetero & sig <= 0)
       r2=0.
 
@@ -64,16 +71,20 @@ c- -Wall (erronously warning if not)
       bmax=1
       ex=1
 
-      if(inputb .and. b.le.0) inputb=.false.
+      if(inputb .and. b.le.0) then
+         inputb = .false.
+         inputbI= 0
+      end if
 
-      if(trace .gt. 0) call monit0(0, n, m, nue, kord,
-     +     inputb, isrand, b, trace)
+      if(trace .gt. 0) then
+         call monit0(0, n, m, nue, kord, inputbI, israndI, b, trace)
+      end if
 
 c-------- 2. computation of s-sequence
       if(trace .gt. 0) call monit1(2, trace)
       s0=1.5*t(1)-0.5*t(2)
       sn=1.5*t(n)-0.5*t(n-1)
-      if(s(n).le.s(0)) then ! typically are all = 0., when called from R
+      if(s(n) .le. s(0)) then ! typically are all = 0., when called from R
          inputs= .true.
          do i=1,n-1
             s(i)=.5*(t(i)+t(i+1))
@@ -163,7 +174,7 @@ c-
 c-------- 9. estimating variance and smoothed pseudoresiduals
       if(trace .gt. 0) call monit1(9, trace)
       rvar=sig ! to become old 'sig'
-      if(hetero) then
+      if(hetero .eq. 1) then
          call resest(t,x,n,wn(1,2),snr,sig)
          bres=max(bmin, .2* dble(nn)**(-.2) * (s(iu)-s(il-1)))
          do i=1,n
@@ -220,7 +231,7 @@ c-
 c-------- 12. compute inflation constant and exponent and loop of iterations
       if(trace .ge. 2) call monit1(12, trace)
       const=dble(2*nue+1)*fak2(kord)*vark(kk,nue)*vi
-     .       /(dble(2*kord-2*nue)*bias(kk,nue)**2*dble(n))
+     .       / (dble(2*kord-2*nue) * bias(kk,nue)**2 * dble(n))
       fac=1.1*(1.+(nue/10.)+0.05*(kord-nue-2.))
      .       * dble(n)**(2./dble((2*kord+1)*(2*kord+3)))
 
@@ -253,7 +264,7 @@ c-------- 16  compute smoothed function with global plug-in bandwidth
       call kernel(t,x,n,b,nue,kord,nyg,s,tt,m,y, trace)
 c-------- 17. variance check
       if(trace .ge. 2) call monit1(17, trace)
-      if(hetero) sig=rvar
+      if(hetero .eq. 1) sig=rvar
       if(sig.eq.rvar .or. r2.lt.0.88 .or. nue.gt.0) goto 222
       ii=0
       iil=0
