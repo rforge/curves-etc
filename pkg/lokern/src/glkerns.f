@@ -32,7 +32,7 @@ c Var
 c		      inputb (was "smo", now same as in R):
 c if TRUE, do not compute bandwidths but use ban(.)
 
-c--------1. initialisations ('data' *first*)
+c-------- 1. initialisations ('data' *first*) ----------
 
       data bias/.2, .04762, .4286, .1515, 1.33, .6293/
       data vark/.6,  1.250, 2.143, 11.93, 35.0, 381.6/

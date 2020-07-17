@@ -38,15 +38,15 @@ c if TRUE, do not compute bandwidths but use ban(.)
       logical isrand, inputb
 c		      inputb (was "smo", now same as in R):
 
-c-------- 1. initialisations
-      isrand = (israndI .ne. 0)
-      inputb = (inputbI .ne. 0)
+c-------- 1. initialisations ('data' *first*) ----------
 
       data bias/.2, .04762, .4286, .1515, 1.33, .6293/
       data vark/.6,  1.250, 2.143, 11.93, 35.0, 381.6/
       data fak2/4.,36.,576./
       nyg=0
       inputs = .false.
+      isrand = (israndI .ne. 0)
+      inputb = (inputbI .ne. 0)
 c r2:  used in phase 17, but only defined in phase 9 if(hetero & sig <= 0)
       r2=0.
       nyl=1
