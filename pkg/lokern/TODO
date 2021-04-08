@@ -1,3 +1,8 @@
+  o plot.lokern() in ~/Vorl/WBL-Nonpar_Regr/R/lokerns-ex.R   allows to plot __bandwidth__ h
+    ------------  *BUT* it shadows the plot.KernS()  method in the package
+                                       ~~~~~~~~~~~~
+    ==> define plot.lokerns()  and it *calls* plot.KernS() but additionally *optionally*  visualizes the bandwidth
+
   o Now both lokerns() and glkerns()  do return class()ed results which
     have  print(), residuals(), ... methods.
 
@@ -19,6 +24,7 @@
     this is nice and useful.
 
   o The 2 man pages look very similar;  ``clean up''
+
 
 Done:
 =====

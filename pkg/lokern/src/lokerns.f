@@ -1,3 +1,4 @@
+c     called from R's .lokerns() in ../R/lokerns.R
       subroutine lokern_s(t,x, tt,y, n,m,nue,kord, hetero,
      .     israndI,inputbI, m1,tl,tu,s,sig, wn,w1, wm,ban, trace)
 c----------------------------------------------------------------------*
@@ -29,8 +30,8 @@ c Args
 c Var
 c if TRUE, do not compute bandwidths but use ban(.)
       logical inputs, needsrt
-      integer nyg, i,ii,iil,itt,il,iu,itende,it, j, kk,kk2, nn
-     1     , kordv, nuev, nyl ! <- lokern extra
+      integer i,ii,iil,itt,il,iu,itende,it, j, kk,kk2, nn
+     1     , kordv, nuev ! <- lokern extra
       double precision bias(2,0:2), vark(2,0:2), fak2(2:4),
      1     rvar, s0,sn, b2,bmin,bmax, bres,bs, alpha,ex,exs,exsvi,
      2     r2,snr,osig, vi,ssi,const,fac, q,tll,tuu, xi,xmy2
@@ -43,13 +44,11 @@ c-------- 1. initialisations ('data' *first*) ----------
       data bias/.2, .04762, .4286, .1515, 1.33, .6293/
       data vark/.6,  1.250, 2.143, 11.93, 35.0, 381.6/
       data fak2/4.,36.,576./
-      nyg=0
       inputs = .false.
       isrand = (israndI .ne. 0)
       inputb = (inputbI .ne. 0)
 c r2:  used in phase 17, but only defined in phase 9 if(hetero & sig <= 0)
       r2=0.
-      nyl=1
 c Stop for invalid inputs (impossible when called from R's lokerns())
 
 c     0 <= nue <= 4;  nue <= 2 if(! inputb)
@@ -66,15 +65,15 @@ c     kord - nue must be even :
       if(kord.gt.4 .and. .not.inputb) kord=nue+2
       if(kord.gt.6 .or. kord.le.nue)  kord=nue+2
 
-      rvar=sig
-      itende = -1
-      il=1
-      iu=n
-
       if(trace .gt. 0) then
          call monit0(1, n, m, nue, kord, inputbI, israndI, ban, trace)
       end if
 
+      rvar=sig
+      itende = -1
+      il=1
+      iu=n
+      b = -1. ! for local bandwidths, sometimes need  b := mean(ban[]) later
 
 c-------- 2. computation of s-sequence
       if(trace .gt. 0) call monit1(2, trace)
@@ -87,7 +86,10 @@ c-------- 2. computation of s-sequence
          end do
          s(0)=s0
          s(n)=sn
-         if(inputb .and. .not.isrand) goto 230
+         if(inputb .and. .not.isrand) then
+            if(trace .gt. 0) call monit2ib(trace)
+            goto 230
+         end if
       else
          if(inputb) goto 230
       end if
@@ -178,9 +180,9 @@ c-------- 9. estimating variance and smoothed pseudoresiduals
            wn(i,2)=wn(i,2)*wn(i,2)
         end do
 c     smooth  (t[i], r[i]^2) , r[]= (leave-one-out interpol.) residual from reset
-        call kernel(t,wn(1,2),n,bres,0,kk2,nyg,s,
-     .       wn(1,3),n,wn(1,4), trace)
-cc ?? FIXME     ^         ^  ./glkerns.f has 'il' here instead of '1'
+        call kernel(t,wn(1,2),n, bres, 0, kk2, 0, ! <- ny=0 : global bandwidth
+     .       s, wn(1,3),n,wn(1,4), trace)
+cc ?? FIXME       ^         ^  ./glkerns.f has 'il' here instead of '1'
       else !-- not hetero
          if(sig .le. 0.) then
             call resest(t(il),x(il),nn,wn(il,2),r2,sig)
@@ -206,8 +208,8 @@ c-------- 11. refinement of s-sequence for random design
         exs= -dble(3*kord+1) / dble(6*kord+3)
         exsvi=dble(kord)     / dble(6*kord+3)
         bs=0.1*(vi/(sn-s0)**2)**exsvi * dble(n)**exs
-        call kernel(wn(1,5),t,n,bs,0,2,nyg,wn(0,3),wn(0,2),n+1,s(0),
-     .       trace)
+        call kernel(wn(1,5),t,n,bs,0,2, 0, ! <- ny=0 : global bandwidth
+     .       wn(0,3),wn(0,2), n+1, s(0), trace)
         vi=0.0
 111     needsrt=.false.
         do i=1,n
@@ -240,7 +242,8 @@ c-
 c-------- 13. estimate derivative of order kord in iterations
         if(trace .ge. 3) call monit1(13, trace)
         b2 = min(bmax, max(b*fac, bmin/dble(kord-1)*dble(kord+1)))
-        call kernel(t,x,n,b2,kord,kord+2,nyg,s,w1(1,1),m1,w1(1,3),trace)
+        call kernel(t,x,n,b2,kord,kord+2, 0, ! <- ny=0: global bandwidth
+     .              s, w1(1,1), m1, w1(1,3), trace)
 c-
 c-------- 14. estimate integralfunctional in iterations
         if(trace .ge. 3) call monit1(14, trace)
@@ -257,7 +260,8 @@ c-------- 15. finish of iterations
 
 c-------- 16  compute smoothed function with global plug-in bandwidth
       if(trace .ge. 2) call monit1(16, trace)
-      call kernel(t,x,n,b,nue,kord,nyg,s,tt,m,y, trace)
+      call kernel(t,x,n,b,nue,kord, 0, ! <- ny=0: global bandwidth
+     .            s,tt, m,y, trace)
 c-
 c-------- 17. variance check
       if(trace .ge. 2) call monit1(17, trace)
@@ -336,7 +340,8 @@ c-------- 20. estimate/compute integral constant vi locally
             wm(j)=tt(j)-.5*dist*g1
          end if
       end do
-      call kernel(t,wn(1,4),n,bvar,nuev,kordv,nyl,s,wm,m,ban,trace)
+      call kernel(t,wn(1,4),n,bvar,nuev,kordv, 1, ! ny=1 : *local* bandwidths
+     .            s,wm,m,ban,trace)
 c-
 c-------- 21. estimation of kord-th derivative locally
       if(trace .gt. 0) call monit1(21, trace)
@@ -347,7 +352,8 @@ c-------- 21. estimation of kord-th derivative locally
       end do
       w1(1,1)=tt(1)+.5*wstep
 
-      call kernel(t,x,n,g1,kord,kord+2,nyg,s,w1(2,2),m1-1,w1(2,3),trace)
+      call kernel(t,x,n,g1,kord,kord+2, 0, ! ny=0 : *global* bandwidths
+     .            s,w1(2,2),m1-1,w1(2,3),trace)
 
       do j=2,m1
         w1(j,3)=w1(j,3)*w1(j,3)
@@ -363,8 +369,8 @@ c-------- 21. estimation of kord-th derivative locally
          end if
       end do
 
-      call kernp(w1(2,2),w1(2,3),m1-1,g2,nuev,kordv,nyl, w1(1,1),wm,m,y,
-     .     trace)
+      call kernp(w1(2,2),w1(2,3),m1-1,g2,nuev,kordv, 1,! ny=1: *local* bandwidths
+     .           w1(1,1), wm, m,y, trace)
 c-
 c-------- 22. finish
 c-what for? irnd=1-irnd
@@ -381,13 +387,21 @@ c-what for? irnd=1-irnd
          end if
       end do
 c-
-c-------- 23. compute smoothed function with local plug-in bandwidth
+c-------- 23. compute smoothed function with *local* plug-in bandwidth
  230  continue
       if(trace .gt. 0) call monit1(23, trace)
       do j=1,m
         y(j)=ban(j)
       end do
-      call kernel(t,x,n,b,nue,kord,nyl,s,tt,m,y, trace)
+      if(b .eq. -1.) then ! compute b := mean(ban[])
+         b=0.
+         do j=1,m
+            b=b + ban(j)
+         end do
+         b=b/m
+      end if
+      call kernel(t,x,n,b,nue,kord, 1,! ny=1: *local* bandwidths
+     .            s,tt, m,y, trace)
 c-  return #{iter} (iff aplicable)
       m1=itende
 

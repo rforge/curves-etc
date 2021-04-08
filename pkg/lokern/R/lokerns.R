@@ -1,11 +1,18 @@
 ### lokerns   kernel regression smoothing with local bandwidth selection
 
 ## auxiliary, factored out of lokerns()
+## -- also called via do.call() from predict.KernS()
 .lokerns <- function(x,y,x.out,nobs,n.out,deriv,korder,
 		     hetero,is.rand,inputb,
 		     m1,xl,xu,s,sig,bandwidth, trace.lev)
 {
-    r <- .Fortran(lokern_s,			# Fortran arg.names :
+    ## FIXME: These checks should happen in the *caller*, but since we see valgrind problems...
+    L1 <- function(x) length(x) == 1L
+    stopifnot(L1(nobs), L1(n.out),
+              nobs == length(x), nobs == length(y), n.out == length(x.out),
+              L1(deriv), L1(korder), L1(hetero), L1(is.rand), L1(inputb),
+              L1(m1), L1(xl), L1(xu), L1(sig), L1(trace.lev), trace.lev >= 0)
+    r <- .Fortran(lokern_s,			# Fortran argument names (iff differing):
 		  x = as.double(x),		# t
 		  y = as.double(y),		# x
 		  x.out = as.double(x.out),	# tt
@@ -17,17 +24,17 @@
 		  hetero = as.logical(hetero),	# hetero
 		  is.rand= as.logical(is.rand),	# isrand
 		  inputb = as.logical(inputb),
-		  iter = as.integer(m1),# number of plug-in iterations on output
+		  iter = as.integer(m1),        # m1 :   number of plug-in iterations on output
 		  xl = as.double(xl),		# tl
 		  xu = as.double(xu),		# tu
 		  s = as.double(s),
 		  sig = as.double(sig),
-		  work1 = double((nobs+1)*5),
-		  work2 = double(3 * m1),
-		  work3 = double(n.out),
-		  bandwidth = as.double(bandwidth)# = 20
-		  , as.integer(trace.lev)
-		  )[-c(1:2, 17:19, 21L)]	# all but (x,y), work*,..
+		  work1 = double((nobs+1)*5),	# wn
+		  work2 = double(3 * m1),	# w1
+		  work3 = double(n.out),	# wm
+		  bandwidth=as.double(bandwidth)# ban   # 20
+		  , as.integer(trace.lev)       # trace
+		  )[-c(1:2, 17:19, 21L)] # keep all, but (x,y), work*,..
     if(r$korder != korder)
 	warning(gettextf("'korder' reset from %d to %d, internally",
 			 korder, r$korder))
@@ -129,7 +136,7 @@ lokerns.default <- function(x, y=NULL, deriv = 0,
     ##		variance estimation
     if (is.null(xl) || is.null(xu)) {
         xl <- 1
-	xu <- 0 # so xl < xu -- and compiled code 'phase 4' computes (tl, tu)
+	xu <- 0 # so xu < xl  ==> compiled code 'phase 4' computes (tl, tu)
     }
 
     ## s	mid-point grid :

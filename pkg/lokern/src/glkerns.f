@@ -24,7 +24,7 @@ c Args
 
 c Var
       logical inputs, needsrt
-      integer nyg, i,ii,iil,itt,il,iu,itende,it, j, kk,kk2, nn
+      integer i,ii,iil,itt,il,iu,itende,it, j, kk,kk2, nn
       double precision bias(2,0:2), vark(2,0:2), fak2(2:4),
      1     rvar, s0,sn, b2,bmin,bmax, bres,bs, alpha,ex,exs,exsvi,
      2     r2,snr,osig, vi,ssi,const,fac, q,tll,tuu, xi,xmy2
@@ -37,7 +37,6 @@ c-------- 1. initialisations ('data' *first*) ----------
       data bias/.2, .04762, .4286, .1515, 1.33, .6293/
       data vark/.6,  1.250, 2.143, 11.93, 35.0, 381.6/
       data fak2/4.,36.,576./
-      nyg=0
       inputs = .false.
       isrand = (israndI .ne. 0)
       inputb = (inputbI .ne. 0)
@@ -182,7 +181,7 @@ c-------- 9. estimating variance and smoothed pseudoresiduals
             wn(i,2)=wn(i,2)*wn(i,2)
          end do
 c     smooth  (t[i], r[i]^2) , r[]= (leave-one-out interpol.) residual from reset
-         call kernel(t,wn(1,2),n,bres,0,kk2,nyg,s,
+         call kernel(t,wn(1,2),n,bres,0,kk2, 0,s,
      .        wn(il,3),nn,wn(il,4), trace)
 cc ?? FIXME      ^^          ^^  ./lokerns.f has '1' here instead of 'il'
       else !-- not hetero
@@ -210,7 +209,7 @@ c-------- 11. refinement of s-sequence for random design
         exs= -dble(3*kord+1) / dble(6*kord+3)
         exsvi=dble(kord)     / dble(6*kord+3)
         bs=0.1*(vi/(sn-s0)**2)**exsvi * dble(n)**exs
-        call kernel(wn(1,5),t,n,bs,0,2,nyg,wn(0,3),wn(0,2),n+1,s(0),
+        call kernel(wn(1,5),t,n,bs,0,2, 0,wn(0,3),wn(0,2),n+1,s(0),
      .       trace)
         vi=0.0
 111     needsrt=.false.
@@ -244,7 +243,7 @@ c-
 c-------- 13. estimate derivative of order kord in iterations
         if(trace .ge. 3) call monit1(13, trace)
         b2 = min(bmax, max(b*fac, bmin/dble(kord-1)*dble(kord+1)))
-        call kernel(t,x,n,b2,kord,kord+2,nyg,s,w1(1,1),m1,w1(1,3),trace)
+        call kernel(t,x,n,b2,kord,kord+2, 0,s,w1(1,1),m1,w1(1,3),trace)
 c-
 c-------- 14. estimate integralfunctional in iterations
         if(trace .ge. 3) call monit1(14, trace)
@@ -261,7 +260,7 @@ c-------- 15. finish of iterations
 
 c-------- 16  compute smoothed function with global plug-in bandwidth
  160  if(trace .ge. 2) call monit1(16, trace)
-      call kernel(t,x,n,b,nue,kord,nyg,s,tt,m,y, trace)
+      call kernel(t,x,n,b,nue,kord, 0,s,tt,m,y, trace)
 c-------- 17. variance check
       if(trace .ge. 2) call monit1(17, trace)
       if(hetero .eq. 1) sig=rvar

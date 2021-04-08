@@ -11,7 +11,7 @@
   In similar form, data like this appears in the smoothing literature
   since at least the eighties.
 }
-\source{\url{http://www.biostat.uzh.ch/en/research/software/kernel.html}
+\source{\url{https://www.biostat.uzh.ch/en/research/software/kernel.html}
 }
 \seealso{The example in \code{\link{glkerns}} replicates the
   computations and plots from the source given.

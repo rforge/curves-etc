@@ -158,13 +158,13 @@ c  output   y(m)         estimated regression function
 c
 c-----------------------------------------------------------------------
       implicit none
-
+c Args
       integer n, m
       double precision t(n), x(n), b
       integer nue, kord, ny
       double precision s(0:n), tt(m),y(m)
       integer trace
-c
+c Vars
       double precision chan, chR
       integer classic
 c
@@ -173,14 +173,13 @@ c------  computing change point
 c------
       chR = chan * (t(n)-t(1)) / (n-1)
 
-c!!   if(trace .gt. 0) call monitk0(0, n, m, b, chan, chR, (b .lt. chR))
       if(trace .gt. 0) then
          if(b .lt. chR) then
             classic = 1
          else
             classic = 0
          end if
-         call monitk0(1, n, m, b, chan, chR, classic)
+         call monitk0(0, n, m, b, ny, chan, chR, classic)
       endif
 
       if(b .lt. chR) then ! small bandwidth ==> classical kernel
@@ -235,7 +234,7 @@ c------
          else
             classic = 0
          end if
-         call monitk0(1, n, m, b, chan, chR, classic)
+         call monitk0(1, n, m, b, ny, chan, chR, classic)
       endif
 
       if(b .lt. chR) then

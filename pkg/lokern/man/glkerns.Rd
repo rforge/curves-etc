@@ -179,7 +179,7 @@ glkerns(x, \dots)
   Theo Gasser, Alois Kneip & Walter Koehler (1991)
   A flexible and fast method for automatic smoothing.
   \emph{Journal of the American Statistical Association} \bold{86}, 643--652.
-  \url{https://doi.org/10.2307/2290393}
+  \doi{10.2307/2290393} %=> \url{https://doi.org/10.2307/2290393} =
 %  \url{http://www.jstor.org/stable/2290393}
 
   Muller, H.-G. (1984)
@@ -211,7 +211,7 @@ glkerns(x, \dots)
   \emph{On the convolution type kernel regression estimator};
   Preprint 1833, FB Mathematik, Technische Universitaet Darmstadt;
   currently available from
-  \url{http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.32.6383}
+  \url{https://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.32.6383}
   %% no longer available from
   %% \url{http://wwwbib.mathematik.tu-darmstadt.de/Math-Net/Preprints/Listen/shadow/pp1833.html})
 }
