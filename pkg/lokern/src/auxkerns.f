@@ -74,7 +74,7 @@ c
 c-----------------------------------------------------------------------
       implicit none
 c
-c     Arguments
+c Arguments
       integer n
       double precision x(n),t(n), res(n), snr, sigma2
 c Var
@@ -92,7 +92,7 @@ c Var
             g1=.5
          endif
          g2=1.-g1
-         res(i)=(x(i)-g1*x(i-1)-g2*x(i+1))/sqrt(1.+g1*g1+g2*g2)
+         res(i)= (x(i)-g1*x(i-1)-g2*x(i+1)) / sqrt(1.+g1*g1+g2*g2)
          sigma2=sigma2+res(i)*res(i)
          sx = x(i)*tt
          ex =ex + sx
@@ -106,7 +106,7 @@ c     first points (ex & ex2 done at beginning)
          g1=.5
       endif
       g2=1.-g1
-      res(1)=(x(1)-g1*x(3)-g2*x(2))/sqrt(1.+g1*g1+g2*g2)
+      res(1)= (x(1)-g1*x(3)-g2*x(2)) / sqrt(1.+g1*g1+g2*g2)
 c     last points
       tt=t(n-1)-t(n-2)
       if(tt.ne.0.) then
@@ -115,7 +115,7 @@ c     last points
          g1=.5
       endif
       g2=1.-g1
-      res(n)=(x(n)-g1*x(n-2)-g2*x(n-1))/sqrt(1.+g1*g1+g2*g2)
+      res(n)= (x(n)-g1*x(n-2)-g2*x(n-1)) / sqrt(1.+g1*g1+g2*g2)
 
       sigma2=(sigma2+ res(1)*res(1)+ res(n)*res(n))/n
 c  snr := explained variance ( = R^2 )

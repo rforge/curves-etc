@@ -25,6 +25,28 @@ void F77_NAME(monit1)(int *phase, int *trace)
     // TODO print more when (*trace >= 2) ...
 }
 
+// after label '40' in phase 4 of glkerns() / lokerns()
+void F77_NAME(monit40)(int* itt, int*  il, int* iu, double *tl, double *tu, int *trace)
+{
+    Rprintf(" 40: itt=%d, (il=%d, iu=%d) -  (tl=%g, tu=%g)\n",
+	    *itt, *il,*iu, *tl,*tu);
+    // TODO print more when (*trace >= 2) ...
+}
+
+// after label '100' in phase 10 of {gl,lo}kerns() : monit1c(il,iu, vi, trace)
+void F77_NAME(monit1c)(int* il, int* iu, double *vi, int *trace)
+{
+    Rprintf("  100: (il=%d, iu=%d) -> vi=%g\n", *il,*iu, *vi);
+    // if(*trace >= 2) <print more>
+}
+
+// after label '111' in phase 11 of {gl,lo}kerns():   monit111(i, s(i-1),ssi)
+void F77_NAME(monit111)(int* i, double *s1, double *s2)
+{
+    Rprintf("  111: i=%d: swapped s[i-1] w/ s[i]: (%g, %g)\n", *i, *s1, *s2);
+}
+
+
 // from the end of "loop 100" of glkerns():
 void F77_NAME(monit_s)(double *r2, double *osig, double *q, double *sig) {
     Rprintf("  r2 = %g, old sig = %g, q = sig/rvar = %g, new sig = %g --> goto 100\n",
@@ -43,8 +65,8 @@ void F77_NAME(monitk0)(int *caller, int *n, int *m, double *b, int *ny,
     Rprintf(" %s(n=%3d, m=%3d, ny=%d => %s; b=%10.7g) -> (chg.pt,cut_b)=(%4.1f,%5.2f) => '%s'\n",
 	    // caller = 0 | 1  <==> from (kernel | kernp )
 	    (*caller) ? "kernp" : "kernel",
-	    *n, *m, *b, *ny, (*ny) ? "local bandw." : "global bandw.",
-	    *chan, *chR, (*do_classic) ? "classic" : "fast O(n)");
+	    *n, *m, *ny, (*ny) ? "local bandw." : "global bandw.",
+	    *b, *chan, *chR, (*do_classic) ? "classic" : "fast O(n)");
 }
 
 // Called from kernfa() and kernfp() in auxkerns.f

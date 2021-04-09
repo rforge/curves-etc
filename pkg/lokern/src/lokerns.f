@@ -47,7 +47,7 @@ c-------- 1. initialisations ('data' *first*) ----------
       inputs = .false.
       isrand = (israndI .ne. 0)
       inputb = (inputbI .ne. 0)
-c r2:  used in phase 17, but only defined in phase 9 if(hetero & sig <= 0)
+c     r2:  used in phase 17, but only defined in phase 9 if(hetero & sig <= 0)
       r2=0.
 c Stop for invalid inputs (impossible when called from R's lokerns())
 
@@ -102,7 +102,9 @@ c-
 c-------- 4. compute tl,tu
       if(trace .gt. 0) call monit1(4, trace)
       itt=0
-40    if (tu.le.tl) then
+ 40   continue
+      if(trace .gt. 0) call monit40(itt, il,iu, tl,tu, trace)
+      if (tu.le.tl) then
         tl=.933*s0+.067*sn
         tu=.067*s0+.933*sn
         itt=itt+1
@@ -182,7 +184,7 @@ c-------- 9. estimating variance and smoothed pseudoresiduals
 c     smooth  (t[i], r[i]^2) , r[]= (leave-one-out interpol.) residual from reset
         call kernel(t,wn(1,2),n, bres, 0, kk2, 0, ! <- ny=0 : global bandwidth
      .       s, wn(1,3),n,wn(1,4), trace)
-cc ?? FIXME       ^         ^  ./glkerns.f has 'il' here instead of '1'
+cc ?? FIXME        ^         ^  ./glkerns.f has 'il' here instead of '1'
       else !-- not hetero
          if(sig .le. 0.) then
             call resest(t(il),x(il),nn,wn(il,2),r2,sig)
@@ -196,9 +198,10 @@ c-------- 10. [LOOP:] estimate/compute integral constant
       do i=il,iu
          vi=vi+ wn(i,1)*n*(s(i)-s(i-1))**2 * wn(i,4)
       end do
+      if(trace .gt. 0) call monit1c(il,iu, vi, trace)
 c-
 c-------- 11. refinement of s-sequence for random design
-      if(trace .ge. 2) call monit1(11, trace)
+      if(trace .gt. 0) call monit1(11, trace)
       if(inputs .and. isrand) then
         do i=0,n
           wn(i,5)=dble(i)/dble(n+1)
@@ -210,16 +213,17 @@ c-------- 11. refinement of s-sequence for random design
         bs=0.1*(vi/(sn-s0)**2)**exsvi * dble(n)**exs
         call kernel(wn(1,5),t,n,bs,0,2, 0, ! <- ny=0 : global bandwidth
      .       wn(0,3),wn(0,2), n+1, s(0), trace)
-        vi=0.0
 111     needsrt=.false.
+        vi=0.0 ! (was *before* 111, so *not* reset after sorting)
         do i=1,n
            vi=vi+ wn(i,1)*n*(s(i)-s(i-1))**2 * wn(i,4)
-           if(s(i).lt.s(i-1)) then
+           if(s(i).lt.s(i-1)) then ! swap them
               ssi=s(i-1)
               s(i-1)=s(i)
               s(i)=ssi
               needsrt=.true.
            end if
+           if(needsrt .and. trace .gt. 0) call monit111(i, s(i-1),ssi)
         end do
         if(needsrt) goto 111
         if(inputb) goto 230
@@ -227,9 +231,9 @@ c-------- 11. refinement of s-sequence for random design
       b=bmin*2.
 c-
 c-------- 12. compute inflation constant and exponent and loop of iterations
-      if(trace .ge. 2) call monit1(12, trace)
+      if(trace .gt. 0) call monit1(12, trace)
       const=dble(2*nue+1)*fak2(kord)*vark(kk,nue)*vi
-     .       /(dble(2*kord-2*nue)*bias(kk,nue)**2*dble(n))
+     .       / (dble(2*kord-2*nue) * bias(kk,nue)**2 * dble(n))
       fac=1.1*(1.+(nue/10.)+0.05*(kord-nue-2.))
      .       * dble(n)**(2./dble((2*kord+1)*(2*kord+3)))
 
@@ -237,13 +241,14 @@ c     itende=1+2*kord+kord*(2*kord+1)
       itende = (1 + 2*kord) * (1 + kord)
 c     ^^^^^^  *fixed* number of iterations ( <== theory !)
 
+c     ================================ iterations ===============
       do it=1,itende
 c-
 c-------- 13. estimate derivative of order kord in iterations
         if(trace .ge. 3) call monit1(13, trace)
         b2 = min(bmax, max(b*fac, bmin/dble(kord-1)*dble(kord+1)))
         call kernel(t,x,n,b2,kord,kord+2, 0, ! <- ny=0: global bandwidth
-     .              s, w1(1,1), m1, w1(1,3), trace)
+     .              s, w1(1,1), m1, w1(1,3), trace-2)
 c-
 c-------- 14. estimate integralfunctional in iterations
         if(trace .ge. 3) call monit1(14, trace)
@@ -257,11 +262,12 @@ c-------- 15. finish of iterations
         if(trace .ge. 3) call monit1(15, trace)
         b = min(bmax, max(bmin, (const/xmy2)**ex))
       end do
+c     ====== end iterations -------------------------------------
 
 c-------- 16  compute smoothed function with global plug-in bandwidth
       if(trace .ge. 2) call monit1(16, trace)
       call kernel(t,x,n,b,nue,kord, 0, ! <- ny=0: global bandwidth
-     .            s,tt, m,y, trace)
+     .            s,tt, m,y, trace-1)
 c-
 c-------- 17. variance check
       if(trace .ge. 2) call monit1(17, trace)
@@ -330,13 +336,11 @@ c-------- 20. estimate/compute integral constant vi locally
          wm(j)=tt(j)
          if(tt(j).lt.s(0)+g1) then
             dist=((tt(j)-g1-s(0))/g1)**2
-            ban(j)=bvar*(1.0+1.0*dist)
-            ban(j)=min(ban(j),bmax)
+            ban(j)=min(bmax, bvar*(1.0+1.0*dist))
             wm(j)=tt(j)+.5*dist*g1
          else if(tt(j).gt.s(n)-g1) then
             dist=((tt(j)-s(n)+g1)/g1)**2
-            ban(j)=bvar*(1.0+1.0*dist)
-            ban(j)=min(ban(j),bmax)
+            ban(j)=min(bmax, bvar*(1.0+1.0*dist))
             wm(j)=tt(j)-.5*dist*g1
          end if
       end do
@@ -347,13 +351,13 @@ c-------- 21. estimation of kord-th derivative locally
       if(trace .gt. 0) call monit1(21, trace)
       wstep=(tt(m)-tt(1))/dble(m1-2)
       do j=2,m1
-         w1(j,2)=tt(1)+dble(j-2)*wstep
+         w1(j,2)=tt(1)+dble(j-2  )*wstep
          w1(j,1)=tt(1)+dble(j-1.5)*wstep
       end do
       w1(1,1)=tt(1)+.5*wstep
 
       call kernel(t,x,n,g1,kord,kord+2, 0, ! ny=0 : *global* bandwidths
-     .            s,w1(2,2),m1-1,w1(2,3),trace)
+     .            s, w1(2,2), m1-1, w1(2,3), trace)
 
       do j=2,m1
         w1(j,3)=w1(j,3)*w1(j,3)
@@ -361,11 +365,9 @@ c-------- 21. estimation of kord-th derivative locally
       do j=1,m
          y(j)=g2
          if(tt(j).lt.s(0)+g1) then
-            y(j)=g2*(1.0+1.0*((tt(j)-g1-s(0))/g1)**2)
-            y(j)=min(y(j),bmax)
+            y(j)=min(bmax, g2*(1.0+1.0*((tt(j)-g1-s(0))/g1)**2))
          else if(tt(j).gt.s(n)-g1) then
-            y(j)=g2*(1.0+1.0*((tt(j)-s(n)+g1)/g1)**2)
-            y(j)=min(y(j),bmax)
+            y(j)=min(bmax, g2*(1.0+1.0*((tt(j)-s(n)+g1)/g1)**2))
          end if
       end do
 

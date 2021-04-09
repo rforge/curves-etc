@@ -1,6 +1,6 @@
 
-R Under development (unstable) (2020-07-14 r78856) -- "Unsuffered Consequences"
-Copyright (C) 2020 The R Foundation for Statistical Computing
+R version 4.0.5 (2021-03-31) -- "Shake and Throw"
+Copyright (C) 2021 The R Foundation for Statistical Computing
 Platform: x86_64-pc-linux-gnu (64-bit)
 
 R is free software and comes with ABSOLUTELY NO WARRANTY.
@@ -34,9 +34,9 @@ List of 23
  $ n.out     : int 300
  $ deriv     : int 0
  $ korder    : int 2
- $ hetero    : logi FALSE
- $ is.rand   : logi TRUE
- $ inputb    : logi FALSE
+ $ hetero    : int 0
+ $ is.rand   : int 1
+ $ inputb    : int 0
  $ iter      : int 15
  $ xl        : num 0.067
  $ xu        : num 0.933
@@ -242,4 +242,4 @@ deriv = 3: modifying korder from 6 to 5
 > 
 > proc.time()
    user  system elapsed 
-  0.286   0.027   0.377 
+  0.414   0.034   0.516 

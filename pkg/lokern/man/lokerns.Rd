@@ -174,7 +174,7 @@ lokerns(x, \dots)
 data(cars)
 lofit <- lokerns(dist ~ speed, data=cars)
 lofit # print() method
-\dontshow{% equivalence of formula and (x,y) method:
+\dontshow{# equivalence of formula and (x,y) method:
 lof1 <- lokerns(cars$ speed, cars$ dist)
 ii <- names(lof1) != "call"
 stopifnot(all.equal(lof1[ii], lofit[ii], tol = 1e-15))

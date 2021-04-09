@@ -59,12 +59,14 @@
 ## "interesting" artificial data:
 set.seed(47)
 x <- sort(round(10*runif(250),2))
-fx <- 5 - x/2 + 3*exp(-(x-5)^2)
-y <- fx + rnorm(fx)/4
+fn <- function(x) 5 - x/2 + 3*exp(-(x-5)^2)
+y <- fn(x) + rnorm(x)/4
 plot(x,y)
-lof <- lokerns(x,y, trace=1)# tracing the phases inside the Fortran code
+## Tracing the phases in the Fortran code: trace=1 gives some, trace=3 gives *much*
+lof <- lokerns(x,y, trace=2) 
 plot(lof)
 plot(lof, cex = 1/4)# maybe preferable
+plot(fn, 0, 10, add=TRUE, col=adjustcolor("gray40",1/2), lwd=2, lty=2)
 ## Simpler, using the lines() method:
 plot(x,y); lines(lof, lwd=2, col=2)
 
@@ -73,13 +75,19 @@ stopifnot(all.equal(y, fitted(lof) + residuals(lof), tolerance = 1e-15),
           predict(lof)$y == fitted(lof))
 lof$iter # negative ?
 tt <- seq(0, 10, by=1/32)
-p0 <- predict(lof, x=tt)
-p1 <- predict(lof, x=tt, deriv=1)
+## again with 'tracing' [not for the average user]
+p0 <- predict(lof, x=tt,          trace=1)
+p1 <- predict(lof, x=tt, deriv=1, trace=1)
 p2 <- predict(lof, x=tt, deriv=2)
-plot(p2, type="l"); abline(h=0, lty=3) # not satisfactory:
+plot(p2, type="l"); abline(h=0, lty=3) # not satisfactory, but lokerns(*,deriv=2) is
 lof2 <- lokerns(x,y, deriv=2)
-plot(lof2, main=
+plot(lof2, ylim = c(-12,4), main=
    "lokerns(*, deriv=2) -- much more smooth than predict(*,deriv=2)")
-lines(p2); abline(h=0, lty=3)
+mtext("as lokerns(*, deriv=2) chooses larger bandwidths[] !")
+lines(predict(lof2, x=tt), col=adjustcolor("tomato", 1/3), lwd=5)
+lines(p2, col="gray50"); abline(h=0, lty=3)
+## add 2nd derivative of underlying fn():
+f2 <- fn; body(f2) <- D(D(body(fn), "x"),"x")
+lines(tt, f2(tt), col="blue")
 }
 \keyword{utilities}

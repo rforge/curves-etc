@@ -1,5 +1,5 @@
 
-R Under development (unstable) (2021-04-06 r80146) -- "Unsuffered Consequences"
+R version 4.0.5 (2021-03-31) -- "Shake and Throw"
 Copyright (C) 2021 The R Foundation for Statistical Computing
 Platform: x86_64-pc-linux-gnu (64-bit)
 
@@ -30,29 +30,17 @@ lokerns (n=75,m=300; nue=0, isrand=1, inputp=0) -> kord=2
  phase  2
  phase  3
  phase  4
+ 40: itt=0, (il=1, iu=75) -  (tl=1, tu=0)
  phase  5
  phase  6
  phase  7
  phase  8
  phase  9
  phase 10
+  100: (il=6, iu=70) -> vi=0.115996
+ phase 11
  kernel(n= 75, m= 76, ny=0 => global bandw.; b=0.01000531) -> (chg.pt,cut_b)=( 7.0, 0.09) => 'classic'
- kernel(n= 75, m=400, ny=0 => global bandw.; b=     0.024) -> (chg.pt,cut_b)=( 9.0, 0.12) => 'classic'
- kernel(n= 75, m=400, ny=0 => global bandw.; b=0.03375978) -> (chg.pt,cut_b)=( 9.0, 0.12) => 'classic'
- kernel(n= 75, m=400, ny=0 => global bandw.; b= 0.0479116) -> (chg.pt,cut_b)=( 9.0, 0.12) => 'classic'
- kernel(n= 75, m=400, ny=0 => global bandw.; b=0.05951944) -> (chg.pt,cut_b)=( 9.0, 0.12) => 'classic'
- kernel(n= 75, m=400, ny=0 => global bandw.; b=0.06496717) -> (chg.pt,cut_b)=( 9.0, 0.12) => 'classic'
- kernel(n= 75, m=400, ny=0 => global bandw.; b=0.06707809) -> (chg.pt,cut_b)=( 9.0, 0.12) => 'classic'
- kernel(n= 75, m=400, ny=0 => global bandw.; b=0.06782741) -> (chg.pt,cut_b)=( 9.0, 0.12) => 'classic'
- kernel(n= 75, m=400, ny=0 => global bandw.; b=0.06808279) -> (chg.pt,cut_b)=( 9.0, 0.12) => 'classic'
- kernel(n= 75, m=400, ny=0 => global bandw.; b=0.06816836) -> (chg.pt,cut_b)=( 9.0, 0.12) => 'classic'
- kernel(n= 75, m=400, ny=0 => global bandw.; b=0.06819685) -> (chg.pt,cut_b)=( 9.0, 0.12) => 'classic'
- kernel(n= 75, m=400, ny=0 => global bandw.; b=0.06820632) -> (chg.pt,cut_b)=( 9.0, 0.12) => 'classic'
- kernel(n= 75, m=400, ny=0 => global bandw.; b=0.06820946) -> (chg.pt,cut_b)=( 9.0, 0.12) => 'classic'
- kernel(n= 75, m=400, ny=0 => global bandw.; b= 0.0682105) -> (chg.pt,cut_b)=( 9.0, 0.12) => 'classic'
- kernel(n= 75, m=400, ny=0 => global bandw.; b=0.06821085) -> (chg.pt,cut_b)=( 9.0, 0.12) => 'classic'
- kernel(n= 75, m=400, ny=0 => global bandw.; b=0.06821097) -> (chg.pt,cut_b)=( 9.0, 0.12) => 'classic'
- kernel(n= 75, m=300, ny=0 => global bandw.; b=0.04845241) -> (chg.pt,cut_b)=( 7.0, 0.09) => 'classic'
+ phase 12
  phase 18
  phase 19
  phase 20
@@ -73,9 +61,9 @@ List of 24
  $ n.out     : int 300
  $ deriv     : int 0
  $ korder    : int 2
- $ hetero    : logi FALSE
- $ is.rand   : logi TRUE
- $ inputb    : logi FALSE
+ $ hetero    : int 0
+ $ is.rand   : int 1
+ $ inputb    : int 0
  $ iter      : int 15
  $ xl        : num 0.067
  $ xu        : num 0.933
@@ -101,100 +89,17 @@ lokerns (n=75,m=300; nue=2, isrand=1, inputp=0) -> kord=4
  phase  2
  phase  3
  phase  4
+ 40: itt=0, (il=1, iu=75) -  (tl=1, tu=0)
  phase  5
  phase  6
  phase  7
  phase  8
  phase  9
  phase 10
+  100: (il=6, iu=70) -> vi=0.115996
+ phase 11
  kernel(n= 75, m= 76, ny=0 => global bandw.; b=0.00909058) -> (chg.pt,cut_b)=( 7.0, 0.09) => 'classic'
- kernel(n= 75, m=400, ny=0 => global bandw.; b=0.06913456) -> (chg.pt,cut_b)=(11.0, 0.15) => 'classic'
- kernel(n= 75, m=400, ny=0 => global bandw.; b=0.09087056) -> (chg.pt,cut_b)=(11.0, 0.15) => 'classic'
- kernel(n= 75, m=400, ny=0 => global bandw.; b= 0.1116875) -> (chg.pt,cut_b)=(11.0, 0.15) => 'classic'
- kernel(n= 75, m=400, ny=0 => global bandw.; b= 0.1331001) -> (chg.pt,cut_b)=(11.0, 0.15) => 'classic'
- kernel(n= 75, m=400, ny=0 => global bandw.; b= 0.1559109) -> (chg.pt,cut_b)=(11.0, 0.15) => 'fast O(n)'
-  kernfa(n= 75, b= 0.1559109, nue=4, kord=6, ny=0, m=400):
- kernel(n= 75, m=400, ny=0 => global bandw.; b= 0.1663355) -> (chg.pt,cut_b)=(11.0, 0.15) => 'fast O(n)'
-  kernfa(n= 75, b= 0.1663355, nue=4, kord=6, ny=0, m=400):
- kernel(n= 75, m=400, ny=0 => global bandw.; b= 0.1698105) -> (chg.pt,cut_b)=(11.0, 0.15) => 'fast O(n)'
-  kernfa(n= 75, b= 0.1698105, nue=4, kord=6, ny=0, m=400):
- kernel(n= 75, m=400, ny=0 => global bandw.; b= 0.1709302) -> (chg.pt,cut_b)=(11.0, 0.15) => 'fast O(n)'
-  kernfa(n= 75, b= 0.1709302, nue=4, kord=6, ny=0, m=400):
- kernel(n= 75, m=400, ny=0 => global bandw.; b= 0.1712874) -> (chg.pt,cut_b)=(11.0, 0.15) => 'fast O(n)'
-  kernfa(n= 75, b= 0.1712874, nue=4, kord=6, ny=0, m=400):
- kernel(n= 75, m=400, ny=0 => global bandw.; b= 0.1714011) -> (chg.pt,cut_b)=(11.0, 0.15) => 'fast O(n)'
-  kernfa(n= 75, b= 0.1714011, nue=4, kord=6, ny=0, m=400):
- kernel(n= 75, m=400, ny=0 => global bandw.; b= 0.1714373) -> (chg.pt,cut_b)=(11.0, 0.15) => 'fast O(n)'
-  kernfa(n= 75, b= 0.1714373, nue=4, kord=6, ny=0, m=400):
- kernel(n= 75, m=400, ny=0 => global bandw.; b= 0.1714489) -> (chg.pt,cut_b)=(11.0, 0.15) => 'fast O(n)'
-  kernfa(n= 75, b= 0.1714489, nue=4, kord=6, ny=0, m=400):
- kernel(n= 75, m=400, ny=0 => global bandw.; b= 0.1714526) -> (chg.pt,cut_b)=(11.0, 0.15) => 'fast O(n)'
-  kernfa(n= 75, b= 0.1714526, nue=4, kord=6, ny=0, m=400):
- kernel(n= 75, m=400, ny=0 => global bandw.; b= 0.1714538) -> (chg.pt,cut_b)=(11.0, 0.15) => 'fast O(n)'
-  kernfa(n= 75, b= 0.1714538, nue=4, kord=6, ny=0, m=400):
- kernel(n= 75, m=400, ny=0 => global bandw.; b= 0.1714541) -> (chg.pt,cut_b)=(11.0, 0.15) => 'fast O(n)'
-  kernfa(n= 75, b= 0.1714541, nue=4, kord=6, ny=0, m=400):
- kernel(n= 75, m=400, ny=0 => global bandw.; b= 0.1714542) -> (chg.pt,cut_b)=(11.0, 0.15) => 'fast O(n)'
-  kernfa(n= 75, b= 0.1714542, nue=4, kord=6, ny=0, m=400):
- kernel(n= 75, m=400, ny=0 => global bandw.; b= 0.1714543) -> (chg.pt,cut_b)=(11.0, 0.15) => 'fast O(n)'
-  kernfa(n= 75, b= 0.1714543, nue=4, kord=6, ny=0, m=400):
- kernel(n= 75, m=400, ny=0 => global bandw.; b= 0.1714543) -> (chg.pt,cut_b)=(11.0, 0.15) => 'fast O(n)'
-  kernfa(n= 75, b= 0.1714543, nue=4, kord=6, ny=0, m=400):
- kernel(n= 75, m=400, ny=0 => global bandw.; b= 0.1714543) -> (chg.pt,cut_b)=(11.0, 0.15) => 'fast O(n)'
-  kernfa(n= 75, b= 0.1714543, nue=4, kord=6, ny=0, m=400):
- kernel(n= 75, m=400, ny=0 => global bandw.; b= 0.1714543) -> (chg.pt,cut_b)=(11.0, 0.15) => 'fast O(n)'
-  kernfa(n= 75, b= 0.1714543, nue=4, kord=6, ny=0, m=400):
- kernel(n= 75, m=400, ny=0 => global bandw.; b= 0.1714543) -> (chg.pt,cut_b)=(11.0, 0.15) => 'fast O(n)'
-  kernfa(n= 75, b= 0.1714543, nue=4, kord=6, ny=0, m=400):
- kernel(n= 75, m=400, ny=0 => global bandw.; b= 0.1714543) -> (chg.pt,cut_b)=(11.0, 0.15) => 'fast O(n)'
-  kernfa(n= 75, b= 0.1714543, nue=4, kord=6, ny=0, m=400):
- kernel(n= 75, m=400, ny=0 => global bandw.; b= 0.1714543) -> (chg.pt,cut_b)=(11.0, 0.15) => 'fast O(n)'
-  kernfa(n= 75, b= 0.1714543, nue=4, kord=6, ny=0, m=400):
- kernel(n= 75, m=400, ny=0 => global bandw.; b= 0.1714543) -> (chg.pt,cut_b)=(11.0, 0.15) => 'fast O(n)'
-  kernfa(n= 75, b= 0.1714543, nue=4, kord=6, ny=0, m=400):
- kernel(n= 75, m=400, ny=0 => global bandw.; b= 0.1714543) -> (chg.pt,cut_b)=(11.0, 0.15) => 'fast O(n)'
-  kernfa(n= 75, b= 0.1714543, nue=4, kord=6, ny=0, m=400):
- kernel(n= 75, m=400, ny=0 => global bandw.; b= 0.1714543) -> (chg.pt,cut_b)=(11.0, 0.15) => 'fast O(n)'
-  kernfa(n= 75, b= 0.1714543, nue=4, kord=6, ny=0, m=400):
- kernel(n= 75, m=400, ny=0 => global bandw.; b= 0.1714543) -> (chg.pt,cut_b)=(11.0, 0.15) => 'fast O(n)'
-  kernfa(n= 75, b= 0.1714543, nue=4, kord=6, ny=0, m=400):
- kernel(n= 75, m=400, ny=0 => global bandw.; b= 0.1714543) -> (chg.pt,cut_b)=(11.0, 0.15) => 'fast O(n)'
-  kernfa(n= 75, b= 0.1714543, nue=4, kord=6, ny=0, m=400):
- kernel(n= 75, m=400, ny=0 => global bandw.; b= 0.1714543) -> (chg.pt,cut_b)=(11.0, 0.15) => 'fast O(n)'
-  kernfa(n= 75, b= 0.1714543, nue=4, kord=6, ny=0, m=400):
- kernel(n= 75, m=400, ny=0 => global bandw.; b= 0.1714543) -> (chg.pt,cut_b)=(11.0, 0.15) => 'fast O(n)'
-  kernfa(n= 75, b= 0.1714543, nue=4, kord=6, ny=0, m=400):
- kernel(n= 75, m=400, ny=0 => global bandw.; b= 0.1714543) -> (chg.pt,cut_b)=(11.0, 0.15) => 'fast O(n)'
-  kernfa(n= 75, b= 0.1714543, nue=4, kord=6, ny=0, m=400):
- kernel(n= 75, m=400, ny=0 => global bandw.; b= 0.1714543) -> (chg.pt,cut_b)=(11.0, 0.15) => 'fast O(n)'
-  kernfa(n= 75, b= 0.1714543, nue=4, kord=6, ny=0, m=400):
- kernel(n= 75, m=400, ny=0 => global bandw.; b= 0.1714543) -> (chg.pt,cut_b)=(11.0, 0.15) => 'fast O(n)'
-  kernfa(n= 75, b= 0.1714543, nue=4, kord=6, ny=0, m=400):
- kernel(n= 75, m=400, ny=0 => global bandw.; b= 0.1714543) -> (chg.pt,cut_b)=(11.0, 0.15) => 'fast O(n)'
-  kernfa(n= 75, b= 0.1714543, nue=4, kord=6, ny=0, m=400):
- kernel(n= 75, m=400, ny=0 => global bandw.; b= 0.1714543) -> (chg.pt,cut_b)=(11.0, 0.15) => 'fast O(n)'
-  kernfa(n= 75, b= 0.1714543, nue=4, kord=6, ny=0, m=400):
- kernel(n= 75, m=400, ny=0 => global bandw.; b= 0.1714543) -> (chg.pt,cut_b)=(11.0, 0.15) => 'fast O(n)'
-  kernfa(n= 75, b= 0.1714543, nue=4, kord=6, ny=0, m=400):
- kernel(n= 75, m=400, ny=0 => global bandw.; b= 0.1714543) -> (chg.pt,cut_b)=(11.0, 0.15) => 'fast O(n)'
-  kernfa(n= 75, b= 0.1714543, nue=4, kord=6, ny=0, m=400):
- kernel(n= 75, m=400, ny=0 => global bandw.; b= 0.1714543) -> (chg.pt,cut_b)=(11.0, 0.15) => 'fast O(n)'
-  kernfa(n= 75, b= 0.1714543, nue=4, kord=6, ny=0, m=400):
- kernel(n= 75, m=400, ny=0 => global bandw.; b= 0.1714543) -> (chg.pt,cut_b)=(11.0, 0.15) => 'fast O(n)'
-  kernfa(n= 75, b= 0.1714543, nue=4, kord=6, ny=0, m=400):
- kernel(n= 75, m=400, ny=0 => global bandw.; b= 0.1714543) -> (chg.pt,cut_b)=(11.0, 0.15) => 'fast O(n)'
-  kernfa(n= 75, b= 0.1714543, nue=4, kord=6, ny=0, m=400):
- kernel(n= 75, m=400, ny=0 => global bandw.; b= 0.1714543) -> (chg.pt,cut_b)=(11.0, 0.15) => 'fast O(n)'
-  kernfa(n= 75, b= 0.1714543, nue=4, kord=6, ny=0, m=400):
- kernel(n= 75, m=400, ny=0 => global bandw.; b= 0.1714543) -> (chg.pt,cut_b)=(11.0, 0.15) => 'fast O(n)'
-  kernfa(n= 75, b= 0.1714543, nue=4, kord=6, ny=0, m=400):
- kernel(n= 75, m=400, ny=0 => global bandw.; b= 0.1714543) -> (chg.pt,cut_b)=(11.0, 0.15) => 'fast O(n)'
-  kernfa(n= 75, b= 0.1714543, nue=4, kord=6, ny=0, m=400):
- kernel(n= 75, m=400, ny=0 => global bandw.; b= 0.1714543) -> (chg.pt,cut_b)=(11.0, 0.15) => 'fast O(n)'
-  kernfa(n= 75, b= 0.1714543, nue=4, kord=6, ny=0, m=400):
- kernel(n= 75, m=400, ny=0 => global bandw.; b= 0.1714543) -> (chg.pt,cut_b)=(11.0, 0.15) => 'fast O(n)'
-  kernfa(n= 75, b= 0.1714543, nue=4, kord=6, ny=0, m=400):
- kernel(n= 75, m=300, ny=0 => global bandw.; b= 0.1190404) -> (chg.pt,cut_b)=( 9.0, 0.12) => 'classic'
+ phase 12
  phase 18
  phase 19
  phase 20
@@ -230,9 +135,9 @@ List of 24
  $ n.out     : int 300
  $ deriv     : int 0
  $ korder    : int 2
- $ hetero    : logi TRUE
- $ is.rand   : logi TRUE
- $ inputb    : logi FALSE
+ $ hetero    : int 1
+ $ is.rand   : int 1
+ $ inputb    : int 0
  $ iter      : int 15
  $ xl        : num 0.067
  $ xu        : num 0.933
@@ -250,4 +155,4 @@ List of 24
 > 
 > proc.time()
    user  system elapsed 
-  0.269   0.024   0.334 
+  0.168   0.029   0.238 
