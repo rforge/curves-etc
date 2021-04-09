@@ -218,9 +218,10 @@ c  input    trace        integer: > 0 means "print tracing info"
 c  output   y(m)         estimated regression function
 c
 c-----------------------------------------------------------------------
-      integer n,nue, kord,ny,m, trace, classic
-      double precision t(n),x(n), b,s(0:n),tt(m),y(m)
+      integer n,nue, kord,ny, m, trace
+      double precision t(n), x(n), b, s(0:n), tt(m), y(m)
 c
+      integer classic
       double precision chan, chR
 c
 c------  computing change point

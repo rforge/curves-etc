@@ -21,9 +21,9 @@
 		  n.out= as.integer(n.out),	# m
 		  deriv = as.integer(deriv),	# nue
 		  korder = as.integer(korder),	# kord
-		  hetero = as.logical(hetero),	# hetero
-		  is.rand= as.logical(is.rand),	# isrand
-		  inputb = as.logical(inputb),
+		  hetero = asIntLogic(hetero),	# hetero
+		  is.rand= asIntLogic(is.rand),	# isrand
+		  inputb = asIntLogic(inputb),
 		  iter = as.integer(m1),        # m1 :   number of plug-in iterations on output
 		  xl = as.double(xl),		# tl
 		  xu = as.double(xu),		# tu

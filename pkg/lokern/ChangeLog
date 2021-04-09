@@ -1,3 +1,7 @@
+2021-04-09  Martin Maechler  <maechler@stat.math.ethz.ch>
+
+	* R/glkerns.R (asIntLogic): wrapper to ensure passing *integer* in .Fortran()
+
 2021-04-07  Martin Maechler  <maechler@stat.math.ethz.ch>
 
 	* DESCRIPTION (Date): updated, Version: 1.1-9 - ready for release

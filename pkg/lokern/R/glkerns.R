@@ -1,5 +1,7 @@
 ### glkerns   kernel regression smoothing with bandwidth selection
 
+asIntLogic <- function(x) as.integer(as.logical(x))# WRE recommends passing *integer* now
+
 ## auxiliary, factored out of glkerns()
 .glkerns <- function(x,y,x.out,nobs,n.out,deriv,korder,
 		     hetero,is.rand,inputb,
@@ -15,9 +17,9 @@
 		  n.out= as.integer(n.out),     # m
 		  deriv = as.integer(deriv),    # nue
 		  korder = as.integer(korder),  # kord
-		  hetero = as.logical(hetero),  # hetero
-		  is.rand= as.logical(is.rand), # isrand
-		  inputb = as.logical(inputb),	# inputb
+		  hetero = asIntLogic(hetero),  # hetero
+		  is.rand= asIntLogic(is.rand), # isrand
+		  inputb = asIntLogic(inputb),	# inputb
 		  iter = as.integer(m1),# number of plug-in iterations on output
 		  xl = as.double(xl),		# tl
 		  xu = as.double(xu),		# tu
