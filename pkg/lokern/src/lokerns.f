@@ -213,8 +213,9 @@ c-------- 11. refinement of s-sequence for random design
         bs=0.1*(vi/(sn-s0)**2)**exsvi * dble(n)**exs
         call kernel(wn(1,5),t,n,bs,0,2, 0, ! <- ny=0 : global bandwidth
      .       wn(0,3),wn(0,2), n+1, s(0), trace)
+c    MM vvvvvv shouldn't this really happen *after* 111  ??
+        vi=0.0
 111     needsrt=.false.
-        vi=0.0 ! (was *before* 111, so *not* reset after sorting)
         do i=1,n
            vi=vi+ wn(i,1)*n*(s(i)-s(i-1))**2 * wn(i,4)
            if(s(i).lt.s(i-1)) then ! swap them
